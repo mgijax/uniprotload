@@ -31,6 +31,8 @@ class Record:
         self.uniprotID = ''
         self.ensemblID = []
         self.entrezgeneID = []
+        self.kwName = []
+        self.interproID = []
 
 
     #
@@ -67,6 +69,36 @@ class Record:
         else:
             return 0
 
+    #
+    # uniprot/swissprot keyword name
+    #
+
+    def addKWName (self, kwName):
+        self.kwName.append(kwName)
+
+    def getKWName (self):
+        return self.kwName
+
+    def hasKWName (self, id):
+        if self.kwName.count(id) > 0:
+            return 1
+        else:
+            return 0
+
+    #
+    # interpro ids
+    #
+    def addInterProID (self, interproID):
+        self.interproID.append(interproID)
+
+    def getInterProID (self):
+        return self.interproID
+
+    def hasInterProID (self, id):
+        if self.interproID.count(id) > 0:
+            return 1
+        else:
+            return 0
 
     #
     # Purpose: Return all the attributes as one string (for debugging).
@@ -78,4 +110,6 @@ class Record:
     def debug (self):
         return '|uniprotID=' + self.uniprotID + \
                '|ensemblID=' + ','.join(self.ensemblID) + \
-               '|entrezgeneID=' + ','.join(self.entrezgeneID) + '|'
+               '|entrezgeneID=' + ','.join(self.entrezgeneID) + '|' + \
+               '|kwName=' + ','.join(self.kwName) + '|' + \
+               '|interproID=' + ','.join(self.interproID)

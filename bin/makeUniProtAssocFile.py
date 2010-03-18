@@ -177,6 +177,8 @@ def getAssociations():
         uniprotID = rec.getUniProtID()
         entrezgeneID = rec.getEntrezGeneID()
         ensemblID = rec.getEnsemblID()
+        kwName = rec.getKWName()
+        interproID = rec.getInterProID()
 
         #
         # Write the IDs to the association file as long as there is at least
@@ -187,7 +189,9 @@ def getAssociations():
         if len(entrezgeneID) > 0 or len(ensemblID) > 0:
             fpAssoc.write(uniprotID + '\t' + \
                           ','.join(entrezgeneID) + '\t' + \
-                          ','.join(ensemblID) + '\n')
+                          ','.join(ensemblID) + '\t' + \
+			  ','.join(kwName) + '\t' + \
+			  ','.join(interproID) + '\n')
 
         #
         # Get the next record from the parser.

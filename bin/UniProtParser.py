@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import string
 
 import UniProtRecord
 
@@ -82,6 +83,32 @@ class Parser:
                 id = re.split(';', self.line[5:])[1].strip()
                 if not self.record.hasEntrezGeneID(id):
                     self.record.addEntrezGeneID(id)
+
+            #
+            # Save an UniProt/SwissProt Keyword Name. If the input line looks like this:
+            #
+            # KW   Acetylation; Alternative initiation; Cytoplasm;
+            #
+            # We want to extract any keyword.
+            #
+            if self.line[0:5] == 'KW   ':
+		for str in re.split(';',self.line[5:]):
+		    fixstr = string.replace(str.strip(), '.', '')
+		    if fixstr.strip() != '':
+                        if not self.record.hasKWName(fixstr.strip()):
+                            self.record.addKWName(fixstr.strip())
+
+            #
+            # Save an InterPro ID. If the input line looks like this:
+            #
+            # DR   InterPro; IPR000308; 14-3-3.
+            #
+            # We want to extract the IPR000308. 
+            #
+            if self.line[0:14] == 'DR   InterPro;':
+                id = re.split(';', self.line[5:])[1].strip()
+                if not self.record.hasInterProID(id):
+                    self.record.addInterProID(id)
 
             #
             # Read the next line from the UniProt file.
