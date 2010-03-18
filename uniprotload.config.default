@@ -1,0 +1,87 @@
+#!/bin/sh
+###########################################################################
+#
+# Configuration.default
+#
+###########################################################################
+
+###########################################################################
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+###########################################################################
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+###########################################################################
+#
+# Directory paths
+#
+###########################################################################
+
+INPUTDIR=/data/seqdbs/blast/uniprot.build
+
+FILEDIR=/data/loads/uniprot/uniprotload
+ARCHIVEDIR=${FILEDIR}/archive
+OUTPUTDIR=${FILEDIR}/output
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+
+export INPUTDIR FILEDIR ARCHIVEDIR OUTPUTDIR LOGDIR RPTDIR
+
+###########################################################################
+#
+# Input/Output files
+#
+###########################################################################
+
+# UniProt input file from seqdb engine
+#
+INPUTFILE=${INPUTDIR}/uniprotmus.dat
+
+# MGI marker to EntrezGene/Ensembl/NCBI associations from the database
+#
+MGI_ACC_ASSOC_FILE=${OUTPUTDIR}/mgi_acc_assoc.txt
+
+# UniProt to EntrezGene/Ensembl associations from UniProt input file
+#
+UNIPROT_ACC_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc_assoc.txt
+
+# MGI marker to UniProt associations (from 1:1 and 1:N buckets)
+#
+MGI_UNIPROT_LOAD_FILE=${OUTPUTDIR}/mgi_uniprot_load.txt
+
+# MGI marker to UniProt associations (from current SwissProt load)
+#
+MGI_UNIPROT_SWISSLOAD=${OUTPUTDIR}/mgi_uniprot_swissload.txt
+
+# Log files
+#
+LOG_PROC=${LOGDIR}/uniprotload.proc.log
+LOG_DIAG=${LOGDIR}/uniprotload.diag.log
+
+export INPUTFILE
+export MGI_ACC_ASSOC_FILE UNIPROT_ACC_ASSOC_FILE
+export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
+export LOG_PROC LOG_DIAG
+
+###########################################################################
+#
+# Bucketizer settings
+#
+###########################################################################
+
+BUCKETDIR=${OUTPUTDIR}
+BUCKET_PREFIX=mgi_uniprot
+
+export BUCKETDIR BUCKET_PREFIX
+
+INSTALLDIR=/home/lec/mgi4.0/dataload/uniprotload
+export INSTALLDIR
+
