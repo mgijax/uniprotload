@@ -179,6 +179,7 @@ def getAssociations():
         ensemblID = rec.getEnsemblID()
         kwName = rec.getKWName()
         interproID = rec.getInterProID()
+        ecID = rec.getECID()
 
         #
         # Write the IDs to the association file as long as there is at least
@@ -191,7 +192,8 @@ def getAssociations():
                           ','.join(entrezgeneID) + '\t' + \
                           ','.join(ensemblID) + '\t' + \
 			  ','.join(kwName) + '\t' + \
-			  ','.join(interproID) + '\n')
+			  ','.join(interproID) + '\t' + \
+			  ','.join(ecID) + '\n')
 
         #
         # Get the next record from the parser.

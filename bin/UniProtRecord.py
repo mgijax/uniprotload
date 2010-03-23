@@ -33,6 +33,7 @@ class Record:
         self.entrezgeneID = []
         self.kwName = []
         self.interproID = []
+        self.ecID = []
 
 
     #
@@ -101,6 +102,21 @@ class Record:
             return 0
 
     #
+    # ec ids
+    #
+    def addECID (self, ecID):
+        self.ecID.append(ecID)
+
+    def getECID (self):
+        return self.ecID
+
+    def hasECID (self, id):
+        if self.ecID.count(id) > 0:
+            return 1
+        else:
+            return 0
+
+    #
     # Purpose: Return all the attributes as one string (for debugging).
     # Returns: String of all objects.
     # Assumes: Nothing
@@ -112,4 +128,5 @@ class Record:
                '|ensemblID=' + ','.join(self.ensemblID) + \
                '|entrezgeneID=' + ','.join(self.entrezgeneID) + '|' + \
                '|kwName=' + ','.join(self.kwName) + '|' + \
-               '|interproID=' + ','.join(self.interproID)
+               '|interproID=' + ','.join(self.interproID) + '|' + \
+               '|ecID=' + ','.join(self.ecID)

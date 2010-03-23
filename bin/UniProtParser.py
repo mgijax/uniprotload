@@ -93,10 +93,10 @@ class Parser:
             #
             if self.line[0:5] == 'KW   ':
 		for str in re.split(';',self.line[5:]):
-		    fixstr = string.replace(str.strip(), '.', '')
-		    if fixstr.strip() != '':
-                        if not self.record.hasKWName(fixstr.strip()):
-                            self.record.addKWName(fixstr.strip())
+		    str = string.replace(str.strip(), '.', '')
+		    if str.strip() != '':
+                        if not self.record.hasKWName(str.strip()):
+                            self.record.addKWName(str.strip())
 
             #
             # Save an InterPro ID. If the input line looks like this:
@@ -109,6 +109,19 @@ class Parser:
                 id = re.split(';', self.line[5:])[1].strip()
                 if not self.record.hasInterProID(id):
                     self.record.addInterProID(id)
+
+            #
+            # Save an EC ID. If the input line looks like this:
+            #
+	    # DE              EC=2.3.1.41;
+            #
+            # We want to extract the 2.3.1.41
+            #
+            if self.line[0:19] == 'DE              EC=':
+                id = re.split('=', self.line[16:])[1].strip()
+		id = string.replace(id.strip(), ';', '')
+                if not self.record.hasECID(id):
+                    self.record.addECID(id)
 
             #
             # Read the next line from the UniProt file.
