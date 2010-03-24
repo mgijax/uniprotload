@@ -107,14 +107,17 @@ class Parser:
             # Save an EC ID. If the input line looks like this:
             #
 	    # DE              EC=2.3.1.41;
+	    # DE            EC=1.1.1.284;
+	    # the EC does not always appear at the same line number
             #
             # We want to extract the 2.3.1.41
             #
-            if self.line[0:19] == 'DE              EC=':
-                id = re.split('=', self.line[16:])[1].strip()
-		id = string.replace(id.strip(), ';', '')
-                if not self.record.hasECID(id):
-                    self.record.addECID(id)
+            if self.line[0:5] == 'DE   ':
+		if string.find(self.line, 'EC=') >= 0:
+                  id = re.split('=', self.line)[1].strip()
+		  id = string.replace(id.strip(), ';', '')
+                  if not self.record.hasECID(id):
+                      self.record.addECID(id)
 
             #
             # Save an UniProt/SwissProt Keyword Name. If the input line looks like this:

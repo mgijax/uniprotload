@@ -116,14 +116,16 @@ import UniProtParser
 #
 def initialize():
     global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global uniprotPDBAssocFile
-    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc, fpPDBAssoc
+    global uniprotPDBAssocFile, uniprotECAssocFile
+    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
+    global fpPDBAssoc, fpECAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
     uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
     uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
     uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
+    uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
 
     rc = 0
 
@@ -150,6 +152,10 @@ def initialize():
         print 'Environment variable not set: UNIPROT_PDB_ASSOC_FILE'
         rc = 1
 
+    if not uniprotECAssocFile:
+        print 'Environment variable not set: UNIPROT_EC_ASSOC_FILE'
+        rc = 1
+
     #
     # Initialize file pointers.
     #
@@ -158,6 +164,7 @@ def initialize():
     fpAcc1Assoc = None
     fpAcc2Assoc = None
     fpPDBAssoc = None
+    fpECAssoc = None
 
     return rc
 
@@ -170,7 +177,8 @@ def initialize():
 # Throws: Nothing
 #
 def openFiles():
-    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc, fpPDBAssoc
+    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
+    global fpPDBAssoc, fpECAssoc
 
     #
     # Open the UniProt file.
@@ -217,6 +225,15 @@ def openFiles():
         print 'Cannot open pdb association file: ' + uniprotPDBAssocFile
         return 1
 
+    #
+    # Open the ec association file.
+    #
+    try:
+        fpECAssoc = open(uniprotECAssocFile, 'w')
+    except:
+        print 'Cannot open pdb association file: ' + uniprotECAssocFile
+        return 1
+
     return 0
 
 
@@ -243,6 +260,9 @@ def closeFiles():
 
     if fpPDBAssoc:
         fpPDBAssoc.close()
+
+    if fpECAssoc:
+        fpECAssoc.close()
 
     return 0
 
@@ -280,7 +300,7 @@ def getAssociations():
         ensemblID = rec.getEnsemblID()
         isTrembl = rec.getIsTrembl()
         pdbID = rec.getPDBID()
-        #ecID = rec.getECID()
+        ecID = rec.getECID()
         #kwName = rec.getKWName()
         #interproID = rec.getInterProID()
 
@@ -308,6 +328,10 @@ def getAssociations():
 	    if len(pdbID) > 0:
                 fpPDBAssoc.write(uniprotID + '\t' + \
 			      ','.join(pdbID) + '\n')
+
+	    if len(ecID) > 0:
+                fpECAssoc.write(uniprotID + '\t' + \
+			      ','.join(ecID) + '\n')
 
         #
         # Get the next record from the parser.
