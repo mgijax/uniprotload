@@ -79,7 +79,7 @@
 #        buckets ($MGI_UNIPROT_LOAD_FILE). It has the following tab-delimited
 #        fields:
 #
-#        header:  MGI\tSWISS-PROT\tPDB\tEC
+#        header:  MGI\tSWISS-PROT\tTrEMBL\tPDB\tEC
 #        1) MGI ID (for a marker)
 #        2) UniProt ID
 #        3) PDB ID
@@ -249,7 +249,7 @@ def openFiles():
         print 'Cannot open report: ' + bucketRptFile
         return 1
 
-    bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tPDB\n')
+    bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tPDB\tEC\n')
 
     #
     # Open the swissprot association file.
