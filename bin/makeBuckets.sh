@@ -76,6 +76,42 @@ then
 fi
 
 #
+# Make sure the UniProt association file exists.
+#
+if [ ! -f ${UNIPROT_ACC1_ASSOC_FILE} ]
+then
+    echo "Missing input file: ${UNIPROT_ACC1_ASSOC_FILE}"
+    exit 1
+fi
+
+#
+# Make sure the UniProt association file exists.
+#
+if [ ! -f ${UNIPROT_ACC2_ASSOC_FILE} ]
+then
+    echo "Missing input file: ${UNIPROT_ACC2_ASSOC_FILE}"
+    exit 1
+fi
+
+#
+# Make sure the UniProt PDB association file exists.
+#
+if [ ! -f ${UNIPROT_PDB_ASSOC_FILE} ]
+then
+    echo "Missing input file: ${UNIPROT_PDB_ASSOC_FILE}"
+    exit 1
+fi
+
+#
+# Make sure the UniProt EC association file exists.
+#
+if [ ! -f ${UNIPROT_EC_ASSOC_FILE} ]
+then
+    echo "Missing input file: ${UNIPROT_EC_ASSOC_FILE}"
+    exit 1
+fi
+
+#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}

@@ -605,10 +605,11 @@ def writeReport():
 		bucketRpt.write(pdbLookup[id][0])
         bucketRpt.write('\t')
 
+	ecIDs = []
 	for id in uniprotIDs:
 	    if ecLookup.has_key(id):
-		bucketRpt.write(ecLookup[id][0])
-        bucketRpt.write('\n')
+		ecIDs.append(id)
+        bucketRpt.write(string.join(ecIDs, ',') + '\n')
 
     return 0
 

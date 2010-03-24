@@ -119,8 +119,11 @@ def openFiles():
 # Throws: Nothing
 #
 def closeFiles():
+
     if fpAssoc:
         fpAssoc.close()
+
+    db.useOneConnection(0)
 
     return 0
 
@@ -139,19 +142,19 @@ def getAssociations():
     # Get all of the EntrezGene IDs, Ensembl gene model IDs that are
     # associated with markers and load them into a temp table.
     #
-    db.sql('select a1.accID, a1._LogicalDB_key, a2.accID "mgiID" ' + \
-           'into #assoc ' + \
-           'from ACC_Accession a1, ACC_Accession a2, MRK_Marker m ' + \
-           'where a1._MGIType_key = 2 and ' + \
-                 'a1._LogicalDB_key in (55, 60) and ' + \
-                 'a1.preferred = 1 and ' + \
-                 'a1._Object_key = m._Marker_key and ' + \
-                 'm._Organism_key = 1 and ' + \
-                 'a1._Object_key = a2._Object_key and ' + \
-                 'a2._MGIType_key = 2 and ' + \
-                 'a2._LogicalDB_Key = 1 and ' + \
-                 'a2.preferred = 1 and ' + \
-                 'a2.prefixPart = "MGI:"', None)
+    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID" 
+              into #assoc 
+              from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
+              where a1._MGIType_key = 2 and 
+                 a1._LogicalDB_key in (55, 60) and 
+                 a1.preferred = 1 and 
+                 a1._Object_key = m._Marker_key and 
+                 m._Organism_key = 1 and 
+                 a1._Object_key = a2._Object_key and 
+                 a2._MGIType_key = 2 and 
+                 a2._LogicalDB_Key = 1 and 
+                 a2.preferred = 1 and
+                 a2.prefixPart = "MGI:"''', None)
 
     #
     # Add indexes to the temp table.
@@ -159,41 +162,22 @@ def getAssociations():
     db.sql('create nonclustered index idx_accID on #assoc (accID)', None)
     db.sql('create nonclustered index idx_logicalDB on #assoc (_LogicalDB_key)', None)
 
-    cmds = []
-
-    #
-    # Get a unique list of all MGI IDs from the temp table.
-    #
-    cmds.append('select distinct mgiID ' + \
-                'from #assoc ' + \
-                'order by mgiID')
-
     #
     # Get the MGI ID of the marker and the unique EntrezGene IDs
     # that are associated with each marker.
     #
-    cmds.append('select distinct mgiID, accID ' + \
-                'from #assoc ' + \
-                'where _LogicalDB_key = 55 ' + \
-                'order by mgiID')
-
-    #
-    # Get the MGI ID of the marker and the unique Ensembl gene model IDs
-    # that are associated with each marker.
-    #
-    cmds.append('select distinct mgiID, accID ' + \
-                'from #assoc ' + \
-                'where _LogicalDB_key = 60 ' + \
-                'order by mgiID')
-
-    results = db.sql(cmds, 'auto')
+    cmd = '''select distinct mgiID, accID 
+             from #assoc 
+             where _LogicalDB_key = 55 
+             order by mgiID'''
+    results = db.sql(cmd, 'auto')
 
     #
     # Create a dictionary lookup where the key is the MGI ID and the value
     # is a list of associated EntrezGene IDs.
     #
     entrezgeneDict = {}
-    for r in results[1]:
+    for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
         if entrezgeneDict.has_key(mgiID):
@@ -204,11 +188,21 @@ def getAssociations():
         entrezgeneDict[mgiID] = list
 
     #
+    # Get the MGI ID of the marker and the unique Ensembl gene model IDs
+    # that are associated with each marker.
+    #
+    cmd = '''select distinct mgiID, accID 
+             from #assoc 
+             where _LogicalDB_key = 60 
+             order by mgiID'''
+    results = db.sql(cmd, 'auto')
+
+    #
     # Create a dictionary lookup where the key is the MGI ID and the value
     # is a list of association Ensembl gene model IDs.
     #
     ensemblDict = {}
-    for r in results[2]:
+    for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
         if ensemblDict.has_key(mgiID):
@@ -219,10 +213,18 @@ def getAssociations():
         ensemblDict[mgiID] = list
 
     #
+    # Get a unique list of all MGI IDs from the temp table.
+    #
+    cmd = '''select distinct mgiID 
+             from #assoc 
+             order by mgiID'''
+    results = db.sql(cmd, 'auto')
+
+    #
     # For each MGI ID, get the associated IDs from the dictionaries and
     # write them to the association file.
     #
-    for r in results[0]:
+    for r in results:
 
         mgiID = r['mgiID']
         if entrezgeneDict.has_key(mgiID):

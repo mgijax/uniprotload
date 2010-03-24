@@ -1,4 +1,4 @@
-#!/bin/sh
+#format: sh
 ###########################################################################
 #
 # Configuration.default
@@ -53,9 +53,37 @@ MGI_ACC_ASSOC_FILE=${OUTPUTDIR}/mgi_acc_assoc.txt
 #
 UNIPROT_ACC_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc_assoc.txt
 
+# UniProt to EntrezGene/Ensembl associations from UniProt input file
+# Swiss-Prot
+#
+UNIPROT_ACC1_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc1_assoc.txt
+
+# UniProt to EntrezGene/Ensembl associations from UniProt input file
+# TrEMBL
+#
+UNIPROT_ACC2_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc2_assoc.txt
+
+# UniProt to PDB id associations from UniProt input file
+#
+UNIPROT_PDB_ASSOC_FILE=${OUTPUTDIR}/uniprot_pdb_assoc.txt
+
+# UniProt to EC id associations from UniProt input file
+#
+UNIPROT_EC_ASSOC_FILE=${OUTPUTDIR}/uniprot_ec_assoc.txt
+
+# UniProt to InterPro id associations from UniProt input file
+#
+UNIPROT_INTERPRO_ASSOC_FILE=${OUTPUTDIR}/uniprot_interpro_assoc.txt
+
+# UniProt to GO/KW id associations from UniProt input file
+#
+UNIPROT_GOKW_ASSOC_FILE=${OUTPUTDIR}/uniprot_gokw_assoc.txt
+
 # MGI marker to UniProt associations (from 1:1 and 1:N buckets)
 #
 MGI_UNIPROT_LOAD_FILE=${OUTPUTDIR}/mgi_uniprot_load.txt
+# ASSOCLOAD expects this parameter name
+INFILE_NAME=${MGI_UNIPROT_LOAD_FILE}
 
 # MGI marker to UniProt associations (from current SwissProt load)
 #
@@ -65,11 +93,16 @@ MGI_UNIPROT_SWISSLOAD=${OUTPUTDIR}/mgi_uniprot_swissload.txt
 #
 LOG_PROC=${LOGDIR}/uniprotload.proc.log
 LOG_DIAG=${LOGDIR}/uniprotload.diag.log
+LOG_CUR=${LOGDIR}/uniprotload.cur.log
+LOG_VAL=${LOGDIR}/uniprotload.val.log
 
-export INPUTFILE
-export MGI_ACC_ASSOC_FILE UNIPROT_ACC_ASSOC_FILE
+export INPUTFILE INFILE_NAME
+export MGI_ACC_ASSOC_FILE 
+export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
+export UNIPROT_PDB_ASSOC_FILE UNIPROT_EC_ASSOC_FILE
+export UNIPROT_INTERPRO_ASSOC_FILE UNIPROT_GOKW_ASSOC_FILE
 export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
-export LOG_PROC LOG_DIAG
+export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
 ###########################################################################
 #
@@ -82,6 +115,95 @@ BUCKET_PREFIX=mgi_uniprot
 
 export BUCKETDIR BUCKET_PREFIX
 
-INSTALLDIR=/home/lec/mgi4.0/dataload/uniprotload
+###########################################################################
+#
+# Association Loader setting
+#
+###########################################################################
+
+# Association Loader shell script
+ASSOCLOADER_SH=${ASSOCLOAD}/bin/AssocLoad.sh
+
+export ASSOCLOADER_SH
+
+#  The J-Number for the load
+J_NUMBER=J:53168
+
+#  The name of the job stream for the load
+JOBSTREAM=swissload
+
+export J_NUMBER JOBSTREAM
+
+#  Association Loader settings
+ASSOCLOAD_FROM_FILE=true
+ASSOCLOAD_TARGET_MGI_TYPE=Marker
+ASSOCLOAD_DELETE_RELOAD=true
+
+export ASSOCLOAD_FROM_FILE
+export ASSOCLOAD_TARGET_MGI_TYPE ASSOCLOAD_DELETE_RELOAD
+
+###########################################################################
+#
+#  BCP MANAGER SETTINGS BY DATABASE
+#
+###########################################################################
+
+#  Settings used to create a BCP manager for the RADAR database
+RADAR_BCP_PATH=${OUTPUTDIR}
+RADAR_BCP_AUTO_FLUSH=false
+RADAR_BCP_DROP_INDEXES=false
+RADAR_BCP_OK_TO_OVERWRITE=true
+RADAR_BCP_PREVENT_EXECUTE=false
+RADAR_BCP_RECORD_STAMPING=false
+RADAR_BCP_TRUNCATE_LOG=true
+RADAR_BCP_TRUNCATE_TABLE=false
+
+export RADAR_BCP_PATH RADAR_BCP_AUTO_FLUSH
+export RADAR_BCP_DROP_INDEXES RADAR_BCP_OK_TO_OVERWRITE
+export RADAR_BCP_PREVENT_EXECUTE RADAR_BCP_RECORD_STAMPING
+export RADAR_BCP_TRUNCATE_LOG RADAR_BCP_TRUNCATE_TABLE
+
+#  Settings used to create a BCP manager for the MGD database
+MGD_BCP_PATH=${OUTPUTDIR}
+MGD_BCP_AUTO_FLUSH=false
+MGD_BCP_DROP_INDEXES=false
+MGD_BCP_OK_TO_OVERWRITE=true
+MGD_BCP_PREVENT_EXECUTE=false
+MGD_BCP_RECORD_STAMPING=false
+MGD_BCP_TRUNCATE_LOG=true
+MGD_BCP_TRUNCATE_TABLE=false
+
+export MGD_BCP_PATH MGD_BCP_AUTO_FLUSH
+export MGD_BCP_DROP_INDEXES MGD_BCP_OK_TO_OVERWRITE
+export MGD_BCP_PREVENT_EXECUTE MGD_BCP_RECORD_STAMPING
+export MGD_BCP_TRUNCATE_LOG MGD_BCP_TRUNCATE_TABLE
+
+###########################################################################
+#
+#  BCP SETTINGS BY TABLE (OVERRIDE BCP MANAGER SETTINGS)
+#
+###########################################################################
+
+#  RADAR database table settings
+#
+MGI_ASSOCIATION_BCP_PRESQL="delete from MGI_Association where _JobStream_key in (select _JobStream_key from APP_JobStream where jobStreamName = '${JOBSTREAM}')"
+
+export MGI_ASSOCIATION_BCP_PRESQL
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="UniProt Load"
+
+#  Recipient list for mailing the log files (comma-separated)
+MAIL_LOG_CUR="mgiadmin"
+
+export MAIL_LOADNAME MAIL_LOG_PROC MAIL_LOG_CUR
+
+INSTALLDIR=${UNIPROTLOAD}
 export INSTALLDIR
 
