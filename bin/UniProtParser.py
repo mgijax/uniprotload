@@ -51,6 +51,13 @@ class Parser:
         while self.line and self.line[0:2] != '//':
             self.line = self.line[:-1]
 
+	    #
+	    # Determine if the UniProt ID is a TrEMBL ID or not
+	    #
+	    if self.line[0:2] == 'ID':
+		if string.find(self.line, 'Unreviewed;') >= 0:
+		    self.record.isTrembl = 1
+
             #
             # Save the UniProt ID.
             #
@@ -85,6 +92,31 @@ class Parser:
                     self.record.addEntrezGeneID(id)
 
             #
+            # Save an PDB ID. If the input line looks like this:
+            #
+            # DR   PDB; 2PF4; X-ray; 3.10 A; A/B/C/D=1-589.
+            #
+            # We want to extract the 2PF4.
+            #
+            if self.line[0:9] == 'DR   PDB;':
+                id = re.split(';', self.line[5:])[1].strip()
+                if not self.record.hasPDBID(id):
+                    self.record.addPDBID(id)
+
+            #
+            # Save an EC ID. If the input line looks like this:
+            #
+	    # DE              EC=2.3.1.41;
+            #
+            # We want to extract the 2.3.1.41
+            #
+            if self.line[0:19] == 'DE              EC=':
+                id = re.split('=', self.line[16:])[1].strip()
+		id = string.replace(id.strip(), ';', '')
+                if not self.record.hasECID(id):
+                    self.record.addECID(id)
+
+            #
             # Save an UniProt/SwissProt Keyword Name. If the input line looks like this:
             #
             # KW   Acetylation; Alternative initiation; Cytoplasm;
@@ -109,19 +141,6 @@ class Parser:
                 id = re.split(';', self.line[5:])[1].strip()
                 if not self.record.hasInterProID(id):
                     self.record.addInterProID(id)
-
-            #
-            # Save an EC ID. If the input line looks like this:
-            #
-	    # DE              EC=2.3.1.41;
-            #
-            # We want to extract the 2.3.1.41
-            #
-            if self.line[0:19] == 'DE              EC=':
-                id = re.split('=', self.line[16:])[1].strip()
-		id = string.replace(id.strip(), ';', '')
-                if not self.record.hasECID(id):
-                    self.record.addECID(id)
 
             #
             # Read the next line from the UniProt file.

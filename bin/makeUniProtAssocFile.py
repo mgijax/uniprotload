@@ -6,8 +6,23 @@
 #  Purpose:
 #
 #      This script will use the records in the UniProt input file to create
-#      an output file that contains all of the EntrezGene IDs and Ensembl
-#      gene model IDs that are associated with each UniProt ID.
+#      output files that contain:
+#
+#      0) all of the EntrezGene IDs and Ensembl 
+#         gene model IDs that are associated with each UniProt ID.
+#         (all)
+#
+#      1) all of the UniProt IDs that are SwissProt
+#
+#      2) all of the UniProt IDs that are TrEMBL
+#
+#      3) PDB ids
+#
+#      4) EC ids
+#
+#      5) InterPro ids
+#
+#      6) GOKW (go key-words)
 #
 #  Usage:
 #
@@ -20,6 +35,12 @@
 #
 #          INPUTFILE
 #          UNIPROT_ACC_ASSOC_FILE
+#          UNIPROT_ACC1_ASSOC_FILE
+#          UNIPROT_ACC2_ASSOC_FILE
+#          UNIPROT_PDB_ACCOC_FILE
+#          UNIPROT_EC_ACCOC_FILE
+#          UNIPROT_INTEPRO_ACCOC_FILE
+#          UNIPROT_GOKW_ACCOC_FILE
 #
 #  Inputs:
 #
@@ -29,10 +50,33 @@
 #
 #      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
-#
 #        1) UniProt ID
 #        2) EntrezGene IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
+#
+#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
+#        the TableDataSet class. It has the following tab-delimited fields:
+#        1) UniProt ID
+#
+#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE) to be used by
+#        the TableDataSet class. It has the following tab-delimited fields:
+#        1) UniProt ID (TrEMBL)
+#
+#      - UniProt/PDB association file ($UNIPROT_PDB_ASSOC_FILE) to be used by
+#        1) UniProt ID
+#        2) PDB IDs (comma-separated)
+#
+#      - UniProt/EC association file ($UNIPROT_EC_ASSOC_FILE) to be used by
+#        1) UniProt ID
+#        2) EC IDs (comma-separated)
+#
+#      - UniProt/InterPro association file ($UNIPROT_INTERPRO_ASSOC_FILE) to be used by
+#        1) UniProt ID
+#        2) InterPro IDs (comma-separated)
+#
+#      - UniProt/GOKW association file ($UNIPROT_GOKW_ASSOC_FILE) to be used by
+#        1) UniProt ID
+#        2) GOKW IDs (comma-separated)
 #
 #  Exit Codes:
 #
@@ -71,11 +115,15 @@ import UniProtParser
 # Throws: Nothing
 #
 def initialize():
-    global uniprotFile, uniprotAssocFile
-    global fpUniProt, fpAssoc
+    global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
+    global uniprotPDBAssocFile
+    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc, fpPDBAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
-    uniprotAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+    uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+    uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
+    uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
+    uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
 
     rc = 0
 
@@ -86,15 +134,30 @@ def initialize():
         print 'Environment variable not set: INPUTFILE'
         rc = 1
 
-    if not uniprotAssocFile:
+    if not uniprotAccAssocFile:
         print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
+        rc = 1
+
+    if not uniprotAcc1AssocFile:
+        print 'Environment variable not set: UNIPROT_ACC1_ASSOC_FILE'
+        rc = 1
+
+    if not uniprotAcc2AssocFile:
+        print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
+        rc = 1
+
+    if not uniprotPDBAssocFile:
+        print 'Environment variable not set: UNIPROT_PDB_ASSOC_FILE'
         rc = 1
 
     #
     # Initialize file pointers.
     #
     fpUniProt = None
-    fpAssoc = None
+    fpAccAssoc = None
+    fpAcc1Assoc = None
+    fpAcc2Assoc = None
+    fpPDBAssoc = None
 
     return rc
 
@@ -107,7 +170,7 @@ def initialize():
 # Throws: Nothing
 #
 def openFiles():
-    global fpUniProt, fpAssoc
+    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc, fpPDBAssoc
 
     #
     # Open the UniProt file.
@@ -119,12 +182,39 @@ def openFiles():
         return 1
 
     #
-    # Open the association file.
+    # Open the acc association file.
     #
     try:
-        fpAssoc = open(uniprotAssocFile, 'w')
+        fpAccAssoc = open(uniprotAccAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotAssocFile
+        print 'Cannot open acc association file: ' + uniprotAccAssocFile
+        return 1
+
+    #
+    # Open the acc association file.
+    #
+    try:
+        fpAcc1Assoc = open(uniprotAcc1AssocFile, 'w')
+    except:
+        print 'Cannot open acc association file: ' + uniprotAcc1AssocFile
+        return 1
+
+    #
+    # Open the acc association file.
+    #
+    try:
+        fpAcc2Assoc = open(uniprotAcc2AssocFile, 'w')
+    except:
+        print 'Cannot open acc association file: ' + uniprotAcc2AssocFile
+        return 1
+
+    #
+    # Open the pdb association file.
+    #
+    try:
+        fpPDBAssoc = open(uniprotPDBAssocFile, 'w')
+    except:
+        print 'Cannot open pdb association file: ' + uniprotPDBAssocFile
         return 1
 
     return 0
@@ -138,10 +228,21 @@ def openFiles():
 # Throws: Nothing
 #
 def closeFiles():
+
     if fpUniProt:
         fpUniProt.close()
-    if fpAssoc:
-        fpAssoc.close()
+
+    if fpAccAssoc:
+        fpAccAssoc.close()
+
+    if fpAcc1Assoc:
+        fpAcc1Assoc.close()
+
+    if fpAcc2Assoc:
+        fpAcc2Assoc.close()
+
+    if fpPDBAssoc:
+        fpPDBAssoc.close()
 
     return 0
 
@@ -177,9 +278,11 @@ def getAssociations():
         uniprotID = rec.getUniProtID()
         entrezgeneID = rec.getEntrezGeneID()
         ensemblID = rec.getEnsemblID()
-        kwName = rec.getKWName()
-        interproID = rec.getInterProID()
-        ecID = rec.getECID()
+        isTrembl = rec.getIsTrembl()
+        pdbID = rec.getPDBID()
+        #ecID = rec.getECID()
+        #kwName = rec.getKWName()
+        #interproID = rec.getInterProID()
 
         #
         # Write the IDs to the association file as long as there is at least
@@ -188,12 +291,23 @@ def getAssociations():
         # within the appropriate field.
         #
         if len(entrezgeneID) > 0 or len(ensemblID) > 0:
-            fpAssoc.write(uniprotID + '\t' + \
+
+	    # all uniprot ids
+            fpAccAssoc.write(uniprotID + '\t' + \
                           ','.join(entrezgeneID) + '\t' + \
-                          ','.join(ensemblID) + '\t' + \
-			  ','.join(kwName) + '\t' + \
-			  ','.join(interproID) + '\t' + \
-			  ','.join(ecID) + '\n')
+                          ','.join(ensemblID) + '\n')
+
+	    # swiss-prot
+	    if not isTrembl:
+                fpAcc1Assoc.write(uniprotID + '\n')
+
+	    # trembl 
+	    else:
+                fpAcc2Assoc.write(uniprotID + '\n')
+
+	    if len(pdbID) > 0:
+                fpPDBAssoc.write(uniprotID + '\t' + \
+			      ','.join(pdbID) + '\n')
 
         #
         # Get the next record from the parser.

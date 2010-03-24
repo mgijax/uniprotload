@@ -20,25 +20,40 @@
 #
 #          MGI_ACC_ASSOC_FILE
 #          UNIPROT_ACC_ASSOC_FILE
+#          UNIPROT_ACC1_ASSOC_FILE
+#          UNIPROT_ACC2_ASSOC_FILE
+#          UNIPROT_PDB_ASSOC_FILE
 #          BUCKETDIR
 #          BUCKET_PREFIX
 #          MGI_UNIPROT_LOAD_FILE
 #
 #  Inputs:
 #
-#      - MGI association file ($MGI_ACC_ASSOC_FILE) to be used by the
-#        TableDataSet class. It has the following tab-delimited fields:
+#      - MGI association file ($MGI_ACC_ASSOC_FILE, $MGI_ACC2_ASSOC_FILE)
+#        to be used by the TableDataSet class. It has the following tab-delimited fields:
 #
 #        1) MGI ID (for a marker)
 #        2) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
 #
-#      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
-#        the TableDataSet class. It has the following tab-delimited fields:
+#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
+#        the generate a lookup file.
+#        It has the following tab-delimited fields:
 #
 #        1) UniProt ID
-#        2) EntrezGene IDs (comma-separated)
-#        3) Ensembl gene model IDs (comma-separated)
+#
+#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE) to be used by
+#        the generate a lookup file.
+#        It has the following tab-delimited fields:
+#
+#        1) UniProt ID
+#
+#      - UniProt PDB association file ($UNIPROT_PDB_ASSOC_FILE) to be used
+#        to generate a lookup file.
+#        It has the following tab-delimited fields:
+#
+#        1) UniProt ID
+#        2) PDB IDs (comma-separated)
 #
 #  Outputs:
 #
@@ -56,8 +71,10 @@
 #        buckets ($MGI_UNIPROT_LOAD_FILE). It has the following tab-delimited
 #        fields:
 #
+#        header:  MGI\tSWISS-PROT\tPDB\tEC
 #        1) MGI ID (for a marker)
 #        2) UniProt ID
+#        3) PDB ID
 #
 #  Exit Codes:
 #
@@ -85,6 +102,7 @@
 
 import sys 
 import os
+import string
 import db
 import tabledatasetlib
 #from tabledatasetlib import *
@@ -105,6 +123,9 @@ BUCKETLIST = [ B0_1, B1_0, B1_1, B1_N, BN_1, BN_N ]
 bucket = {}
 bucketizer = None
 
+swissprotLookup = []
+tremblLookup = []
+pdbLookup = {}
 
 #
 # Purpose: Initialization
@@ -114,12 +135,19 @@ bucketizer = None
 # Throws: Nothing
 #
 def initialize():
-    global mgiAssocFile, uniprotAssocFile, bucketRptFile
+    global mgiAssocFile
+    global uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
+    global uniprotPDBAssocFile
+    global bucketRptFile
     global bucketDir, bucketPrefix
     global bucket, bucketRpt
+    global fpSPAssoc, fpTRAssoc, fpPDBAssoc
 
     mgiAssocFile = os.getenv('MGI_ACC_ASSOC_FILE')
-    uniprotAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+    uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+    uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
+    uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
+    uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
     bucketDir = os.getenv('BUCKETDIR')
     bucketPrefix = os.getenv('BUCKET_PREFIX')
     bucketRptFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
@@ -132,8 +160,17 @@ def initialize():
     if not mgiAssocFile:
         print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
         rc = 1
-    if not uniprotAssocFile:
+    if not uniprotAccAssocFile:
         print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
+        rc = 1
+    if not uniprotAcc1AssocFile:
+        print 'Environment variable not set: UNIPROT_ACC1_ASSOC_FILE'
+        rc = 1
+    if not uniprotAcc2AssocFile:
+        print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
+        rc = 1
+    if not uniprotPDBAssocFile:
+        print 'Environment variable not set: UNIPROT_PDB_ASSOC_FILE'
         rc = 1
     if not bucketRptFile:
         print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
@@ -153,6 +190,9 @@ def initialize():
     for i in BUCKETLIST:
         bucket[i] = None
     bucketRpt = None
+    fpSPAssoc = None
+    fpTRAssoc = None
+    fpPDBAssoc = None
 
     return rc
 
@@ -166,6 +206,8 @@ def initialize():
 #
 def openFiles():
     global bucket, bucketRpt
+    global swissprotLookup, tremblLookup, pdbLookup
+    global fpSPAssoc, fpTRAssoc, fpPDBAssoc
 
     #
     # Open the bucket files.
@@ -187,6 +229,46 @@ def openFiles():
         print 'Cannot open report: ' + bucketRptFile
         return 1
 
+    bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tPDB\n')
+
+    #
+    # Open the swissprot association file.
+    #
+    try:
+        fpSPAssoc = open(uniprotAcc1AssocFile, 'r')
+	for line in fpSPAssoc.readlines():
+            swissprotLookup.append(line[:-1])
+    except:
+        print 'Cannot open swissprot association file: ' + uniprotPDBAssocFile
+        return 1
+
+    #
+    # Open the trembl association file.
+    #
+    try:
+        fpTRAssoc = open(uniprotAcc2AssocFile, 'r')
+	for line in fpTRAssoc.readlines():
+            tremblLookup.append(line[:-1])
+    except:
+        print 'Cannot open trembl association file: ' + uniprotPDBAssocFile
+        return 1
+
+    #
+    # Open the pdb association file.
+    #
+    try:
+        fpPDBAssoc = open(uniprotPDBAssocFile, 'r')
+	for line in fpPDBAssoc.readlines():
+	    tokens = string.split(line[:-1], '\t')
+	    key = tokens[0]
+	    value = tokens[1]
+	    if not pdbLookup.has_key(key):
+		pdbLookup[key] = []
+            pdbLookup[key].append(value)
+    except:
+        print 'Cannot open pdb association file: ' + uniprotPDBAssocFile
+        return 1
+
     return 0
 
 
@@ -204,6 +286,15 @@ def closeFiles():
 
     if bucketRpt:
         bucketRpt.close()
+
+    if fpSPAssoc:
+        fpSPAssoc.close()
+
+    if fpTRAssoc:
+        fpTRAssoc.close()
+
+    if fpPDBAssoc:
+        fpPDBAssoc.close()
 
     return 0
 
@@ -241,7 +332,7 @@ def bucketize():
 
     dsUniProt = tabledatasetlib.TextFileTableDataSet(
                     'uniprot',
-                    uniprotAssocFile,
+                    uniprotAccAssocFile,
                     fieldnames=fields,
                     multiValued=multiFields,
                     readNow=1)
@@ -454,8 +545,26 @@ def writeReport():
     for m in mgiIDs:
         uniprotIDs = mgiDict[m]
         uniprotIDs.sort()
-        for u in uniprotIDs:
-            bucketRpt.write(m + '\t' + u + '\n')
+
+        bucketRpt.write(m + '\t')
+	
+	spIDs = []
+	trIDs = []
+	for id in uniprotIDs:
+
+	    if id in swissprotLookup:
+		spIDs.append(id)
+
+	    if id in tremblLookup:
+		trIDs.append(id)
+
+	bucketRpt.write(string.join(spIDs, ',') + '\t')
+	bucketRpt.write(string.join(trIDs, ',') + '\t')
+
+	for id in uniprotIDs:
+	    if pdbLookup.has_key(id):
+		bucketRpt.write(pdbLookup[id][0])
+        bucketRpt.write('\n')
 
     return 0
 

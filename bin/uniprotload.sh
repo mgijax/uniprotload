@@ -103,4 +103,17 @@ then
     exit 1
 fi
 
+#
+# Create GO annotation file.
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeGOAnnotFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeGOAnnotFile.sh 2>&1 >> ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    exit 1
+fi
+
 exit 0

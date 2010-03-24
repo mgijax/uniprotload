@@ -29,11 +29,13 @@ class Record:
     #
     def clear (self):
         self.uniprotID = ''
+	self.isTrembl = 0
         self.ensemblID = []
         self.entrezgeneID = []
+        self.pdbID = []
+        self.ecID = []
         self.kwName = []
         self.interproID = []
-        self.ecID = []
 
 
     #
@@ -46,6 +48,13 @@ class Record:
     def getUniProtID (self):
         return self.uniprotID
 
+    def getIsTrembl (self):
+	return self.isTrembl
+
+    #
+    # Ensembl ids
+    #
+
     def addEnsemblID (self, ensemblID):
         self.ensemblID.append(ensemblID)
 
@@ -57,6 +66,10 @@ class Record:
             return 1
         else:
             return 0
+
+    #
+    # EntrezGene ids
+    #
 
     def addEntrezGeneID (self, entrezgeneID):
         self.entrezgeneID.append(entrezgeneID)
@@ -71,7 +84,39 @@ class Record:
             return 0
 
     #
-    # uniprot/swissprot keyword name
+    # PDB ids (protein data bank)
+    #
+
+    def addPDBID (self, pdbID):
+        self.pdbID.append(pdbID)
+
+    def getPDBID (self):
+        return self.pdbID
+
+    def hasPDBID (self, id):
+        if self.pdbID.count(id) > 0:
+            return 1
+        else:
+            return 0
+
+    #
+    # ED ids
+    #
+
+    def addECID (self, ecID):
+        self.ecID.append(ecID)
+
+    def getECID (self):
+        return self.ecID
+
+    def hasECID (self, id):
+        if self.ecID.count(id) > 0:
+            return 1
+        else:
+            return 0
+
+    #
+    # GO keyword name
     #
 
     def addKWName (self, kwName):
@@ -87,8 +132,9 @@ class Record:
             return 0
 
     #
-    # interpro ids
+    # InterPro ids
     #
+
     def addInterProID (self, interproID):
         self.interproID.append(interproID)
 
@@ -97,21 +143,6 @@ class Record:
 
     def hasInterProID (self, id):
         if self.interproID.count(id) > 0:
-            return 1
-        else:
-            return 0
-
-    #
-    # ec ids
-    #
-    def addECID (self, ecID):
-        self.ecID.append(ecID)
-
-    def getECID (self):
-        return self.ecID
-
-    def hasECID (self, id):
-        if self.ecID.count(id) > 0:
             return 1
         else:
             return 0
@@ -127,6 +158,7 @@ class Record:
         return '|uniprotID=' + self.uniprotID + \
                '|ensemblID=' + ','.join(self.ensemblID) + \
                '|entrezgeneID=' + ','.join(self.entrezgeneID) + '|' + \
+               '|pdbID=' + ','.join(self.pdbID) + '|' + \
+               '|ecID=' + ','.join(self.ecID) + '|' + \
                '|kwName=' + ','.join(self.kwName) + '|' + \
-               '|interproID=' + ','.join(self.interproID) + '|' + \
-               '|ecID=' + ','.join(self.ecID)
+               '|interproID=' + ','.join(self.interproID)
