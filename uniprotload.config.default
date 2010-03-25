@@ -71,9 +71,9 @@ UNIPROT_PDB_ASSOC_FILE=${OUTPUTDIR}/uniprot_pdb_assoc.txt
 #
 UNIPROT_EC_ASSOC_FILE=${OUTPUTDIR}/uniprot_ec_assoc.txt
 
-# UniProt to InterPro id associations from UniProt input file
+# UniProt to GO/InterPro id associations from UniProt input file
 #
-UNIPROT_INTERPRO_ASSOC_FILE=${OUTPUTDIR}/uniprot_interpro_assoc.txt
+UNIPROT_GOINTERPRO_ASSOC_FILE=${OUTPUTDIR}/uniprot_gointerpro_assoc.txt
 
 # UniProt to GO/KW id associations from UniProt input file
 #
@@ -100,7 +100,7 @@ export INPUTFILE INFILE_NAME
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
 export UNIPROT_PDB_ASSOC_FILE UNIPROT_EC_ASSOC_FILE
-export UNIPROT_INTERPRO_ASSOC_FILE UNIPROT_GOKW_ASSOC_FILE
+export UNIPROT_GOINTERPRO_ASSOC_FILE UNIPROT_GOKW_ASSOC_FILE
 export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
@@ -130,7 +130,7 @@ export ASSOCLOADER_SH
 J_NUMBER=J:53168
 
 #  The name of the job stream for the load
-JOBSTREAM=swissload
+JOBSTREAM=swissload_assocload
 
 export J_NUMBER JOBSTREAM
 
