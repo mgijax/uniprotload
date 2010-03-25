@@ -585,8 +585,11 @@ def writeReport():
         uniprotIDs = mgiDict[m]
         uniprotIDs.sort()
 
+	# MGI id
         bucketRpt.write(m + '\t')
 	
+	# SwissProt ids
+	# TrEMBL ids
 	spIDs = []
 	trIDs = []
 	for id in uniprotIDs:
@@ -600,15 +603,20 @@ def writeReport():
 	bucketRpt.write(string.join(spIDs, ',') + '\t')
 	bucketRpt.write(string.join(trIDs, ',') + '\t')
 
+	# PDB ids
 	for id in uniprotIDs:
 	    if pdbLookup.has_key(id):
 		bucketRpt.write(pdbLookup[id][0])
         bucketRpt.write('\t')
 
+	# EC ids
 	ecIDs = []
 	for id in uniprotIDs:
 	    if ecLookup.has_key(id):
-		ecIDs.append(id)
+		# ignore duplicates
+		e = ecLookup[id][0]
+		if e not in ecIDs:
+		    ecIDs.append(e)
         bucketRpt.write(string.join(ecIDs, ',') + '\n')
 
     return 0

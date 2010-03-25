@@ -98,8 +98,7 @@ preload ${OUTPUTDIR}
 # run association load
 #
 
-echo "Running UniProt association load" >> ${LOG_DIAG}
-echo ${ASSOCLOADER_SH} ${CONFIG_UNIPROT} ${JOBKEY}
+echo "Running UniProt association load (loadBuckets.sh)" >> ${LOG_DIAG}
 ${ASSOCLOADER_SH} ${CONFIG_UNIPROT} ${JOBKEY}
 STAT=$?
 checkStatus ${STAT} "${ASSOCLOADER_SH} ${CONFIG_UNIPROT}"
@@ -108,5 +107,4 @@ checkStatus ${STAT} "${ASSOCLOADER_SH} ${CONFIG_UNIPROT}"
 # run postload cleanup and email logs
 #
 shutDown
-
-#exit 0
+exit 0
