@@ -39,6 +39,7 @@
 #      5) Call makeMGIAssocFile.sh to make an association file from
 #         the database.
 #      6) Call makeBuckets.sh to bucketize the association files.
+#      7) Call loadBuckets.sh to load associations created by bucketizer.
 #
 #  Notes:  None
 #
@@ -104,12 +105,12 @@ then
 fi
 
 #
-# Create GO annotation file.
+# Load association buckets
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Call makeGOAnnotFile.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeGOAnnotFile.sh 2>&1 >> ${LOG}
+echo "Call oadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+./loadBuckets.sh 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

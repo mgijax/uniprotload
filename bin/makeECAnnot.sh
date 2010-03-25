@@ -1,15 +1,15 @@
 #!/bin/sh
 #
-#  loadBuckets.sh
+#  makeECAnnot.sh
 ###########################################################################
 #
 #  Purpose:
 #
-#      This script will run the association loader using the MGI/UniProt IDs.
+#      This script will run the annotation loader for GO/EC associations.
 #
 #  Usage:
 #
-#      loadBuckets.sh
+#      makeECAnnot.sh
 #
 #  Env Vars:
 #
@@ -35,7 +35,7 @@
 #      1) Source the configuration file to establish the environment.
 #      2) Verify that the input files exist.
 #      3) Establish the log file.
-#      4) Call loadBuckets.py to bucketize the association files.
+#      4) Call makeECAnnot.py to bucketize the association files.
 #
 #  Notes:  None
 #
@@ -89,22 +89,43 @@ else
 fi
 
 #
-# createArchive 
+# createArchive
 #
-preload
+#preload
 
 #
 #
-# run association load
+# make the GO/EC annotation file
 #
 
-echo "Running UniProt association load (loadBuckets.sh)" >> ${LOG_DIAG}
-${ASSOCLOADER_SH} ${CONFIG} ${JOBKEY}
+#
+# Call the Python script to create the GO/EC annotation file.
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Create the Go/EC annotation file (makeECAnnot.sh)" | tee -a ${LOG}
+./makeECAnnot.py 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "${ASSOCLOADER_SH} ${CONFIG}"
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error creating GO/EC annotation file" | tee -a ${LOG}
+    exit 1
+fi
+
+#
+#
+# run annotation load
+#
+
+#CONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+
+#echo "Running UniProt/EC annotation load (makeECAnnot.sh)" >> ${LOG_DIAG}
+#${ANNOTLOADER_CSH} ${CONFIG_CSH}
+#STAT=$?
+#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${CONFIG_CSH}"
 
 #
 # run postload cleanup and email logs
 #
-shutDown
+#shutDown
 exit 0

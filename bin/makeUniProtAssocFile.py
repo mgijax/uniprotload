@@ -20,9 +20,9 @@
 #
 #      4) EC ids
 #
-#      5) InterPro ids
+#      5) GO/InterPro ids
 #
-#      6) GOKW (go key-words)
+#      6) GO/KW (go key-words)
 #
 #  Usage:
 #
@@ -39,7 +39,7 @@
 #          UNIPROT_ACC2_ASSOC_FILE
 #          UNIPROT_PDB_ACCOC_FILE
 #          UNIPROT_EC_ACCOC_FILE
-#          UNIPROT_INTEPRO_ACCOC_FILE
+#          UNIPROT_GOINTEPRO_ACCOC_FILE
 #          UNIPROT_GOKW_ACCOC_FILE
 #
 #  Inputs:
@@ -70,7 +70,7 @@
 #        1) UniProt ID
 #        2) EC IDs (comma-separated)
 #
-#      - UniProt/InterPro association file ($UNIPROT_INTERPRO_ASSOC_FILE) to be used by
+#      - UniProt/GOInterPro association file ($UNIPROT_GOINTERPRO_ASSOC_FILE) to be used by
 #        1) UniProt ID
 #        2) InterPro IDs (comma-separated)
 #
