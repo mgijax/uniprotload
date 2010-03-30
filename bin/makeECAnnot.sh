@@ -91,7 +91,7 @@ fi
 #
 # createArchive
 #
-#preload
+preload
 
 #
 #
@@ -106,26 +106,24 @@ date >> ${LOG}
 echo "Create the Go/EC annotation file (makeECAnnot.sh)" | tee -a ${LOG}
 ./makeECAnnot.py 2>&1 >> ${LOG}
 STAT=$?
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error creating GO/EC annotation file" | tee -a ${LOG}
-    exit 1
-fi
+checkStatus ${STAT} "GO/EC annotation file"
 
 #
 #
 # run annotation load
+# output files assume the current directory
 #
 
-#CONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+CONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+cd ${OUTPUTDIR}
 
-#echo "Running UniProt/EC annotation load (makeECAnnot.sh)" >> ${LOG_DIAG}
-#${ANNOTLOADER_CSH} ${CONFIG_CSH}
-#STAT=$?
-#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${CONFIG_CSH}"
+echo "Running UniProt GO/EC annotation load (makeECAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${CONFIG_CSH}
+STAT=$?
+checkStatus ${STAT} "UniProt GO/EC annotation load (makeECAnnot.sh)"
 
 #
 # run postload cleanup and email logs
 #
-#shutDown
+shutDown
 exit 0

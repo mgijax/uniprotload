@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 
 #
-# Program: makeECAnnot
+# Program: makeECAnnot.py
 #
 # Original Author: Lori Corbani
 #
@@ -10,27 +10,52 @@
 # 	To create a file for the Python "annotload" program that
 # 	will load Marker/GO annotations based on Marker/EC associations.
 #
-# Requirements Satisfied by This Program:
-#
 # Usage:
 #
-# Envvars:
+#      makeECAnnot.py
+#
+# Env Vars:
+#
+#      The following environment variables are set by the configuration
+#      file that is sourced by the wrapper script:
+#
+#         EC2GOFILE
+#         GO_EC_ASSOC_FILE
+#         GO_ECANNOTREF
+#         GO_EVIDENCECODE
+#         GO_ANNOTEDITOR
+#         GO_ANNOTDATE
 #
 # Inputs:
 #
+#	- EC-2-GO file ($EC2GOFILE)
+#
+#	  EC:1 > GO:oxidoreductase activity ; GO:0016491
+#
+#       - GO/EC Reference ($GO_ECANNOTREF)
+#
+#       - GO/EC Evidence ($GO_EVIDENCECODE)
+#
+#       - GO/EC Editor ($GO_ANNOTEDITOR)
+#
+#       - GO/EC Date ($GO_ANNOTDATE)
+#
 # Outputs:
 #
-# Exit Codes:
+#	A tab-delimited annotation file in the format ($GO_EC_ASSOC_FILE):
+#	(see dataload/annotload)
 #
-# Assumes:
+#               field 1: Accession ID of Vocabulary Term being Annotated to
+#               field 2: ID of MGI Object being Annotated (ex. MGI ID)
+#               field 3: J: (J:#####)
+#               field 4: Evidence Code Abbreviation (max length 5)
+#               field 5: Inferred From (max length 255)
+#               field 6: Qualifier (max length 255)
+#               field 7: Editor (max length 30)
+#               field 8: Date (MM/DD/YYYY)
+#               field 9: Notes (max length 255)
 #
-# Bugs:
-#
-# Implementation:
-#
-#    Modules:
-#
-# Modification History:
+# History:
 #
 # 03/25/2010	lec
 #	- TR 9777; original program "swissecload"
@@ -52,11 +77,14 @@ import db
 
 # globals
 
-ec_to_go = {}		# EC to GO mapping (EC id -> GO id)
-mgiMarker = {}		# MGI Marker key->MGI ID)
-nonIEA_annotations = []	# non IEA MGI Marker/GO ID annotations
+# EC to GO mapping (EC id -> GO id)
+ec_to_go = {}		
 
-FIELD_DELIM = '\t'
+# MGI Marker key->MGI ID)
+mgiMarker = {}		
+
+# non-IEA MGI Marker/GO ID annotations
+nonIEA_annotations = []	
 
 def initialize():
     global ec2goFile, goECFile
@@ -66,9 +94,6 @@ def initialize():
     #
     #  initialize caches
     #
-
-    global mgiMarker
-    global nonIEA_annotations
 
     db.useOneConnection(1)
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -119,6 +144,9 @@ def initialize():
     return rc
 
 def openFiles():
+
+    global mgiMarker
+    global nonIEA_annotations
 
     readEC2GO()
 
@@ -251,15 +279,17 @@ def processEC2GO():
 
 		# ....then we want to load this annotation.
 
-	        fpGOEC.write(goid + FIELD_DELIM + \
-		         markerID + FIELD_DELIM + \
-	      	         goRef + FIELD_DELIM + \
-	      	         goEvidence + FIELD_DELIM + \
-	      	         ec + FIELD_DELIM + \
-	      	         FIELD_DELIM + \
-	      	         goEditor + FIELD_DELIM + \
-	      	         goDate + FIELD_DELIM + \
+	        fpGOEC.write(goid + '\t' + \
+		         markerID + '\t' + \
+	      	         goRef + '\t' + \
+	      	         goEvidence + '\t' + \
+	      	         ec + '\t' + \
+	      	         '\t' + \
+	      	         goEditor + '\t' + \
+	      	         goDate + '\t' + \
 	      	         '\n')
+
+    return 0
 
 #
 # Main
