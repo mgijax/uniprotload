@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  makeECAnnot.sh
+#  makeGOAnnot.sh
 ###########################################################################
 #
 #  Purpose:
@@ -9,7 +9,7 @@
 #
 #  Usage:
 #
-#      makeECAnnot.sh
+#      makeGOAnnot.sh
 #
 #  Env Vars:
 #
@@ -35,7 +35,7 @@
 #      1) Source the configuration file to establish the environment.
 #      2) Verify that the input files exist.
 #      3) Establish the log file.
-#      4) Call makeECAnnot.py to bucketize the association files.
+#      4) Call makeGOAnnot.py to bucketize the association files.
 #
 #  Notes:  None
 #
@@ -103,24 +103,30 @@ preload
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Create the Go/EC annotation file (makeECAnnot.sh)" | tee -a ${LOG}
-./makeECAnnot.py 2>&1 >> ${LOG}
+echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
+./makeGOAnnot.py 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "GO/EC annotation file"
+checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
 
 #
 #
-# run annotation load
+# run annotation loads
 # output files assume the current directory
 #
 
-CONFIG_CSH=${UNIPROTLOAD}/ecannot.config
-cd ${OUTPUTDIR}
+#cd ${OUTPUTDIR}
 
-echo "Running UniProt GO/EC annotation load (makeECAnnot.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${CONFIG_CSH}
-STAT=$?
-checkStatus ${STAT} "UniProt GO/EC annotation load (makeECAnnot.sh)"
+#ECCONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+#echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+#${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
+#STAT=$?
+#checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
+
+#IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
+#echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+#${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
+#STAT=$?
+#checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
 
 #
 # run postload cleanup and email logs

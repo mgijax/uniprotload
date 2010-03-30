@@ -1,0 +1,15 @@
+#!/bin/csh -f
+
+#
+# config variables for GO/EC annotation load
+#
+
+setenv ANNOTDATADIR		${OUTPUTDIR}
+setenv ANNOTMODE		new
+setenv ANNOTTYPENAME		"GO/Marker"
+setenv ANNOTINPUTFILE		${GO_EC_ASSOC_FILE}
+setenv ANNOTLOG			${LOGDIR}/go_ec.txt.log
+setenv DELETEREFERENCE		${GO_ECANNOTREF}
+setenv DELETEUSER		${GO_ANNOTEDITOR}
+setenv ANNOTOBSOLETE		0
+

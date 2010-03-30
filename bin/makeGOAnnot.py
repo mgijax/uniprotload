@@ -1,18 +1,20 @@
 #!/usr/local/bin/python
 
 #
-# Program: makeECAnnot.py
+# Program: makeGOAnnot.py
 #
 # Original Author: Lori Corbani
 #
 # Purpose:
 #
-# 	To create a file for the Python "annotload" program that
-# 	will load Marker/GO annotations based on Marker/EC associations.
+#	Create/load GO annotation files for the following groups:
+#
+#	  GO/EC
+#	  GO/InterPro
 #
 # Usage:
 #
-#      makeECAnnot.py
+#      makeGOAnnot.py
 #
 # Env Vars:
 #
@@ -22,6 +24,7 @@
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
 #         GO_ECANNOTREF
+#
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
 #         GO_ANNOTDATE
@@ -42,7 +45,7 @@
 #
 # Outputs:
 #
-#	A tab-delimited annotation file in the format ($GO_EC_ASSOC_FILE):
+#	A tab-delimited annotation file in the format
 #	(see dataload/annotload)
 #
 #               field 1: Accession ID of Vocabulary Term being Annotated to
@@ -80,6 +83,9 @@ import db
 # EC to GO mapping (EC id -> GO id)
 ec_to_go = {}		
 
+# InterPro to GO mapping (InterPro id -> GO id)
+ip_to_go = {}		
+
 # MGI Marker key->MGI ID)
 mgiMarker = {}		
 
@@ -88,8 +94,9 @@ nonIEA_annotations = []
 
 def initialize():
     global ec2goFile, goECFile
-    global goRef, goEvidence, goEditor, goDate
-    global fpEC2GO, fpGOEC
+    global interpro2goFile, goIPFile
+    global goECRef, goEvidence, goEditor, goDate
+    global fpEC2GO, fpGOEC, fpGOIP
 
     #
     #  initialize caches
@@ -100,7 +107,8 @@ def initialize():
 
     ec2goFile = os.getenv('EC2GOFILE')
     goECFile = os.getenv('GO_EC_ASSOC_FILE')
-    goRef = os.environ['GO_ECANNOTREF']
+    goECRef = os.environ['GO_ECANNOTREF']
+
     goEvidence = os.environ['GO_EVIDENCECODE']
     goEditor = os.environ['GO_ANNOTEDITOR']
     goDate = os.environ['GO_ANNOTDATE']
@@ -118,7 +126,7 @@ def initialize():
         print 'Environment variable not set: GO_EC_ASSOC_FILE'
         rc = 1
 
-    if not goRef:
+    if not goECRef:
         print 'Environment variable not set: GO_ECANNOTREF'
         rc = 1
 
@@ -281,7 +289,7 @@ def processEC2GO():
 
 	        fpGOEC.write(goid + '\t' + \
 		         markerID + '\t' + \
-	      	         goRef + '\t' + \
+	      	         goECRef + '\t' + \
 	      	         goEvidence + '\t' + \
 	      	         ec + '\t' + \
 	      	         '\t' + \
