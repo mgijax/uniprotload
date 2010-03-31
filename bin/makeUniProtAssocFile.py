@@ -198,7 +198,7 @@ def openFiles():
     try:
         fpUniProt = open(uniprotFile, 'r')
     except:
-        print 'Cannot open UniProt file: ' + uniprotFile
+        print 'Cannot open file: ' + uniprotFile
         return 1
 
     #
@@ -207,7 +207,7 @@ def openFiles():
     try:
         fpAccAssoc = open(uniprotAccAssocFile, 'w')
     except:
-        print 'Cannot open ACC association file: ' + uniprotAccAssocFile
+        print 'Cannot open association file: ' + uniprotAccAssocFile
         return 1
 
     #
@@ -216,7 +216,7 @@ def openFiles():
     try:
         fpAcc1Assoc = open(uniprotAcc1AssocFile, 'w')
     except:
-        print 'Cannot open ACC association file: ' + uniprotAcc1AssocFile
+        print 'Cannot open association file: ' + uniprotAcc1AssocFile
         return 1
 
     #
@@ -225,7 +225,7 @@ def openFiles():
     try:
         fpAcc2Assoc = open(uniprotAcc2AssocFile, 'w')
     except:
-        print 'Cannot open ACC association file: ' + uniprotAcc2AssocFile
+        print 'Cannot open association file: ' + uniprotAcc2AssocFile
         return 1
 
     #
@@ -234,7 +234,7 @@ def openFiles():
     try:
         fpPDBAssoc = open(uniprotPDBAssocFile, 'w')
     except:
-        print 'Cannot open PDB association file: ' + uniprotPDBAssocFile
+        print 'Cannot open association file: ' + uniprotPDBAssocFile
         return 1
 
     #
@@ -243,7 +243,7 @@ def openFiles():
     try:
         fpECAssoc = open(uniprotECAssocFile, 'w')
     except:
-        print 'Cannot open EC association file: ' + uniprotECAssocFile
+        print 'Cannot open association file: ' + uniprotECAssocFile
         return 1
 
     #
@@ -252,7 +252,7 @@ def openFiles():
     try:
         fpIPAssoc = open(uniprotIPAssocFile, 'w')
     except:
-        print 'Cannot open IP association file: ' + uniprotIPAssocFile
+        print 'Cannot open association file: ' + uniprotIPAssocFile
         return 1
 
     #
@@ -261,7 +261,7 @@ def openFiles():
     try:
         fpKWAssoc = open(uniprotKWAssocFile, 'w')
     except:
-        print 'Cannot open KW association file: ' + uniprotKWAssocFile
+        print 'Cannot open association file: ' + uniprotKWAssocFile
         return 1
 
     return 0

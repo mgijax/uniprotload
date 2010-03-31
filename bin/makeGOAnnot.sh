@@ -91,7 +91,7 @@ fi
 #
 # createArchive
 #
-#preload
+preload
 
 #
 #
@@ -104,11 +104,10 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
-#./makeGOAnnot.py 2>&1 >> ${LOG}
-./makeGOAnnot.py
+./makeGOAnnot.py 2>&1 >> ${LOG}
+#./makeGOAnnot.py
 STAT=$?
 checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
-exit 0
 
 #
 #
@@ -129,6 +128,12 @@ echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIA
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
+
+SPKWCONFIG_CSH=${UNIPROTLOAD}/spkwannot.config
+echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${KWCONFIG_CSH}
+STAT=$?
+checkStatus ${STAT} "UniProt GO/SP-KW annotation load (makeGOAnnot.sh)"
 
 #
 # run postload cleanup and email logs
