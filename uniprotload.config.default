@@ -49,6 +49,10 @@ INPUTFILE=${INPUTDIR}/uniprotmus.dat
 #
 EC2GOFILE=${DATADOWNLOADS}/go_translation/ec2go
 
+# IP-2-GO input file from 
+#
+IP2GOFILE=${DATADOWNLOADS}/go_translation/interpro2go
+
 # MGI marker to EntrezGene/Ensembl/NCBI associations from the database
 #
 MGI_ACC_ASSOC_FILE=${OUTPUTDIR}/mgi_acc_assoc.txt
@@ -77,7 +81,7 @@ UNIPROT_EC_ASSOC_FILE=${OUTPUTDIR}/uniprot_ec_assoc.txt
 
 # UniProt to GO/InterPro id associations from UniProt input file
 #
-UNIPROT_GOINTERPRO_ASSOC_FILE=${OUTPUTDIR}/uniprot_gointerpro_assoc.txt
+UNIPROT_GOIP_ASSOC_FILE=${OUTPUTDIR}/uniprot_goip_assoc.txt
 
 # UniProt to GO/KW id associations from UniProt input file
 #
@@ -101,23 +105,35 @@ LOG_CUR=${LOGDIR}/uniprotload.cur.log
 LOG_VAL=${LOGDIR}/uniprotload.val.log
 
 export INPUTFILE INFILE_NAME
-export EC2GOFILE
+export EC2GOFILE IP2GOFILE
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
 export UNIPROT_PDB_ASSOC_FILE UNIPROT_EC_ASSOC_FILE
-export UNIPROT_GOINTERPRO_ASSOC_FILE UNIPROT_GOKW_ASSOC_FILE
+export UNIPROT_GOIP_ASSOC_FILE UNIPROT_GOKW_ASSOC_FILE
 export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
 # GO Annotations
 ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
-GO_EC_ASSOC_FILE=${OUTPUTDIR}/go_ec_annot.txt
-GO_ECANNOTREF=J:72245
 GO_EVIDENCECODE=IEA
 GO_ANNOTEDITOR=swissload
 GO_ANNOTDATE=`date '+%m/%d/%Y'`
+GO_ANNOTNOTE="gene product:"
 
-export ANNOTLOADER_CSH GO_EC_ASSOC_FILE GO_ECANNOTREF GO_EVIDENCECODE GO_ANNOTEDITOR GO_ANNOTDATE
+GO_EC_ASSOC_FILE=${OUTPUTDIR}/go_ec_annot.txt
+GO_EC_ANNOTREF=J:72245
+
+GO_IP_ASSOC_FILE=${OUTPUTDIR}/go_ip_annot.txt
+GO_IP_ANNOTREF=J:72247
+
+GO_UNIPROT_ASSOC_FILE=${OUTPUTDIR}/go_uniprot_annot.txt
+GO_UNIPROT_ANNOTREF=J:60000
+
+export ANNOTLOADER_CSH GO_EVIDENCECODE GO_ANNOTEDITOR GO_ANNOTDATE GO_ANNOTNOTE
+export GO_EC_ASSOC_FILE GO_EC_ANNOTREF 
+export GO_IP_ASSOC_FILE GO_IP_ANNOTREF
+export GO_UNIPROT_ASSOC_FILE GO_UNIPROT_ANNOTREF
+
 
 ###########################################################################
 #

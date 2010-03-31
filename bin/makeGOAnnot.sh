@@ -91,7 +91,7 @@ fi
 #
 # createArchive
 #
-preload
+#preload
 
 #
 #
@@ -107,6 +107,7 @@ echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
 ./makeGOAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
+exit 0
 
 #
 #

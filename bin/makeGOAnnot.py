@@ -1,5 +1,5 @@
 #!/usr/local/bin/python
-
+#
 #
 # Program: makeGOAnnot.py
 #
@@ -9,8 +9,9 @@
 #
 #	Create/load GO annotation files for the following groups:
 #
-#	  GO/EC
-#	  GO/InterPro
+#	  GO/EC		J:72245
+#	  GO/InterPro	J:72247
+#	  GO/UniProt	J:60000
 #
 # Usage:
 #
