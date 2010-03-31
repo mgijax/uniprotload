@@ -34,7 +34,7 @@
 #         GO_IP_ANNOTREF
 #
 #         SP2GOFILE
-#	  UNIPROT_GOUP_ASSOC_FILE
+#	  UNIPROT_GOKW_ASSOC_FILE
 #         GO_UP_ASSOC_FILE
 #         GO_UP_ANNOTREF
 #
@@ -57,6 +57,10 @@
 #	- IP-2-GO file ($IP2GOFILE)
 #
 #	  InterPro:IPR000003 Retinoid X receptor > GO:DNA binding ; GO:0003677
+#
+#	- SP-2-GO file ($SP2GOFILE)
+#
+#	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
 #
 #       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
 #

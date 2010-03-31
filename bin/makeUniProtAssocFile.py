@@ -76,7 +76,7 @@
 #
 #      - UniProt/GOKW association file ($UNIPROT_GOKW_ASSOC_FILE) to be used by
 #        1) UniProt ID
-#        2) GOKW IDs (comma-separated)
+#        2) GOKW Names (comma-separated)
 #
 #  Exit Codes:
 #
@@ -116,9 +116,9 @@ import UniProtParser
 #
 def initialize():
     global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global uniprotPDBAssocFile, uniprotECAssocFile, uniprotIPAssocFile
+    global uniprotPDBAssocFile, uniprotECAssocFile, uniprotIPAssocFile, uniprotKWAssocFile
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
-    global fpPDBAssoc, fpECAssoc, fpIPAssoc
+    global fpPDBAssoc, fpECAssoc, fpIPAssoc, fpKWAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
@@ -127,6 +127,7 @@ def initialize():
     uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
     uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
     uniprotIPAssocFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
+    uniprotKWAssocFile = os.getenv('UNIPROT_GOKW_ASSOC_FILE')
 
     rc = 0
 
@@ -161,6 +162,10 @@ def initialize():
         print 'Environment variable not set: UNIPROT_GOIP_ASSOC_FILE'
         rc = 1
 
+    if not uniprotKWAssocFile:
+        print 'Environment variable not set: UNIPROT_GOKW_ASSOC_FILE'
+        rc = 1
+
     #
     # Initialize file pointers.
     #
@@ -171,6 +176,7 @@ def initialize():
     fpPDBAssoc = None
     fpECAssoc = None
     fpIPAssoc = None
+    fpKWAssoc = None
 
     return rc
 
@@ -184,7 +190,7 @@ def initialize():
 #
 def openFiles():
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
-    global fpPDBAssoc, fpECAssoc, fpIPAssoc
+    global fpPDBAssoc, fpECAssoc, fpIPAssoc, fpKWAssoc
 
     #
     # Open the UniProt file.
@@ -201,7 +207,7 @@ def openFiles():
     try:
         fpAccAssoc = open(uniprotAccAssocFile, 'w')
     except:
-        print 'Cannot open acc association file: ' + uniprotAccAssocFile
+        print 'Cannot open ACC association file: ' + uniprotAccAssocFile
         return 1
 
     #
@@ -210,7 +216,7 @@ def openFiles():
     try:
         fpAcc1Assoc = open(uniprotAcc1AssocFile, 'w')
     except:
-        print 'Cannot open acc association file: ' + uniprotAcc1AssocFile
+        print 'Cannot open ACC association file: ' + uniprotAcc1AssocFile
         return 1
 
     #
@@ -219,7 +225,7 @@ def openFiles():
     try:
         fpAcc2Assoc = open(uniprotAcc2AssocFile, 'w')
     except:
-        print 'Cannot open acc association file: ' + uniprotAcc2AssocFile
+        print 'Cannot open ACC association file: ' + uniprotAcc2AssocFile
         return 1
 
     #
@@ -228,7 +234,7 @@ def openFiles():
     try:
         fpPDBAssoc = open(uniprotPDBAssocFile, 'w')
     except:
-        print 'Cannot open pdb association file: ' + uniprotPDBAssocFile
+        print 'Cannot open PDB association file: ' + uniprotPDBAssocFile
         return 1
 
     #
@@ -237,7 +243,7 @@ def openFiles():
     try:
         fpECAssoc = open(uniprotECAssocFile, 'w')
     except:
-        print 'Cannot open pdb association file: ' + uniprotECAssocFile
+        print 'Cannot open EC association file: ' + uniprotECAssocFile
         return 1
 
     #
@@ -246,7 +252,16 @@ def openFiles():
     try:
         fpIPAssoc = open(uniprotIPAssocFile, 'w')
     except:
-        print 'Cannot open pdb association file: ' + uniprotIPAssocFile
+        print 'Cannot open IP association file: ' + uniprotIPAssocFile
+        return 1
+
+    #
+    # Open the kw association file.
+    #
+    try:
+        fpKWAssoc = open(uniprotKWAssocFile, 'w')
+    except:
+        print 'Cannot open KW association file: ' + uniprotKWAssocFile
         return 1
 
     return 0
@@ -281,6 +296,9 @@ def closeFiles():
 
     if fpIPAssoc:
         fpIPAssoc.close()
+
+    if fpKWAssoc:
+        fpKWAssoc.close()
 
     return 0
 
@@ -320,7 +338,7 @@ def getAssociations():
         pdbID = rec.getPDBID()
         ecID = rec.getECID()
         ipID = rec.getInterProID()
-        #kwName = rec.getKWName()
+        kwName = rec.getKWName()
 
         #
         # Write the IDs to the association file as long as there is at least
@@ -343,17 +361,25 @@ def getAssociations():
 	    else:
                 fpAcc2Assoc.write(uniprotID + '\n')
 
+	    # PDB
 	    if len(pdbID) > 0:
                 fpPDBAssoc.write(uniprotID + '\t' + \
 			      ','.join(pdbID) + '\n')
 
+	    # EC
 	    if len(ecID) > 0:
                 fpECAssoc.write(uniprotID + '\t' + \
 			      ','.join(ecID) + '\n')
 
+	    # InterPro
 	    if len(ipID) > 0:
                 fpIPAssoc.write(uniprotID + '\t' + \
 			      ','.join(ipID) + '\n')
+	    # UniProt key word
+	    if len(kwName) > 0:
+                fpKWAssoc.write(uniprotID + '\t' + \
+			      ','.join(kwName) + '\n')
+
         #
         # Get the next record from the parser.
         #
