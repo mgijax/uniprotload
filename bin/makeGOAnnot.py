@@ -7,7 +7,7 @@
 #
 # Purpose:
 #
-#	Create/load GO annotation files for the following groups:
+#	Create/load GO annotation files for the following areas:
 #
 #	  GO/EC		J:72245
 #	  GO/InterPro	J:72247
@@ -35,8 +35,8 @@
 #
 #         SP2GOFILE
 #	  UNIPROT_GOKW_ASSOC_FILE
-#         GO_UP_ASSOC_FILE
-#         GO_UP_ANNOTREF
+#         GO_KW_ASSOC_FILE
+#         GO_KW_ANNOTREF
 #
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
@@ -64,6 +64,8 @@
 #
 #       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
 #
+#       - UniProt/KW files (${UNIPROT_GOKW_ASSOC_FILE})
+#
 #       - GO/EC Reference ($GO_ECANNOTREF)
 #
 #       - GO Evidence ($GO_EVIDENCECODE)
@@ -73,6 +75,12 @@
 #       - GO Date ($GO_ANNOTDATE)
 #
 # Outputs:
+#
+#	A tab-delimtied file, one for each of these areas:
+#
+#	GO/EC		J:72245	GO_EC_ASSOC_FILE
+#	GO/InterPro	J:72247	GO_IP_ASSOC_FILE
+#	GO/UniProt	J:60000	GO_KW_ASSOC_FILE
 #
 #	A tab-delimited annotation file in the format
 #	(see dataload/annotload)
@@ -93,12 +101,10 @@
 #	- TR 9777; original program "swissecload"
 #
 # 07/29/2008	lec
-#	- TR 8877; only select markers of type "gene"
-#
 # 01/24/2007	lec
-#	- TR 8122; added EC id to "inferred from" field for GO annotations
-#
 # 05/11/2005	lec
+#	- TR 8877; only select markers of type "gene"
+#	- TR 8122; added EC id to "inferred from" field for GO annotations
 #	- TR 6790
 #
 
@@ -119,6 +125,9 @@ ec_to_go = {}
 # InterPro to GO mapping (InterPro id -> GO id)
 ip_to_go = {}		
 
+# uniprot keyword to GO mapping (KW name -> GO id)
+spkw_to_go = {}		
+
 # UniProt to InterPro mapping (UniProt id -> InterPro ids)
 uniprot_to_ip = {}
 
@@ -137,11 +146,12 @@ def initialize():
     global mgi_to_uniprotFile
     global ec2goFile, goECFile
     global ip2goFile, goIPFile
+    global spkw2goFile, goKWFile
     global uniprot2ipFile
-    global fpMGI2UNIPROT
-    global fpEC2GO, fpIP2GO
-    global fpGOEC, fpGOIP, fpUNIPROT2IP
-    global goECRef, goIPRef
+    global fpMGI2UNIPROT, fpUNIPROT2IP
+    global fpEC2GO, fpIP2GO, fpKW2GO
+    global fpGOEC, fpGOIP, fpGOKW
+    global goECRef, goIPRef, goKWRef
     global goEvidence, goEditor, goDate, goNote
 
     #

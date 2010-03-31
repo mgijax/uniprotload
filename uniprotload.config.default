@@ -45,13 +45,17 @@ export INPUTDIR FILEDIR ARCHIVEDIR OUTPUTDIR LOGDIR RPTDIR
 #
 INPUTFILE=${INPUTDIR}/uniprotmus.dat
 
-# EC-2-GO input file from 
+# EC-2-GO input file from GO
 #
 EC2GOFILE=${DATADOWNLOADS}/go_translation/ec2go
 
-# IP-2-GO input file from 
+# IP-2-GO input file from GO
 #
 IP2GOFILE=${DATADOWNLOADS}/go_translation/interpro2go
+
+# SPKW-2-GO input file from GO
+#
+SP2GOFILE=${DATADOWNLOADS}/go_translation/spkw2go
 
 # MGI marker to EntrezGene/Ensembl/NCBI associations from the database
 #
@@ -105,7 +109,7 @@ LOG_CUR=${LOGDIR}/uniprotload.cur.log
 LOG_VAL=${LOGDIR}/uniprotload.val.log
 
 export INPUTFILE INFILE_NAME
-export EC2GOFILE IP2GOFILE
+export EC2GOFILE IP2GOFILE SP2GOFILE
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
 export UNIPROT_PDB_ASSOC_FILE UNIPROT_EC_ASSOC_FILE
@@ -126,13 +130,13 @@ GO_EC_ANNOTREF=J:72245
 GO_IP_ASSOC_FILE=${OUTPUTDIR}/go_ip_annot.txt
 GO_IP_ANNOTREF=J:72247
 
-GO_UP_ASSOC_FILE=${OUTPUTDIR}/go_up_annot.txt
-GO_UP_ANNOTREF=J:60000
+GO_KW_ASSOC_FILE=${OUTPUTDIR}/go_up_annot.txt
+GO_KW_ANNOTREF=J:60000
 
 export ANNOTLOADER_CSH GO_EVIDENCECODE GO_ANNOTEDITOR GO_ANNOTDATE GO_ANNOTNOTE
 export GO_EC_ASSOC_FILE GO_EC_ANNOTREF 
 export GO_IP_ASSOC_FILE GO_IP_ANNOTREF
-export GO_UP_ASSOC_FILE GO_UP_ANNOTREF
+export GO_KW_ASSOC_FILE GO_KW_ANNOTREF
 
 
 ###########################################################################
