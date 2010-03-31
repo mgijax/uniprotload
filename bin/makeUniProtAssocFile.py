@@ -40,7 +40,7 @@
 #          UNIPROT_PDB_ACCOC_FILE
 #          UNIPROT_EC_ACCOC_FILE
 #          UNIPROT_GOIP_ACCOC_FILE
-#          UNIPROT_GOKW_ACCOC_FILE
+#          UNIPROT_GOSPKW_ACCOC_FILE
 #
 #  Inputs:
 #
@@ -74,9 +74,9 @@
 #        1) UniProt ID
 #        2) InterPro IDs (comma-separated)
 #
-#      - UniProt/GOKW association file ($UNIPROT_GOKW_ASSOC_FILE) to be used by
+#      - UniProt/GOSPKW association file ($UNIPROT_GOSPKW_ASSOC_FILE) to be used by
 #        1) UniProt ID
-#        2) GOKW Names (comma-separated)
+#        2) GOSPKW Names (comma-separated)
 #
 #  Exit Codes:
 #
@@ -127,7 +127,7 @@ def initialize():
     uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
     uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
     uniprotIPAssocFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
-    uniprotKWAssocFile = os.getenv('UNIPROT_GOKW_ASSOC_FILE')
+    uniprotKWAssocFile = os.getenv('UNIPROT_GOSPKW_ASSOC_FILE')
 
     rc = 0
 
@@ -163,7 +163,7 @@ def initialize():
         rc = 1
 
     if not uniprotKWAssocFile:
-        print 'Environment variable not set: UNIPROT_GOKW_ASSOC_FILE'
+        print 'Environment variable not set: UNIPROT_GOSPKW_ASSOC_FILE'
         rc = 1
 
     #

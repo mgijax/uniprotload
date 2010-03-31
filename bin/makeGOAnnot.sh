@@ -131,7 +131,7 @@ checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
 
 SPKWCONFIG_CSH=${UNIPROTLOAD}/spkwannot.config
 echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${KWCONFIG_CSH}
+${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/SP-KW annotation load (makeGOAnnot.sh)"
 
