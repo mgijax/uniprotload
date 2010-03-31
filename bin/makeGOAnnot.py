@@ -33,10 +33,10 @@
 #         GO_IP_ASSOC_FILE
 #         GO_IP_ANNOTREF
 #
-#         KW2GOFILE
-#	  UNIPROT_GOKW_ASSOC_FILE
-#         GO_KW_ASSOC_FILE
-#         GO_KW_ANNOTREF
+#         SPKW2GOFILE
+#	  UNIPROT_GOSPKW_ASSOC_FILE
+#         GO_SPKW_ASSOC_FILE
+#         GO_SPKW_ANNOTREF
 #
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
@@ -58,13 +58,13 @@
 #
 #	  InterPro:IPR000003 Retinoid X receptor > GO:DNA binding ; GO:0003677
 #
-#	- KW-2-GO file ($KW2GOFILE)
+#	- SPKW-2-GO file ($SPKW2GOFILE)
 #
 #	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
 #
 #       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
 #
-#       - UniProt/KW files (${UNIPROT_GOKW_ASSOC_FILE})
+#       - UniProt/SPKW files (${UNIPROT_GOSPKW_ASSOC_FILE})
 #
 #       - GO/EC Reference ($GO_ECANNOTREF)
 #
@@ -80,7 +80,7 @@
 #
 #	GO/EC		J:72245	GO_EC_ASSOC_FILE
 #	GO/InterPro	J:72247	GO_IP_ASSOC_FILE
-#	GO/UniProt	J:60000	GO_KW_ASSOC_FILE
+#	GO/UniProt	J:60000	GO_SPKW_ASSOC_FILE
 #
 #	A tab-delimited annotation file in the format
 #	(see dataload/annotload)
@@ -125,14 +125,14 @@ ec_to_go = {}
 # InterPro to GO mapping (InterPro id -> GO id)
 ip_to_go = {}		
 
-# uniprot keyword to GO mapping (KW name -> GO id)
-kw_to_go = {}		
+# uniprot keyword to GO mapping (SPKW name -> GO id)
+spkw_to_go = {}		
 
 # UniProt to InterPro mapping (UniProt id -> InterPro ids)
 uniprot_to_ip = {}
 
-# UniProt to KW mapping (UniProt id -> KW name)
-uniprot_to_kw = {}
+# UniProt to SPKW mapping (UniProt id -> SPKW name)
+uniprot_to_spkw = {}
 
 # non-IEA MGI Marker/GO ID annotations
 nonIEA_annotations = []	
@@ -149,12 +149,12 @@ def initialize():
     global mgi_to_uniprotFile
     global ec2goFile, goECFile
     global ip2goFile, goIPFile
-    global kw2goFile, goKWFile
-    global uniprot2ipFile, uniprot2kwFile
-    global fpMGI2UNIPROT, fpUNIPROT2IP, fpUNIPROT2KW
-    global fpEC2GO, fpIP2GO, fpKW2GO
-    global fpGOEC, fpGOIP, fpGOKW
-    global goECRef, goIPRef, goKWRef
+    global spkw2goFile, goSPKWFile
+    global uniprot2ipFile, uniprot2spkwFile
+    global fpMGI2UNIPROT, fpUNIPROT2IP, fpUNIPROT2SPKW
+    global fpEC2GO, fpIP2GO, fpSPKW2GO
+    global fpGOEC, fpGOIP, fpGOSPKW
+    global goECRef, goIPRef, goSPKWRef
     global goEvidence, goEditor, goDate, goNote
 
     #
@@ -175,10 +175,10 @@ def initialize():
     goIPFile = os.getenv('GO_IP_ASSOC_FILE')
     goIPRef = os.environ['GO_IP_ANNOTREF']
 
-    kw2goFile = os.getenv('KW2GOFILE')
-    uniprot2kwFile = os.getenv('UNIPROT_GOKW_ASSOC_FILE')
-    goKWFile = os.getenv('GO_KW_ASSOC_FILE')
-    goKWRef = os.environ['GO_KW_ANNOTREF']
+    spkw2goFile = os.getenv('SPKW2GOFILE')
+    uniprot2spkwFile = os.getenv('UNIPROT_GOSPKW_ASSOC_FILE')
+    goSPKWFile = os.getenv('GO_SPKW_ASSOC_FILE')
+    goSPKWRef = os.environ['GO_SPKW_ANNOTREF']
 
     goEvidence = os.environ['GO_EVIDENCECODE']
     goEditor = os.environ['GO_ANNOTEDITOR']
@@ -222,16 +222,16 @@ def initialize():
         print 'Environment variable not set: GO_IP_ANNOTREF'
         rc = 1
 
-    if not uniprot2kwFile:
-        print 'Environment variable not set: UNIPROT_GOKW_ASSOC'
+    if not uniprot2spkwFile:
+        print 'Environment variable not set: UNIPROT_GOSPKW_ASSOC'
         rc = 1
 
-    if not goKWFile:
-        print 'Environment variable not set: GO_KW_ASSOC_FILE'
+    if not goSPKWFile:
+        print 'Environment variable not set: GO_SPKW_ASSOC_FILE'
         rc = 1
 
-    if not goKWRef:
-        print 'Environment variable not set: GO_KW_ANNOTREF'
+    if not goSPKWRef:
+        print 'Environment variable not set: GO_SPKW_ANNOTREF'
         rc = 1
 
     if not goEvidence:
@@ -256,13 +256,13 @@ def initialize():
 
     fpMGI2UNIPROT = None
     fpUNIPROT2IP = None
-    fpUNIPROT2KW = None
+    fpUNIPROT2SPKW = None
     fpEC2GO = None
     fpIP2GO = None
-    fpKW2GO = None
+    fpSPKW2GO = None
     fpGOEC = None
     fpGOIP = None
-    fpGOKW = None
+    fpGOSPKW = None
 
     return rc
 
@@ -282,8 +282,8 @@ def closeFiles():
     if fpUNIPROT2IP:
 	fpUNIPROT2IP.close()
 
-    if fpUNIPROT2KW:
-	fpUNIPROT2KW.close()
+    if fpUNIPROT2SPKW:
+	fpUNIPROT2SPKW.close()
 
     if fpEC2GO:
 	fpEC2GO.close()
@@ -297,11 +297,11 @@ def closeFiles():
     if fpGOIP:
 	fpGOIP.close()
 
-    if fpKW2GO:
-	fpKW2GO.close()
+    if fpSPKW2GO:
+	fpSPKW2GO.close()
 
-    if fpGOKW:
-	fpGOKW.close()
+    if fpGOSPKW:
+	fpGOSPKW.close()
 
     return 0
 
@@ -320,7 +320,7 @@ def openFiles():
     readMGI2UNIPROT()
     readEC2GO()
     readIP2GO()
-    readKW2GO()
+    readSPKW2GO()
 
     #
     # Non-IEA GO Annotations.
@@ -507,17 +507,17 @@ def readIP2GO():
     return 0
 
 #
-# Purpose: Read KW-to-GO file & create lookup
+# Purpose: Read SPKW-to-GO file & create lookup
 # Returns: Nothing
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
 #
 
-def readKW2GO():
+def readSPKW2GO():
 
     #
-    # parse kw2go file
+    # parse spkw2go file
     #
     # a dictionary where:
     #	key = SP keyword
@@ -527,42 +527,42 @@ def readKW2GO():
     # will use the expanded SP KW ID in the annotation "inferred from" field
     #
 
-    global kw_to_go
-    global kw2goFile
-    global fpKW2GO, fpUNIPROT2KW
+    global spkw_to_go
+    global spkw2goFile
+    global fpSPKW2GO, fpUNIPROT2SPKW
 
-    kw2gore = re.compile("(^SP_KW:KW-[0-9]+) (.+) +> +GO:.* +; +(GO:[0-9]+)")
+    spkw2gore = re.compile("(^SP_KW:KW-[0-9]+) (.+) +> +GO:.* +; +(GO:[0-9]+)")
 
-    fpKW2GO = open(kw2goFile,'r')
+    fpSPKW2GO = open(spkw2goFile,'r')
 
-    for line in fpKW2GO.readlines():
+    for line in fpSPKW2GO.readlines():
 
-        r = kw2gore.match(line)
+        r = spkw2gore.match(line)
 
         if (r is not None):
 
-            kwid = r.group(1)        # SP_KW:####
-            kwName = r.group(2)      # "Cytoplasm,Phosphoprotein"
+            spkwid = r.group(1)        # SP_KW:####
+            spkwName = r.group(2)      # "Cytoplasm,Phosphoprotein"
             goid = r.group(3)        # GO:#####
 
-            if not kw_to_go.has_key(kwName):
-                kw_to_go[kwName] = []
-            kw_to_go[kwName].append((kwid, goid))
+            if not spkw_to_go.has_key(spkwName):
+                spkw_to_go[spkwName] = []
+            spkw_to_go[spkwName].append((spkwid, goid))
 
     #
-    # lookup of uniprot ID -> kw name, kw name, ...
+    # lookup of uniprot ID -> spkw name, spkw name, ...
     #
 
-    fpUNIPROT2KW = open(uniprot2kwFile,'r')
+    fpUNIPROT2SPKW = open(uniprot2spkwFile,'r')
 
-    for line in fpUNIPROT2KW.readlines():
+    for line in fpUNIPROT2SPKW.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	values = string.split(tokens[1], ',')
 
-	uniprot_to_kw[key] = []
+	uniprot_to_spkw[key] = []
 	for v in values:
-	    uniprot_to_kw[key].append(v)
+	    uniprot_to_spkw[key].append(v)
 
     return 0
 
@@ -733,24 +733,24 @@ def processIP2GO():
     return 0
 
 #
-# Purpose: Process KW-to-GO data & create annotation file
+# Purpose: Process SPKW-to-GO data & create annotation file
 # Returns: Nothing
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
 #
 
-def processKW2GO():
+def processSPKW2GO():
 
-    global goKWFile, fpGOKW
+    global goSPKWFile, fpGOSPKW
 
     #
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
-    # Generate a GO annotation file from the Marker/KW associations.
+    # Generate a GO annotation file from the Marker/SPKW associations.
     #
     # each marker has one-or-more uniprot ids (mgi_to_uniprot):
-    #    each uniprot id has one-or-more sp-kw ids (uniprot_to_kw)
-    #        each sp-kw id has one-or-more go ids (kw_to_go)
+    #    each uniprot id has one-or-more sp-kw ids (uniprot_to_spkw)
+    #        each sp-kw id has one-or-more go ids (spkw_to_go)
     #              go id 1
     #              go id 2
     #	           etc...
@@ -759,7 +759,7 @@ def processKW2GO():
     # to the same GO term does not already exist.
     #
 
-    fpGOKW = open(goKWFile, 'w')
+    fpGOSPKW = open(goSPKWFile, 'w')
 
     markerIDs = mgi_to_uniprot.keys()
     markerIDs.sort()
@@ -772,29 +772,29 @@ def processKW2GO():
 	# we want one set of SP-KW ids per GO id per Marker
         #
     
-        go_to_kw = {}		
+        go_to_spkw = {}		
 
         for uniprotVal in mgi_to_uniprot[m]:
 
-            # if there is no uniprot_to_kw mapping, then skip it
+            # if there is no uniprot_to_spkw mapping, then skip it
 
-            if not uniprot_to_kw.has_key(uniprotVal):
+            if not uniprot_to_spkw.has_key(uniprotVal):
                 continue
 
-	    # for each UNIPROT-2-KW mapping....
+	    # for each UNIPROT-2-SPKW mapping....
 
-	    for kwName in uniprot_to_kw[uniprotVal]:
+	    for spkwName in uniprot_to_spkw[uniprotVal]:
 
-                # if there is no kw_to_go mapping, then skip it
+                # if there is no spkw_to_go mapping, then skip it
 
-	        if not kw_to_go.has_key(kwName):
+	        if not spkw_to_go.has_key(spkwName):
 		    continue
 
-	        # for each KW-2-GO mapping...
+	        # for each SPKW-2-GO mapping...
 
-                for r in kw_to_go[kwName]:
+                for r in spkw_to_go[spkwName]:
 
-		    kwid = r[0]
+		    spkwid = r[0]
 		    goid = r[1]
 
 	            # if a non-IEA annotation exists, skip
@@ -804,22 +804,22 @@ def processKW2GO():
 
 		    # else we want to load this annotation.
 
-	            if not go_to_kw.has_key(goid):
-	                go_to_kw[goid] = []
-                    if kwid not in go_to_kw[goid]:
-                        go_to_kw[goid].append(kwid)
+	            if not go_to_spkw.has_key(goid):
+	                go_to_spkw[goid] = []
+                    if spkwid not in go_to_spkw[goid]:
+                        go_to_spkw[goid].append(spkwid)
 
 	#
 	# the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
 	# we want one set of SP-KW ids per GO id per Marker
 	#
 
-        for goid in go_to_kw.keys():
-            fpGOKW.write(goid + '\t' + \
+        for goid in go_to_spkw.keys():
+            fpGOSPKW.write(goid + '\t' + \
 		         m + '\t' + \
-	      	         goKWRef + '\t' + \
+	      	         goSPKWRef + '\t' + \
 	      	         goEvidence + '\t' + \
-	      	         string.join(go_to_kw[goid], ',') + '\t' + \
+	      	         string.join(go_to_spkw[goid], ',') + '\t' + \
 	      	         '\t' + \
 	      	         goEditor + '\t' + \
 	      	         goDate + '\t' + \
@@ -843,7 +843,7 @@ if processEC2GO() != 0:
 if processIP2GO() != 0:
     sys.exit(1)
 
-if processKW2GO() != 0:
+if processSPKW2GO() != 0:
     sys.exit(1)
 
 closeFiles()
