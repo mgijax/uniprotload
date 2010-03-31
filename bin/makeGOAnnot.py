@@ -26,12 +26,17 @@
 #
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
-#         GO_ECANNOTREF
+#         GO_EC_ANNOTREF
 #
 #         IP2GOFILE
 #	  UNIPROT_GOIP_ASSOC_FILE
 #         GO_IP_ASSOC_FILE
-#         GO_IPANNOTREF
+#         GO_IP_ANNOTREF
+#
+#         SP2GOFILE
+#	  UNIPROT_GOUP_ASSOC_FILE
+#         GO_UP_ASSOC_FILE
+#         GO_UP_ANNOTREF
 #
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
@@ -146,12 +151,12 @@ def initialize():
 
     ec2goFile = os.getenv('EC2GOFILE')
     goECFile = os.getenv('GO_EC_ASSOC_FILE')
-    goECRef = os.environ['GO_ECANNOTREF']
+    goECRef = os.environ['GO_EC_ANNOTREF']
 
     ip2goFile = os.getenv('IP2GOFILE')
     uniprot2ipFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
     goIPFile = os.getenv('GO_IP_ASSOC_FILE')
-    goIPRef = os.environ['GO_IPANNOTREF']
+    goIPRef = os.environ['GO_IP_ANNOTREF']
 
     goEvidence = os.environ['GO_EVIDENCECODE']
     goEditor = os.environ['GO_ANNOTEDITOR']
@@ -176,7 +181,7 @@ def initialize():
         rc = 1
 
     if not goECRef:
-        print 'Environment variable not set: GO_ECANNOTREF'
+        print 'Environment variable not set: GO_EC_ANNOTREF'
         rc = 1
 
     if not ip2goFile:
@@ -192,7 +197,7 @@ def initialize():
         rc = 1
 
     if not goIPRef:
-        print 'Environment variable not set: GO_IPANNOTREF'
+        print 'Environment variable not set: GO_IP_ANNOTREF'
         rc = 1
 
     if not goEvidence:
