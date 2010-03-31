@@ -105,7 +105,6 @@ echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
 ./makeGOAnnot.py 2>&1 >> ${LOG}
-#./makeGOAnnot.py
 STAT=$?
 checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
 

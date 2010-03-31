@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 #
 #
-# Program: makeGOAnnot.py
+# Program: makeGOInterPro.py
 #
 # Original Author: Lori Corbani
 #
@@ -9,13 +9,11 @@
 #
 #	Create/load GO annotation files for the following areas:
 #
-#	  GO/EC		J:72245
-#	  GO/InterPro	J:72247
-#	  GO/UniProt	J:60000
+#	  GO/InterPro	J:53168
 #
 # Usage:
 #
-#      makeGOAnnot.py
+#      makeGOInterPro.py
 #
 # Env Vars:
 #
@@ -24,19 +22,10 @@
 #
 #	  MGI_UNIPROT_LOAD_FILE
 #
-#         EC2GOFILE
-#         GO_EC_ASSOC_FILE
-#         GO_EC_ANNOTREF
-#
 #         IP2GOFILE
 #	  UNIPROT_GOIP_ASSOC_FILE
 #         GO_IP_ASSOC_FILE
 #         GO_IP_ANNOTREF
-#
-#         SPKW2GOFILE
-#	  UNIPROT_GOSPKW_ASSOC_FILE
-#         GO_SPKW_ASSOC_FILE
-#         GO_SPKW_ANNOTREF
 #
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
@@ -50,23 +39,13 @@
 #	  3: trembl id
 #	  5: ec
 #
-#	- EC-2-GO file ($EC2GOFILE)
-#
-#	  EC:1 > GO:oxidoreductase activity ; GO:0016491
-#
 #	- IP-2-GO file ($IP2GOFILE)
 #
 #	  InterPro:IPR000003 Retinoid X receptor > GO:DNA binding ; GO:0003677
 #
-#	- SPKW-2-GO file ($SPKW2GOFILE)
-#
-#	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
-#
 #       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
 #
-#       - UniProt/SPKW files (${UNIPROT_GOSPKW_ASSOC_FILE})
-#
-#       - GO/EC Reference ($GO_ECANNOTREF)
+#	- GO/InterPro Note ($GO_IPSP_ANNOTNOTE)
 #
 #       - GO Evidence ($GO_EVIDENCECODE)
 #
@@ -78,9 +57,7 @@
 #
 #	A tab-delimtied file, one for each of these areas:
 #
-#	GO/EC		J:72245	GO_EC_ASSOC_FILE
-#	GO/InterPro	J:72247	GO_IP_ASSOC_FILE
-#	GO/UniProt	J:60000	GO_SPKW_ASSOC_FILE
+#	GO/InterPro	J:53168	GO_IPSP_ASSOC_FILE
 #
 #	A tab-delimited annotation file in the format
 #	(see dataload/annotload)
@@ -100,12 +77,6 @@
 # 03/25/2010	lec
 #	- TR 9777; original program "swissecload"
 #
-# 07/29/2008	lec
-# 01/24/2007	lec
-# 05/11/2005	lec
-#	- TR 8877; only select markers of type "gene"
-#	- TR 8122; added EC id to "inferred from" field for GO annotations
-#	- TR 6790
 #
 
 import sys
