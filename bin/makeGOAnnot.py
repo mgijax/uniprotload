@@ -21,9 +21,16 @@
 #      The following environment variables are set by the configuration
 #      file that is sourced by the wrapper script:
 #
+#	  MGI_UNIPROT_LOAD_FILE
+#
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
 #         GO_ECANNOTREF
+#
+#         IP2GOFILE
+#	  UNIPROT_GOIP_ASSOC_FILE
+#         GO_IP_ASSOC_FILE
+#         GO_IPANNOTREF
 #
 #         GO_EVIDENCECODE
 #         GO_ANNOTEDITOR
@@ -31,17 +38,29 @@
 #
 # Inputs:
 #
+#       - UniProt load file (${MGI_UNIPROT_LOAD_FILE})
+#	  1: mgi id
+#	  2: swiss-prot id
+#	  3: trembl id
+#	  5: ec
+#
 #	- EC-2-GO file ($EC2GOFILE)
 #
 #	  EC:1 > GO:oxidoreductase activity ; GO:0016491
 #
+#	- IP-2-GO file ($IP2GOFILE)
+#
+#	  InterPro:IPR000003 Retinoid X receptor > GO:DNA binding ; GO:0003677
+#
+#       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
+#
 #       - GO/EC Reference ($GO_ECANNOTREF)
 #
-#       - GO/EC Evidence ($GO_EVIDENCECODE)
+#       - GO Evidence ($GO_EVIDENCECODE)
 #
-#       - GO/EC Editor ($GO_ANNOTEDITOR)
+#       - GO Editor ($GO_ANNOTEDITOR)
 #
-#       - GO/EC Date ($GO_ANNOTDATE)
+#       - GO Date ($GO_ANNOTDATE)
 #
 # Outputs:
 #
@@ -76,9 +95,13 @@
 import sys
 import os
 import re
+import string
 import db
 
 # globals
+
+# MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
+mgi_to_uniprot = {}
 
 # EC to GO mapping (EC id -> GO id)
 ec_to_go = {}		
@@ -86,17 +109,30 @@ ec_to_go = {}
 # InterPro to GO mapping (InterPro id -> GO id)
 ip_to_go = {}		
 
-# MGI Marker key->MGI ID)
-mgiMarker = {}		
+# UniProt to InterPro mapping (UniProt id -> InterPro ids)
+uniprot_to_ip = {}
 
 # non-IEA MGI Marker/GO ID annotations
 nonIEA_annotations = []	
 
+#
+# Purpose: Initialization
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
 def initialize():
+    global mgi_to_uniprotFile
     global ec2goFile, goECFile
-    global interpro2goFile, goIPFile
-    global goECRef, goEvidence, goEditor, goDate
-    global fpEC2GO, fpGOEC, fpGOIP
+    global ip2goFile, goIPFile
+    global uniprot2ipFile
+    global fpMGI2UNIPROT
+    global fpEC2GO, fpIP2GO
+    global fpGOEC, fpGOIP, fpUNIPROT2IP
+    global goECRef, goIPRef
+    global goEvidence, goEditor, goDate, goNote
 
     #
     #  initialize caches
@@ -105,19 +141,31 @@ def initialize():
     db.useOneConnection(1)
     db.set_sqlLogFunction(db.sqlLogAll)
 
+    mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
+
     ec2goFile = os.getenv('EC2GOFILE')
     goECFile = os.getenv('GO_EC_ASSOC_FILE')
     goECRef = os.environ['GO_ECANNOTREF']
 
+    ip2goFile = os.getenv('IP2GOFILE')
+    uniprot2ipFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
+    goIPFile = os.getenv('GO_IP_ASSOC_FILE')
+    goIPRef = os.environ['GO_IPANNOTREF']
+
     goEvidence = os.environ['GO_EVIDENCECODE']
     goEditor = os.environ['GO_ANNOTEDITOR']
     goDate = os.environ['GO_ANNOTDATE']
+    goNote = os.environ['GO_ANNOTNOTE']
 
     rc = 0
 
     #
     # Make sure the required environment variables are set.
     #
+    if not mgi_to_uniprotFile:
+        print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
+        rc = 1
+
     if not ec2goFile:
         print 'Environment variable not set: EC2GOFILE'
         rc = 1
@@ -128,6 +176,22 @@ def initialize():
 
     if not goECRef:
         print 'Environment variable not set: GO_ECANNOTREF'
+        rc = 1
+
+    if not ip2goFile:
+        print 'Environment variable not set: IP2GOFILE'
+        rc = 1
+
+    if not uniprot2ipFile:
+        print 'Environment variable not set: UNIPROT_GOIP_ASSOC'
+        rc = 1
+
+    if not goIPFile:
+        print 'Environment variable not set: GO_IP_ASSOC_FILE'
+        rc = 1
+
+    if not goIPRef:
+        print 'Environment variable not set: GO_IPANNOTREF'
         rc = 1
 
     if not goEvidence:
@@ -142,30 +206,38 @@ def initialize():
         print 'Environment variable not set: GO_ANNOTDATE'
         rc = 1
 
+    if not goNote:
+        print 'Environment variable not set: GO_ANNOTNOTE'
+        rc = 1
+
     #
     # Initialize file pointers.
     #
 
+    fpMGI2UNIPROT = None
     fpEC2GO = None
+    fpIP2GO = None
     fpGOEC = None
+    fpGOIP = None
+    fpUNIPROT2IP = None
 
     return rc
 
+#
+# Purpose: Oopen Files
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
 def openFiles():
 
-    global mgiMarker
     global nonIEA_annotations
 
+    readMGI2UNIPROT()
     readEC2GO()
-
-    #
-    # Markers & MGI IDs
-
-    results = db.sql('select _Object_key, accID from ACC_Accession ' + \
-        'where _MGIType_key = 2 and _LogicalDB_key = 1 ' + \
-        'and prefixPart = "MGI:" and preferred = 1', 'auto')
-    for r in results:
-        mgiMarker[r['_Object_key']] = r['accID']
+    readIP2GO()
 
     #
     # Non-IEA GO Annotations.
@@ -178,7 +250,9 @@ def openFiles():
 	from VOC_Annot a, ACC_Accession ac 
 	where a._AnnotType_key = 1000 
 	and a._Term_key = ac._Object_key 
-	and ac._MGIType_key = 13 ''', None)
+	and ac._MGIType_key = 13 
+	and a._Object_key = 3
+	''', None)
     db.sql('create index idx1 on #annots(_Annot_key)', None)
 
     # get  all non-IEA
@@ -199,12 +273,62 @@ def openFiles():
 	and a.prefixPart = "MGI:" 
 	and a.preferred = 1 
 	and a._Object_key = m._Marker_key 
-	and m._Marker_Type_key = 1''', 'auto')
+	and m._Marker_Type_key = 1
+	and m._Marker_key = 3
+	''', 'auto')
     for r in results:
         key = r['mgiID'] + r['accID']
         nonIEA_annotations.append(key)
 
     return 0
+
+#
+# Purpose: Read MGI-to-UniProt file & create lookup
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readMGI2UNIPROT():
+
+    #
+    # parse mgi-to-uniprot file
+    #
+
+    global mgi_to_uniprot
+    global mgi_to_uniprotFile, fpMGI2UNIPROT
+
+    fpMGI2UNIPROT = open(mgi_to_uniprotFile,'r')
+
+    lineNum = 0
+    for line in fpMGI2UNIPROT.readlines():
+
+	if lineNum == 0:
+	    lineNum = lineNum + 1
+	    continue
+
+	tokens = string.split(line[:-1], '\t')
+	key = tokens[0]
+	value1 = string.split(tokens[1], ',')
+	value2 = string.split(tokens[2], ',')
+	ecValue = string.split(tokens[4], ',')
+
+	mgi_to_uniprot[key] = []
+	for v in value1:
+	    mgi_to_uniprot[key].append(v)
+	for v in value2:
+	    mgi_to_uniprot[key].append(v)
+
+    return 0
+
+#
+# Purpose: Read EC-to-GO file & create lookup
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
 
 def readEC2GO():
 
@@ -229,7 +353,77 @@ def readEC2GO():
 
     return 0
 
+#
+# Purpose: Read IP-to-GO file & create lookup
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readIP2GO():
+
+    #
+    # parse ip2go file...one IP ID can have many GO mappings
+    #
+
+    global ip_to_go
+    global ip2goFile
+    global fpIP2GO, fpUNIPROT2IP
+
+    ip2gore = re.compile("(^InterPro:(IPR[0-9]+)) +.* +> +GO:.* +; +(GO:[0-9]+)")
+
+    fpIP2GO = open(ip2goFile,'r')
+
+    for line in fpIP2GO.readlines():
+        r = ip2gore.match(line)
+
+        if (r is not None):
+
+            ipid = r.group(2)         # IPR#####
+            goid = r.group(3)         # GO:#####
+
+            #
+            # Exclude associations to these GO IDs:
+            #    GO:0005575 cellular_component unknown
+            #    GO:0005554 molecular_function unknown
+            #    GO:0008150 biological_process unknown
+            #
+            if goid not in ['GO:0005575', 'GO:0003674', 'GO:0008150']:
+
+                if not ip_to_go.has_key(ipid):
+                    ip_to_go[ipid] = []
+                ip_to_go[ipid].append(goid)
+
+    #
+    # lookup of uniprot ID -> ip id, ip id....
+    #
+
+    fpUNIPROT2IP = open(uniprot2ipFile,'r')
+
+    for line in fpUNIPROT2IP.readlines():
+	tokens = string.split(line[:-1], '\t')
+	key = tokens[0]
+	values = string.split(tokens[1], ',')
+
+	uniprot_to_ip[key] = []
+	for v in values:
+	    uniprot_to_ip[key].append(v)
+
+    return 0
+
+#
+# Purpose: Close files
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
 def closeFiles():
+
+    if fpMGI2UNIPROT:
+	fpMGI2UNIPROT.close()
 
     if fpEC2GO:
 	fpEC2GO.close()
@@ -237,20 +431,34 @@ def closeFiles():
     if fpGOEC:
 	fpGOEC.close()
 
+    if fpIP2GO:
+	fpIP2GO.close()
+
+    if fpGOIP:
+	fpGOIP.close()
+
+    if fpUNIPROT2IP:
+	fpUNIPROT2IP.close()
+
     return 0
+
+#
+# Purpose: Process EC-to-GO data & create annotation file
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
 
 def processEC2GO():
 
     global goECFile, fpGOEC
 
     #
-    # Prepare an GO annotation load file that will contain all Marker/GO annotations
-    # that are based on Marker/EC annotations currently in MGI.
+    # Select all Marker/EC associations from MGD.
+    # Some come from manual curation, some from the UniProt load.
     #
-    # Only select those Markers that are of marker type "gene".
-    #
-    # Some of the Marker/EC annotations in MGI are manually curated.
-    # Others are the result of the SwissProt load.
+    # Generate a GO annotation file from the Marker/EC associations.
     #
     # Only consider loading a Marker/GO IEA EC annotation if a non-IEA GO annotation
     # to the same GO term does not already exist.
@@ -258,18 +466,23 @@ def processEC2GO():
 
     fpGOEC = open(goECFile, 'w')
 
-    results = db.sql('''select a._Object_key, accID = "EC:" + a.accID 
-        from ACC_Accession a, MRK_Marker m 
-        where a._MGIType_key = 2 
-        and a._LogicalDB_key = 8 
-        and a._Object_key = m._Marker_key 
-        and m._Marker_Type_key = 1''', 'auto')
+    results = db.sql('''select markerID = a2.accID, accID = "EC:" + a.accID
+                from ACC_Accession a, MRK_Marker m, ACC_Accession a2
+                where a._MGIType_key = 2
+                and a._LogicalDB_key = 8
+                and a._Object_key = m._Marker_key
+		and m._Organism_key = 1
+                and m._Marker_Type_key = 1
+		and a._Object_key = a2._Object_key
+                and a2._LogicalDB_key = 1
+		and a2.prefixPart = "MGI:"
+		and a2.preferred = 1
+		''', 'auto')
 
     for r in results:
 
-        marker = r['_Object_key']
-        markerID = mgiMarker[marker]
-        ec = r['accID']
+	markerID = r['markerID']
+	ec = r['accID']
 
         # if there is no EC-2-GO mapping for the EC ID, then skip it
 
@@ -280,14 +493,15 @@ def processEC2GO():
 
 	for goid in ec_to_go[ec]:
 
-	    # if a non-IEA annotation does not exist for this Marker/GO association....
+	    # if a non-IEA annotation exists, skip
 
 	    nonIEAkey = markerID + goid
-	    if nonIEAkey not in nonIEA_annotations:
+	    if nonIEAkey in nonIEA_annotations:
+	        continue
 
-		# ....then we want to load this annotation.
+	     # else we want to load this annotation.
 
-	        fpGOEC.write(goid + '\t' + \
+	    fpGOEC.write(goid + '\t' + \
 		         markerID + '\t' + \
 	      	         goECRef + '\t' + \
 	      	         goEvidence + '\t' + \
@@ -296,6 +510,100 @@ def processEC2GO():
 	      	         goEditor + '\t' + \
 	      	         goDate + '\t' + \
 	      	         '\n')
+
+    return 0
+
+#
+# Purpose: Process IP-to-GO data & create annotation file
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def processIP2GO():
+
+    global goIPFile, fpGOIP
+
+    #
+    # Select all Marker/UniProt associations from the Marker/UniProt association file.
+    # Generate a GO annotation file from the Marker/InterPro associations.
+    #
+    # each marker has one-or-more uniprot ids (mgi_to_uniprot):
+    #    each uniprot id has one-or-more interpro ids (uniprot_to_ip)
+    #        each interpro id has one-or-more go ids (ip_to_go)
+    #              go id 1
+    #              go id 2
+    #	           etc...
+    #
+    # Only consider loading a Marker/GO IEA InterPro annotation if a non-IEA GO annotation
+    # to the same GO term does not already exist.
+    #
+
+    fpGOIP = open(goIPFile, 'w')
+
+    markerIDs = mgi_to_uniprot.keys()
+    markerIDs.sort()
+
+    for m in markerIDs:
+
+        #
+        # for the given marker, collect a set of GO id -> interpro ids
+	# the GO annotation loader is driven by Marker/GO id/set of interpro ids
+	# we want one set of interpro ids per GO id per Marker
+        #
+    
+        go_to_ip = {}		
+
+        for uniprotVal in mgi_to_uniprot[m]:
+
+            # if there is no uniprot_to_ip mapping, then skip it
+
+            if not uniprot_to_ip.has_key(uniprotVal):
+                continue
+
+	    # for each UNIPROT-2-IP mapping....
+
+	    for ipid in uniprot_to_ip[uniprotVal]:
+
+                # if there is no ip_to_go mapping, then skip it
+
+	        if not ip_to_go.has_key(ipid):
+		    continue
+
+	        # for each IP-2-GO mapping...
+
+                for goid in ip_to_go[ipid]:
+
+	            # if a non-IEA annotation exists, skip
+	            nonIEAkey = m + goid
+	            if nonIEAkey in nonIEA_annotations:
+		        continue
+
+		    # else we want to load this annotation.
+
+		    ipidPrint = 'InterPro:' + ipid
+
+	            if not go_to_ip.has_key(goid):
+	                go_to_ip[goid] = []
+                    if ipidPrint not in go_to_ip[goid]:
+                        go_to_ip[goid].append(ipidPrint)
+
+	#
+	# the GO annotation loader is driven by Marker/GO id/set of interpro ids
+	# we want one set of interpro ids per GO id per Marker
+	#
+
+        for goid in go_to_ip.keys():
+            fpGOIP.write(goid + '\t' + \
+		         m + '\t' + \
+	      	         goIPRef + '\t' + \
+	      	         goEvidence + '\t' + \
+	      	         string.join(go_to_ip[goid], ',') + '\t' + \
+	      	         '\t' + \
+	      	         goEditor + '\t' + \
+	      	         goDate + '\t' + \
+		         goNote + '\n')
 
     return 0
 
@@ -310,6 +618,9 @@ if openFiles() != 0:
     sys.exit(1)
 
 if processEC2GO() != 0:
+    sys.exit(1)
+
+if processIP2GO() != 0:
     sys.exit(1)
 
 closeFiles()

@@ -114,19 +114,19 @@ checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
 # output files assume the current directory
 #
 
-#cd ${OUTPUTDIR}
+cd ${OUTPUTDIR}
 
-#ECCONFIG_CSH=${UNIPROTLOAD}/ecannot.config
-#echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
-#${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
-#STAT=$?
-#checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
+ECCONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
+STAT=$?
+checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
 
-#IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
-#echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
-#${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
-#STAT=$?
-#checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
+IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
+echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
+STAT=$?
+checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
 
 #
 # run postload cleanup and email logs

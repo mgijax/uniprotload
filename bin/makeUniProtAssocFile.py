@@ -39,7 +39,7 @@
 #          UNIPROT_ACC2_ASSOC_FILE
 #          UNIPROT_PDB_ACCOC_FILE
 #          UNIPROT_EC_ACCOC_FILE
-#          UNIPROT_GOINTEPRO_ACCOC_FILE
+#          UNIPROT_GOIP_ACCOC_FILE
 #          UNIPROT_GOKW_ACCOC_FILE
 #
 #  Inputs:
@@ -70,7 +70,7 @@
 #        1) UniProt ID
 #        2) EC IDs (comma-separated)
 #
-#      - UniProt/GOInterPro association file ($UNIPROT_GOINTERPRO_ASSOC_FILE) to be used by
+#      - UniProt/GOInterPro association file ($UNIPROT_GOIP_ASSOC_FILE) to be used by
 #        1) UniProt ID
 #        2) InterPro IDs (comma-separated)
 #
@@ -116,9 +116,9 @@ import UniProtParser
 #
 def initialize():
     global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global uniprotPDBAssocFile, uniprotECAssocFile
+    global uniprotPDBAssocFile, uniprotECAssocFile, uniprotIPAssocFile
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
-    global fpPDBAssoc, fpECAssoc
+    global fpPDBAssoc, fpECAssoc, fpIPAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
@@ -126,6 +126,7 @@ def initialize():
     uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
     uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
     uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
+    uniprotIPAssocFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
 
     rc = 0
 
@@ -156,6 +157,10 @@ def initialize():
         print 'Environment variable not set: UNIPROT_EC_ASSOC_FILE'
         rc = 1
 
+    if not uniprotIPAssocFile:
+        print 'Environment variable not set: UNIPROT_GOIP_ASSOC_FILE'
+        rc = 1
+
     #
     # Initialize file pointers.
     #
@@ -165,6 +170,7 @@ def initialize():
     fpAcc2Assoc = None
     fpPDBAssoc = None
     fpECAssoc = None
+    fpIPAssoc = None
 
     return rc
 
@@ -178,7 +184,7 @@ def initialize():
 #
 def openFiles():
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
-    global fpPDBAssoc, fpECAssoc
+    global fpPDBAssoc, fpECAssoc, fpIPAssoc
 
     #
     # Open the UniProt file.
@@ -234,6 +240,15 @@ def openFiles():
         print 'Cannot open pdb association file: ' + uniprotECAssocFile
         return 1
 
+    #
+    # Open the ip association file.
+    #
+    try:
+        fpIPAssoc = open(uniprotIPAssocFile, 'w')
+    except:
+        print 'Cannot open pdb association file: ' + uniprotIPAssocFile
+        return 1
+
     return 0
 
 
@@ -263,6 +278,9 @@ def closeFiles():
 
     if fpECAssoc:
         fpECAssoc.close()
+
+    if fpIPAssoc:
+        fpIPAssoc.close()
 
     return 0
 
@@ -301,8 +319,8 @@ def getAssociations():
         isTrembl = rec.getIsTrembl()
         pdbID = rec.getPDBID()
         ecID = rec.getECID()
+        ipID = rec.getInterProID()
         #kwName = rec.getKWName()
-        #interproID = rec.getInterProID()
 
         #
         # Write the IDs to the association file as long as there is at least
@@ -333,6 +351,9 @@ def getAssociations():
                 fpECAssoc.write(uniprotID + '\t' + \
 			      ','.join(ecID) + '\n')
 
+	    if len(ipID) > 0:
+                fpIPAssoc.write(uniprotID + '\t' + \
+			      ','.join(ipID) + '\n')
         #
         # Get the next record from the parser.
         #
@@ -357,3 +378,4 @@ if getAssociations() != 0:
 
 closeFiles()
 sys.exit(0)
+
