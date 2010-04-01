@@ -148,8 +148,8 @@ fi
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeInterProAnnot.sh 2>&1 >> ${LOG}
+echo "Call Inferred From/Accession cache load" | tee -a ${LOG}
+${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
