@@ -81,7 +81,7 @@ fi
 #
 # createArchive
 #
-#preload
+preload
 
 #
 # Establish the log file.
@@ -93,47 +93,32 @@ touch ${LOG}
 #
 # Create the UniProt association file.
 #
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
-STAT=$?
+#echo "" >> ${LOG}
+#date >> ${LOG}
+#echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
+#./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
+#STAT=$?
 #checkStatus ${STAT} "makeUniProtAssocFile.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
 
 #
 # Create the MGI association file.
 #
-echo "" >> ${LOG}
-date >> ${LOG}
+#echo "" >> ${LOG}
+#date >> ${LOG}
 echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeMGIAssocFile.sh 2>&1 >> ${LOG}
-STAT=$?
+#./makeMGIAssocFile.sh 2>&1 >> ${LOG}
+#STAT=$?
 #checkStatus ${STAT} "makeMGIAssocFile.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
 
 #
 # Bucketized the association files.
 #
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Call makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeBuckets.sh 2>&1 >> ${LOG}
-STAT=$?
+#echo "" >> ${LOG}
+#date >> ${LOG}
+#echo "Call makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+#./makeBuckets.sh 2>&1 >> ${LOG}
+#STAT=$?
 #checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
 
 #
 # Load association buckets
@@ -141,14 +126,9 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-./loadBuckets.sh 2>&1 >> ${LOG}
+./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
 STAT=$?
-#checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
+checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
 
 shutDown
 exit 0
@@ -161,12 +141,7 @@ date >> ${LOG}
 echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
 ./makeGOAnnot.sh 2>&1 >> ${LOG}
 STAT=$?
-#checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
+checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
 
 #
 # Create/load InterPro annotations
@@ -176,12 +151,7 @@ date >> ${LOG}
 echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
 ./makeInterProAnnot.sh 2>&1 >> ${LOG}
 STAT=$?
-#checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
+checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
 
 #
 # Refresh Inferred-From Cache
@@ -191,15 +161,10 @@ date >> ${LOG}
 echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
 ${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
 STAT=$?
-#checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
-    exit 1
-fi
+checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
 
 #
 # run postload cleanup and email logs
 #
-#shutDown
+shutDown
 exit 0

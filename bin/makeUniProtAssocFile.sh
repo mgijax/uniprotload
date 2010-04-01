@@ -72,9 +72,8 @@ echo "Create the UniProt association file (makeUniProtAssocFile.sh)" | tee -a ${
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error creating UniProt association file" | tee -a ${LOG}
+    echo "Error: Create the UniProt association file (makeUniProtAssocFile.sh)" | tee -a ${LOG}
     exit 1
 fi
-date >> ${LOG}
 
 exit 0

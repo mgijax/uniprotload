@@ -47,6 +47,7 @@
 cd `dirname $0`
 
 CONFIG=${UNIPROTLOAD}/uniprotload.config
+JOBKEY=$1
 
 #
 # Make sure the configuration file exists and source it.
@@ -60,45 +61,31 @@ else
 fi
 
 #
+# Make sure the job key variable was created by the caller
+#
+#if [ -f ${JOBKEY} ]
+#then
+#    echo "Missing job key variable: ${JOBKEY}"
+#    exit 1
+#fi
+
+#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
-
-#
-#  Source the DLA library functions.
-#
-
-if [ "${DLAJOBSTREAMFUNC}" != "" ]
-then
-    if [ -r ${DLAJOBSTREAMFUNC} ]
-    then
-        . ${DLAJOBSTREAMFUNC}
-    else
-        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG}
-        exit 1
-    fi
-else
-    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG}
-    exit 1
-fi
-
-#
-# createArchive 
-#
-preload
 
 #
 #
 # run association load
 #
 
-echo "Running UniProt association load (loadBuckets.sh)" >> ${LOG_DIAG}
+echo "Running UniProt association load (loadBuckets.sh)" >> ${LOG}
 ${ASSOCLOADER_SH} ${CONFIG} ${JOBKEY}
 STAT=$?
-checkStatus ${STAT} "${ASSOCLOADER_SH} ${CONFIG}"
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
-#
-# run postload cleanup and email logs
-#
-shutDown
 exit 0

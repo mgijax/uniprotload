@@ -72,9 +72,8 @@ echo "Create MGI/UniProt association report" | tee -a ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error creating report" | tee -a ${LOG}
+    echo "Error: Create MGI/UniProt association report" | tee -a ${LOG}
     exit 1
 fi
-date >> ${LOG}
 
 exit 0

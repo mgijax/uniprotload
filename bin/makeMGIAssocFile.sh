@@ -71,9 +71,8 @@ echo "Create the MGI association file (makeMGIAssocFile.sh)" | tee -a ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error creating MGI association file" | tee -a ${LOG}
+    echo "Error: Create the MGI association file (makeMGIAssocFile.sh)" | tee -a ${LOG}
     exit 1
 fi
-date >> ${LOG}
 
 exit 0

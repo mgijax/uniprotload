@@ -72,9 +72,8 @@ echo "Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error bucketizing association files" | tee -a ${LOG}
+    echo "Error: Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
     exit 1
 fi
-date >> ${LOG}
 
 exit 0

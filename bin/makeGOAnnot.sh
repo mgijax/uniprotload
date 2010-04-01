@@ -44,6 +44,7 @@
 cd `dirname $0`
 
 CONFIG=${UNIPROTLOAD}/uniprotload.config
+JOBKEY=$1
 
 #
 # Make sure the configuration file exists and source it.
@@ -62,29 +63,6 @@ fi
 LOG=${LOG_DIAG}
 
 #
-#  Source the DLA library functions.
-#
-
-if [ "${DLAJOBSTREAMFUNC}" != "" ]
-then
-    if [ -r ${DLAJOBSTREAMFUNC} ]
-    then
-        . ${DLAJOBSTREAMFUNC}
-    else
-        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG}
-        exit 1
-    fi
-else
-    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG}
-    exit 1
-fi
-
-#
-# createArchive
-#
-preload
-
-#
 #
 # make the GO/EC annotation file
 #
@@ -97,8 +75,11 @@ date >> ${LOG}
 echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
 ./makeGOAnnot.py 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
 #
 #
@@ -113,27 +94,32 @@ date >> ${LOG}
 echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Running UniProt GO/EC annotation load (makeGOAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
 IPCONFIG_CSH=${UNIPROTLOAD}/goipannot.config
 echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 date >> ${LOG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
 SPKWCONFIG_CSH=${UNIPROTLOAD}/gospkwannot.config
 echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 date >> ${LOG}
 ${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt GO/SP-KW annotation load (makeGOAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
-#
-# run postload cleanup and email logs
-#
-shutDown
 exit 0

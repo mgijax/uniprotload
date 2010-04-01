@@ -44,6 +44,7 @@
 cd `dirname $0`
 
 CONFIG=${UNIPROTLOAD}/uniprotload.config
+JOBKEY=$1
 
 #
 # Make sure the configuration file exists and source it.
@@ -62,29 +63,6 @@ fi
 LOG=${LOG_DIAG}
 
 #
-#  Source the DLA library functions.
-#
-
-if [ "${DLAJOBSTREAMFUNC}" != "" ]
-then
-    if [ -r ${DLAJOBSTREAMFUNC} ]
-    then
-        . ${DLAJOBSTREAMFUNC}
-    else
-        echo "Cannot source DLA functions script: ${DLAJOBSTREAMFUNC}" | tee -a ${LOG}
-        exit 1
-    fi
-else
-    echo "Environment variable DLAJOBSTREAMFUNC has not been defined." | tee -a ${LOG}
-    exit 1
-fi
-
-#
-# createArchive
-#
-preload
-
-#
 #
 # make the Marker/InterPro annotation file
 #
@@ -94,11 +72,14 @@ preload
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Run vocload to load InterPro domain names (makeInterProAnnot.sh) " | tee -a ${LOG}
+echo "Run vocload to load InterPro domain names (makeInterProAnnot.sh)" | tee -a ${LOG}
 ${VOCLOAD}/runSimpleFullLoad.sh ${VOCLOAD}/IP.config 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "InterPro Vocabulary load (runSimpleFullLoad, makeInterProAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Run vocload to load InterPro domain names (makeInterProAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
 #
 # Call the Python script to create the Marker/InterPro annotation file.
@@ -108,8 +89,11 @@ date >> ${LOG}
 echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
 ./makeInterProAnnot.py 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
 #
 #
@@ -125,11 +109,10 @@ date >> ${LOG}
 echo "Running UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)"
-date >> ${LOG}
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Running UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
 
-#
-# run postload cleanup and email logs
-#
-shutDown
 exit 0
