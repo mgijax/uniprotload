@@ -57,15 +57,6 @@ else
 fi
 
 #
-# Make sure the MGI association load file exists.
-#
-if [ ! -f ${MGI_UNIPROT_LOAD_FILE} ]
-then
-    echo "Missing input file: ${MGI_UNIPROT_LOAD_FILE}"
-    exit 1
-fi
-
-#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
@@ -101,10 +92,13 @@ preload
 #
 # Delete and Re-Load InterPro domain names as a vocabulary
 #
+echo "" >> ${LOG}
+date >> ${LOG}
 echo "Run vocload to load InterPro domain names (makeInterProAnnot.sh) " | tee -a ${LOG}
 ${VOCLOAD}/runSimpleFullLoad.sh ${VOCLOAD}/IP.config 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "InterPro Vocabulary load (runSimpleFullLoad, makeInterProAnnot.sh)"
+date >> ${LOG}
 
 #
 # Call the Python script to create the Marker/InterPro annotation file.
@@ -115,6 +109,7 @@ echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee 
 ./makeInterProAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
+date >> ${LOG}
 
 #
 #
@@ -125,10 +120,13 @@ checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
 cd ${OUTPUTDIR}
 
 IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
+echo "" >> ${LOG}
+date >> ${LOG}
 echo "Running UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)"
+date >> ${LOG}
 
 #
 # run postload cleanup and email logs

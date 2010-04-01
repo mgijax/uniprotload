@@ -57,15 +57,6 @@ else
 fi
 
 #
-# Make sure the MGI association load file exists.
-#
-if [ ! -f ${MGI_UNIPROT_LOAD_FILE} ]
-then
-    echo "Missing input file: ${MGI_UNIPROT_LOAD_FILE}"
-    exit 1
-fi
-
-#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
@@ -107,6 +98,7 @@ echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
 ./makeGOAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
+date >> ${LOG}
 
 #
 #
@@ -117,22 +109,28 @@ checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
 cd ${OUTPUTDIR}
 
 ECCONFIG_CSH=${UNIPROTLOAD}/goecannot.config
+date >> ${LOG}
 echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
+date >> ${LOG}
 
 IPCONFIG_CSH=${UNIPROTLOAD}/goipannot.config
 echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+date >> ${LOG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
+date >> ${LOG}
 
 SPKWCONFIG_CSH=${UNIPROTLOAD}/gospkwannot.config
 echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
+date >> ${LOG}
 ${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/SP-KW annotation load (makeGOAnnot.sh)"
+date >> ${LOG}
 
 #
 # run postload cleanup and email logs

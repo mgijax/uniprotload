@@ -58,15 +58,6 @@ else
 fi
 
 #
-# Make sure the input file exists.
-#
-if [ ! -f ${INPUTFILE} ]
-then
-    echo "Missing input file: ${INPUTFILE}"
-    exit 1
-fi
-
-#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
@@ -84,5 +75,6 @@ then
     echo "Error creating UniProt association file" | tee -a ${LOG}
     exit 1
 fi
+date >> ${LOG}
 
 exit 0

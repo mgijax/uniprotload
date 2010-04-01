@@ -74,5 +74,6 @@ then
     echo "Error creating MGI association file" | tee -a ${LOG}
     exit 1
 fi
+date >> ${LOG}
 
 exit 0

@@ -5,7 +5,8 @@
 #
 #  Purpose:
 #
-#      This script will run the association loader using the MGI/UniProt IDs.
+#      This script will run the association loader
+#      using the MGI/UniProt associations created by the bucketizer.
 #
 #  Usage:
 #
@@ -15,7 +16,9 @@
 #
 #      See the configuration file (uniprotload.config)
 #
-#  Inputs:  None
+#  Inputs:
+#
+#      ${MGI_UNIPROT_LOAD_FILE}
 #
 #  Outputs:
 #
@@ -53,15 +56,6 @@ then
     . ${CONFIG}
 else
     echo "Missing configuration file: ${CONFIG}"
-    exit 1
-fi
-
-#
-# Make sure the MGI association load file exists.
-#
-if [ ! -f ${MGI_UNIPROT_LOAD_FILE} ]
-then
-    echo "Missing input file: ${MGI_UNIPROT_LOAD_FILE}"
     exit 1
 fi
 
