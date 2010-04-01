@@ -99,6 +99,14 @@ preload
 #
 
 #
+# Delete and Re-Load InterPro domain names as a vocabulary
+#
+echo "Run vocload to load InterPro domain names (makeInterProAnnot.sh) " | tee -a ${LOG}
+${VOCLOAD}/runSimpleFullLoad.sh ${VOCLOAD}/IP.config 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "InterPro Vocabulary load (runSimpleFullLoad, makeInterProAnnot.sh)"
+
+#
 # Call the Python script to create the Marker/InterPro annotation file.
 #
 echo "" >> ${LOG}
