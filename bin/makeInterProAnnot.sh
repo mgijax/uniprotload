@@ -116,7 +116,7 @@ checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
 
 cd ${OUTPUTDIR}
 
-IPCONFIG_CSH=${UNIPROTLOAD}/ipspannot.config
+IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
 echo "Running UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
