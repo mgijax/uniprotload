@@ -63,7 +63,7 @@ fi
 #
 # Make sure the job key variable was created by the caller
 #
-#if [ -f ${JOBKEY} ]
+if [ ! -f ${JOBKEY} ]
 #then
 #    echo "Missing job key variable: ${JOBKEY}"
 #    exit 1
@@ -84,7 +84,7 @@ ${ASSOCLOADER_SH} ${CONFIG} ${JOBKEY}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error: Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
+    echo "Error: Running UniProt association load (loadBuckets.sh)" | tee -a ${LOG}
     exit 1
 fi
 

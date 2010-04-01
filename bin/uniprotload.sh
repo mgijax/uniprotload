@@ -123,15 +123,12 @@ echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
 #
 # Load association buckets
 #
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
-
-shutDown
-exit 0
+#echo "" >> ${LOG}
+#date >> ${LOG}
+#echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+#./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
+#STAT=$?
+#checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
 
 #
 # Create/load GO annotations
@@ -142,6 +139,9 @@ echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
 ./makeGOAnnot.sh 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
+
+shutDown
+exit 0
 
 #
 # Create/load InterPro annotations
