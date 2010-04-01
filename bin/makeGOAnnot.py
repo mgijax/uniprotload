@@ -29,12 +29,12 @@
 #         GO_EC_ANNOTREF
 #
 #         IP2GOFILE
-#	  UNIPROT_GOIP_ASSOC_FILE
+#	  UNIPROT_IP_ASSOC_FILE
 #         GO_IP_ASSOC_FILE
 #         GO_IP_ANNOTREF
 #
 #         SPKW2GOFILE
-#	  UNIPROT_GOSPKW_ASSOC_FILE
+#	  UNIPROT_SPKW_ASSOC_FILE
 #         GO_SPKW_ASSOC_FILE
 #         GO_SPKW_ANNOTREF
 #
@@ -62,9 +62,9 @@
 #
 #	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
 #
-#       - UniProt/InterPro files (${UNIPROT_GOIP_ASSOC_FILE})
+#       - UniProt/InterPro files (${UNIPROT_IP_ASSOC_FILE})
 #
-#       - UniProt/SPKW files (${UNIPROT_GOSPKW_ASSOC_FILE})
+#       - UniProt/SPKW files (${UNIPROT_SPKW_ASSOC_FILE})
 #
 #       - GO/EC Reference ($GO_ECANNOTREF)
 #
@@ -171,12 +171,12 @@ def initialize():
     goECRef = os.environ['GO_EC_ANNOTREF']
 
     ip2goFile = os.getenv('IP2GOFILE')
-    uniprot2ipFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
+    uniprot2ipFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
     goIPFile = os.getenv('GO_IP_ASSOC_FILE')
     goIPRef = os.environ['GO_IP_ANNOTREF']
 
     spkw2goFile = os.getenv('SPKW2GOFILE')
-    uniprot2spkwFile = os.getenv('UNIPROT_GOSPKW_ASSOC_FILE')
+    uniprot2spkwFile = os.getenv('UNIPROT_SPKW_ASSOC_FILE')
     goSPKWFile = os.getenv('GO_SPKW_ASSOC_FILE')
     goSPKWRef = os.environ['GO_SPKW_ANNOTREF']
 
@@ -211,7 +211,7 @@ def initialize():
         rc = 1
 
     if not uniprot2ipFile:
-        print 'Environment variable not set: UNIPROT_GOIP_ASSOC'
+        print 'Environment variable not set: UNIPROT_IP_ASSOC'
         rc = 1
 
     if not goIPFile:
@@ -223,7 +223,7 @@ def initialize():
         rc = 1
 
     if not uniprot2spkwFile:
-        print 'Environment variable not set: UNIPROT_GOSPKW_ASSOC'
+        print 'Environment variable not set: UNIPROT_SPKW_ASSOC'
         rc = 1
 
     if not goSPKWFile:

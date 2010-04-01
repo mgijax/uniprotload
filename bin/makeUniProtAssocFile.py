@@ -39,8 +39,8 @@
 #          UNIPROT_ACC2_ASSOC_FILE
 #          UNIPROT_PDB_ACCOC_FILE
 #          UNIPROT_EC_ACCOC_FILE
-#          UNIPROT_GOIP_ACCOC_FILE
-#          UNIPROT_GOSPKW_ACCOC_FILE
+#          UNIPROT_IP_ACCOC_FILE
+#          UNIPROT_SPKW_ACCOC_FILE
 #
 #  Inputs:
 #
@@ -70,13 +70,13 @@
 #        1) UniProt ID
 #        2) EC IDs (comma-separated)
 #
-#      - UniProt/GOInterPro association file ($UNIPROT_GOIP_ASSOC_FILE) to be used by
+#      - UniProt/InterPro association file ($UNIPROT_IP_ASSOC_FILE) to be used by
 #        1) UniProt ID
 #        2) InterPro IDs (comma-separated)
 #
-#      - UniProt/GOSPKW association file ($UNIPROT_GOSPKW_ASSOC_FILE) to be used by
+#      - UniProt/SPKW association file ($UNIPROT_SPKW_ASSOC_FILE) to be used by
 #        1) UniProt ID
-#        2) GOSPKW Names (comma-separated)
+#        2) SPKW Names (comma-separated)
 #
 #  Exit Codes:
 #
@@ -126,8 +126,8 @@ def initialize():
     uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
     uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
     uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
-    uniprotIPAssocFile = os.getenv('UNIPROT_GOIP_ASSOC_FILE')
-    uniprotKWAssocFile = os.getenv('UNIPROT_GOSPKW_ASSOC_FILE')
+    uniprotIPAssocFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
+    uniprotKWAssocFile = os.getenv('UNIPROT_SPKW_ASSOC_FILE')
 
     rc = 0
 
@@ -159,11 +159,11 @@ def initialize():
         rc = 1
 
     if not uniprotIPAssocFile:
-        print 'Environment variable not set: UNIPROT_GOIP_ASSOC_FILE'
+        print 'Environment variable not set: UNIPROT_IP_ASSOC_FILE'
         rc = 1
 
     if not uniprotKWAssocFile:
-        print 'Environment variable not set: UNIPROT_GOSPKW_ASSOC_FILE'
+        print 'Environment variable not set: UNIPROT_SPKW_ASSOC_FILE'
         rc = 1
 
     #

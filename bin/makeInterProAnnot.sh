@@ -1,15 +1,15 @@
 #!/bin/sh
 #
-#  makeGOInterPro.sh
+#  makeInterProAnnot.sh
 ###########################################################################
 #
 #  Purpose:
 #
-#      This script will run the annotation loader for GO/InterPro associations.
+#      This script will run the annotation loader for Marker/InterPro annotations.
 #
 #  Usage:
 #
-#      makeGOInterPro.sh
+#      makeInterProAnnot.sh
 #
 #  Env Vars:
 #
@@ -35,7 +35,7 @@
 #      1) Source the configuration file to establish the environment.
 #      2) Verify that the input files exist.
 #      3) Establish the log file.
-#      4) Call makeGOInterPro.py to bucketize the association files.
+#      4) Call makeInterProAnnot.py to bucketize the association files.
 #
 #  Notes:  None
 #
@@ -91,23 +91,24 @@ fi
 #
 # createArchive
 #
-preload
+#preload
 
 #
 #
-# make the GO/EC annotation file
+# make the Marker/InterPro annotation file
 #
 
 #
-# Call the Python script to create the GO/EC annotation file.
+# Call the Python script to create the Marker/InterPro annotation file.
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Create the GO annotation files (makeGOInterPro.sh)" | tee -a ${LOG}
-./makeGOInterPro.py 2>&1 >> ${LOG}
-#./makeGOInterPro.py
+echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
+#./makeInterProAnnot.py 2>&1 >> ${LOG}
+./makeInterProAnnot.py
 STAT=$?
-checkStatus ${STAT} "GO annotation files (makeGOInterPro.sh)"
+checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
+exit 0
 
 #
 #
@@ -117,11 +118,17 @@ checkStatus ${STAT} "GO annotation files (makeGOInterPro.sh)"
 
 cd ${OUTPUTDIR}
 
-IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
-echo "Running UniProt GO/InterPro annotation load (makeGOInterPro.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
+IPSPCONFIG_CSH=${UNIPROTLOAD}/ipspannot.config
+echo "Running UniProt Marker/InterPro/SP annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${IPSPCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOInterPro.sh)"
+checkStatus ${STAT} "UniProt Marker/InterPro/SP annotation load (makeInterProAnnot.sh)"
+
+IPTRCONFIG_CSH=${UNIPROTLOAD}/iptrannot.config
+echo "Running UniProt Marker/InterPro/TR annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${IPTRCONFIG_CSH}
+STAT=$?
+checkStatus ${STAT} "UniProt Marker/InterPro/TR annotation load (makeInterProAnnot.sh)"
 
 #
 # run postload cleanup and email logs
