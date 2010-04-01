@@ -26,21 +26,21 @@
 #
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
-#         GO_EC_ANNOTREF
+#         GO_EC_ANNOT_REF
 #
 #         IP2GOFILE
 #	  UNIPROT_IP_ASSOC_FILE
 #         GO_IP_ASSOC_FILE
-#         GO_IP_ANNOTREF
+#         GO_IP_ANNOT_REF
 #
 #         SPKW2GOFILE
 #	  UNIPROT_SPKW_ASSOC_FILE
 #         GO_SPKW_ASSOC_FILE
-#         GO_SPKW_ANNOTREF
+#         GO_SPKW_ANNOT_REF
 #
-#         GO_EVIDENCECODE
-#         GO_ANNOTEDITOR
-#         GO_ANNOTDATE
+#         ANNOT_EVIDENCECODE
+#         ANNOT_EDITOR
+#         ANNOT_DATE
 #
 # Inputs:
 #
@@ -66,13 +66,17 @@
 #
 #       - UniProt/SPKW files (${UNIPROT_SPKW_ASSOC_FILE})
 #
-#       - GO/EC Reference ($GO_ECANNOTREF)
+#       - GO/EC Reference ($GO_EC_ANNOT_REF)
 #
-#       - GO Evidence ($GO_EVIDENCECODE)
+#       - GO/InterPro Reference ($GO_IP_ANNOT_REF)
 #
-#       - GO Editor ($GO_ANNOTEDITOR)
+#       - GO/SPKW Reference ($GO_SPKW_ANNOT_REF)
 #
-#       - GO Date ($GO_ANNOTDATE)
+#       - GO Evidence ($ANNOT_EVIDENCECODE)
+#
+#       - GO Editor ($ANNOT_EDITOR)
+#
+#       - GO Date ($ANNOT_DATE)
 #
 # Outputs:
 #
@@ -155,7 +159,7 @@ def initialize():
     global fpEC2GO, fpIP2GO, fpSPKW2GO
     global fpGOEC, fpGOIP, fpGOSPKW
     global goECRef, goIPRef, goSPKWRef
-    global goEvidence, goEditor, goDate, goNote
+    global annotEvidence, annotEditor, annotDate, annotNote
 
     #
     #  initialize caches
@@ -168,22 +172,22 @@ def initialize():
 
     ec2goFile = os.getenv('EC2GOFILE')
     goECFile = os.getenv('GO_EC_ASSOC_FILE')
-    goECRef = os.environ['GO_EC_ANNOTREF']
+    goECRef = os.environ['GO_EC_ANNOT_REF']
 
     ip2goFile = os.getenv('IP2GOFILE')
     uniprot2ipFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
     goIPFile = os.getenv('GO_IP_ASSOC_FILE')
-    goIPRef = os.environ['GO_IP_ANNOTREF']
+    goIPRef = os.environ['GO_IP_ANNOT_REF']
 
     spkw2goFile = os.getenv('SPKW2GOFILE')
     uniprot2spkwFile = os.getenv('UNIPROT_SPKW_ASSOC_FILE')
     goSPKWFile = os.getenv('GO_SPKW_ASSOC_FILE')
-    goSPKWRef = os.environ['GO_SPKW_ANNOTREF']
+    goSPKWRef = os.environ['GO_SPKW_ANNOT_REF']
 
-    goEvidence = os.environ['GO_EVIDENCECODE']
-    goEditor = os.environ['GO_ANNOTEDITOR']
-    goDate = os.environ['GO_ANNOTDATE']
-    goNote = os.environ['GO_ANNOTNOTE']
+    annotEvidence = os.environ['ANNOT_EVIDENCECODE']
+    annotEditor = os.environ['ANNOT_EDITOR']
+    annotDate = os.environ['ANNOT_DATE']
+    annotNote = os.environ['ANNOT_NOTE']
 
     rc = 0
 
@@ -234,19 +238,19 @@ def initialize():
         print 'Environment variable not set: GO_SPKW_ANNOTREF'
         rc = 1
 
-    if not goEvidence:
+    if not annotEvidence:
         print 'Environment variable not set: GO_EVIDENCECODE'
         rc = 1
 
-    if not goEditor:
+    if not annotEditor:
         print 'Environment variable not set: GO_ANNOTEDITOR'
         rc = 1
 
-    if not goDate:
+    if not annotDate:
         print 'Environment variable not set: GO_ANNOTDATE'
         rc = 1
 
-    if not goNote:
+    if not annotNote:
         print 'Environment variable not set: GO_ANNOTNOTE'
         rc = 1
 
@@ -320,6 +324,7 @@ def openFiles():
     readMGI2UNIPROT()
     readEC2GO()
     readIP2GO()
+    readUNIPROT2IP()
     readSPKW2GO()
 
     #
@@ -395,7 +400,6 @@ def readMGI2UNIPROT():
 	key = tokens[0]
 	value1 = string.split(tokens[1], ',')
 	value2 = string.split(tokens[2], ',')
-	ecValue = string.split(tokens[4], ',')
 
 	mgi_to_uniprot[key] = []
 	for v in value1:
@@ -489,8 +493,24 @@ def readIP2GO():
                     ip_to_go[ipName] = []
                 ip_to_go[ipName].append((ipid, goid))
 
+    return 0
+
+#
+# Purpose: Read UniProt-to-InterPro file & create lookup
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readUNIPROT2IP():
+
     #
-    # lookup of uniprot ID -> ip id, ip id....
+    # parse UniProt-to-InterPro file
+    #
+    # a dictionary where:
+    #	key = UniProt ID
+    #	value = InterPro ID (IPR#####)
     #
 
     fpUNIPROT2IP = open(uniprot2ipFile,'r')
@@ -629,11 +649,11 @@ def processEC2GO():
 	    fpGOEC.write(goid + '\t' + \
 		         markerID + '\t' + \
 	      	         goECRef + '\t' + \
-	      	         goEvidence + '\t' + \
+	      	         annotEvidence + '\t' + \
 	      	         ec + '\t' + \
 	      	         '\t' + \
-	      	         goEditor + '\t' + \
-	      	         goDate + '\t' + \
+	      	         annotEditor + '\t' + \
+	      	         annotDate + '\t' + \
 	      	         '\n')
 
     return 0
@@ -724,12 +744,12 @@ def processIP2GO():
             fpGOIP.write(goid + '\t' + \
 		         m + '\t' + \
 	      	         goIPRef + '\t' + \
-	      	         goEvidence + '\t' + \
+	      	         annotEvidence + '\t' + \
 	      	         string.join(go_to_ip[goid], ',') + '\t' + \
 	      	         '\t' + \
-	      	         goEditor + '\t' + \
-	      	         goDate + '\t' + \
-		         goNote + '\n')
+	      	         annotEditor + '\t' + \
+	      	         annotDate + '\t' + \
+		         annotNote + '\n')
 
     return 0
 
@@ -819,12 +839,12 @@ def processSPKW2GO():
             fpGOSPKW.write(goid + '\t' + \
 		         m + '\t' + \
 	      	         goSPKWRef + '\t' + \
-	      	         goEvidence + '\t' + \
+	      	         annotEvidence + '\t' + \
 	      	         string.join(go_to_spkw[goid], ',') + '\t' + \
 	      	         '\t' + \
-	      	         goEditor + '\t' + \
-	      	         goDate + '\t' + \
-		         goNote + '\n')
+	      	         annotEditor + '\t' + \
+	      	         annotDate + '\t' + \
+		         annotNote + '\n')
 
     return 0
 

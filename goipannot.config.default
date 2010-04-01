@@ -1,0 +1,15 @@
+#!/bin/csh -f
+
+#
+# config variables for GO/InterPro annotation load
+#
+
+setenv ANNOTDATADIR		${OUTPUTDIR}
+setenv ANNOTMODE		new
+setenv ANNOTTYPENAME		"GO/Marker"
+setenv ANNOTINPUTFILE		${GO_IP_ASSOC_FILE}
+setenv ANNOTLOG			${LOGDIR}/go_ip.log
+setenv DELETEREFERENCE		${GO_IP_ANNOTREF}
+setenv DELETEUSER		${GO_ANNOTEDITOR}
+setenv ANNOTOBSOLETE        	0
+

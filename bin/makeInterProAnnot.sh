@@ -91,7 +91,7 @@ fi
 #
 # createArchive
 #
-#preload
+preload
 
 #
 #
@@ -104,11 +104,9 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
-#./makeInterProAnnot.py 2>&1 >> ${LOG}
-./makeInterProAnnot.py
+./makeInterProAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "Marker/InterPro annotation files (makeInterProAnnot.sh)"
-exit 0
 
 #
 #
@@ -118,17 +116,11 @@ exit 0
 
 cd ${OUTPUTDIR}
 
-IPSPCONFIG_CSH=${UNIPROTLOAD}/ipspannot.config
-echo "Running UniProt Marker/InterPro/SP annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${IPSPCONFIG_CSH}
+IPCONFIG_CSH=${UNIPROTLOAD}/ipspannot.config
+echo "Running UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
+${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
-checkStatus ${STAT} "UniProt Marker/InterPro/SP annotation load (makeInterProAnnot.sh)"
-
-IPTRCONFIG_CSH=${UNIPROTLOAD}/iptrannot.config
-echo "Running UniProt Marker/InterPro/TR annotation load (makeInterProAnnot.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${IPTRCONFIG_CSH}
-STAT=$?
-checkStatus ${STAT} "UniProt Marker/InterPro/TR annotation load (makeInterProAnnot.sh)"
+checkStatus ${STAT} "UniProt Marker/InterPro annotation load (makeInterProAnnot.sh)"
 
 #
 # run postload cleanup and email logs

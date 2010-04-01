@@ -24,12 +24,11 @@
 #
 #	  UNIPROT_IP_ASSOC_FILE
 #         MARKER_IP_ASSOC_FILE
-#         MARKER_IP_ANNOTREF
-#	  MARKER_IPSP_ANNOTNOTE
+#         MARKER_IP_ANNOT_REF
 #
-#         MARKER_EVIDENCECODE
-#         MARKER_ANNOTEDITOR
-#         MARKER_ANNOTDATE
+#         ANNOT_EVIDENCECODE
+#         ANNOT_EDITOR
+#         ANNOT_DATE
 #
 # Inputs:
 #
@@ -40,20 +39,21 @@
 #
 #       - UniProt/InterPro files (${UNIPROT_IP_ASSOC_FILE})
 #
-#	- Marker/InterPro Note ($MARKER_IPSP_ANNOTNOTE)
+#	- Marker/InterPro Reference (${MARKER_IP_ANNOT_REF})
 #
-#       - Marker Evidence ($MARKER_EVIDENCECODE)
+#	- Marker/InterPro Note (${MARKER_IPSP_ANNOT_NOTE}, ${MARKER_IPTR_ANNOT_NOTE})
 #
-#       - Marker Editor ($MARKER_ANNOTEDITOR)
+#       - Marker Evidence (${ANNOT_EVIDENCECODE})
 #
-#       - Marker Date ($MARKER_ANNOTDATE)
+#       - Marker Editor (${ANNOT_EDITOR})
+#
+#       - Marker Date (${ANNOT_DATE})
 #
 # Outputs:
 #
 #	A tab-delimtied file, one for each of these areas:
 #
-#	Marker/InterPro/SP	J:53168	MARKER_IPSP_ASSOC_FILE
-#	Marker/InterPro/TR	J:53168	MARKER_IPTR_ASSOC_FILE
+#	Marker/InterPro	J:53168	MARKER_IP_ASSOC_FILE
 #
 #	A tab-delimited annotation file in the format
 #	(see dataload/annotload)
@@ -83,11 +83,8 @@ import db
 
 # globals
 
-# MGI UniProt load mapping/SP (MGI id -> UniProt/SwissProt id)
-mgi_to_uniprotsp = {}
-
-# MGI UniProt load mapping/TR (MGI id -> UniProt/TrEMBL id)
-mgi_to_uniprottr = {}
+# MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
+mgi_to_uniprot = {}
 
 # UniProt to InterPro mapping (UniProt id -> InterPro ids)
 uniprot_to_ip = {}
@@ -104,10 +101,9 @@ def initialize():
     global mgi_to_uniprotFile
     global uniprot2ipFile
     global fpMGI2UNIPROT, fpUNIPROT2IP
-    global fpIPSP, fpIPTR
-    global markerIPSPRef, markerIPSPNote
-    global markerIPTRRef, markerIPTRNote
-    global markerEvidence, markerEditor, goDate
+    global markerIPFile
+    global markerIPRef
+    global annotEvidence, annotEditor, annotDate
 
     #
     #  initialize caches
@@ -120,17 +116,12 @@ def initialize():
 
     uniprot2ipFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
 
-    markerIPSPFile = os.getenv('MARKER_IPSP_ASSOC_FILE')
-    markerIPSPRef = os.environ['MARKER_IPSP_ANNOTREF']
-    markerIPSPNote = os.environ['MARKER_IPSP_ANNOTNOTE']
+    markerIPFile = os.getenv('MARKER_IP_ASSOC_FILE')
+    markerIPRef = os.environ['MARKER_IP_ANNOT_REF']
 
-    markerIPTRFile = os.getenv('MARKER_IPTR_ASSOC_FILE')
-    markerIPTRRef = os.environ['MARKER_IPTR_ANNOTREF']
-    markerIPTRNote = os.environ['MARKER_IPTR_ANNOTNOTE']
-
-    markerEvidence = os.environ['MARKER_EVIDENCECODE']
-    markerEditor = os.environ['MARKER_ANNOTEDITOR']
-    markerDate = os.environ['MARKER_ANNOTDATE']
+    annotEvidence = os.environ['ANNOT_EVIDENCECODE']
+    annotEditor = os.environ['ANNOT_EDITOR']
+    annotDate = os.environ['ANNOT_DATE']
 
     rc = 0
 
@@ -145,40 +136,24 @@ def initialize():
         print 'Environment variable not set: UNIPROT_IP_ASSOC'
         rc = 1
 
-    if not markerIPSPFile:
-        print 'Environment variable not set: MARKER_IPSP_ASSOC_FILE'
+    if not markerIPFile:
+        print 'Environment variable not set: MARKER_IP_ASSOC_FILE'
         rc = 1
 
-    if not markerIPSPRef:
-        print 'Environment variable not set: MARKER_IPSP_ANNOTREF'
+    if not markerIPRef:
+        print 'Environment variable not set: MARKER_IP_ANNOT_REF'
         rc = 1
 
-    if not markerIPSPNote:
-        print 'Environment variable not set: MARKER_IPSP_ANNOTNOTE'
+    if not annotEvidence:
+        print 'Environment variable not set: ANNOT_EVIDENCECODE'
         rc = 1
 
-    if not markerIPTRFile:
-        print 'Environment variable not set: MARKER_IPTR_ASSOC_FILE'
+    if not annotEditor:
+        print 'Environment variable not set: ANNOT_EDITOR'
         rc = 1
 
-    if not markerIPTRRef:
-        print 'Environment variable not set: MARKER_IPTR_ANNOTREF'
-        rc = 1
-
-    if not markerIPTRNote:
-        print 'Environment variable not set: MARKER_IPTR_ANNOTNOTE'
-        rc = 1
-
-    if not markerEvidence:
-        print 'Environment variable not set: MARKER_EVIDENCECODE'
-        rc = 1
-
-    if not markerEditor:
-        print 'Environment variable not set: MARKER_ANNOTEDITOR'
-        rc = 1
-
-    if not markerDate:
-        print 'Environment variable not set: MARKER_ANNOTDATE'
+    if not annotDate:
+        print 'Environment variable not set: ANNOT_DATE'
         rc = 1
 
     #
@@ -187,8 +162,6 @@ def initialize():
 
     fpMGI2UNIPROT = None
     fpUNIPROT2IP = None
-    fpIPSP = None
-    fpIPTR = None
 
     return rc
 
@@ -208,12 +181,6 @@ def closeFiles():
     if fpUNIPROT2IP:
 	fpUNIPROT2IP.close()
 
-    if fpIPSP:
-	fpIPSP.close()
-
-    if fpIPTR:
-	fpIPTR.close()
-
     return 0
 
 #
@@ -227,6 +194,7 @@ def closeFiles():
 def openFiles():
 
     readMGI2UNIPROT()
+    readUNIPROT2IP()
 
     return 0
 
@@ -244,7 +212,6 @@ def readMGI2UNIPROT():
     # parse mgi-to-uniprot file
     #
 
-    global mgi_to_uniprotsp, mgi_to_uniprottr
     global mgi_to_uniprotFile, fpMGI2UNIPROT
 
     fpMGI2UNIPROT = open(mgi_to_uniprotFile,'r')
@@ -261,14 +228,44 @@ def readMGI2UNIPROT():
 	value1 = string.split(tokens[1], ',')
 	value2 = string.split(tokens[2], ',')
 
-	mgi_to_uniprotsp[key] = []
-	for v in value1:
-	    mgi_to_uniprotsp[key].append(v)
+        mgi_to_uniprot[key] = []
+        for v in value1:
+            mgi_to_uniprot[key].append(v)
+        for v in value2:
+            mgi_to_uniprot[key].append(v)
 
-	for v in value2:
-	    if not mgi_to_uniprottr.has_key(key):
-	        mgi_to_uniprottr[key] = []
-	    mgi_to_uniprottr[key].append(v)
+    return 0
+
+#
+# Purpose: Read UniProt-to-InterPro file & create lookup
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readUNIPROT2IP():
+
+    #
+    # parse uniprot-to-interpro file
+    #
+    # a dictionary where:
+    #	key = UniProt ID
+    #   value = InterPro ID (IPR#####)
+    #
+
+    global fpUNIPROT2IP
+
+    fpUNIPROT2IP = open(uniprot2ipFile,'r')
+
+    for line in fpUNIPROT2IP.readlines():
+	tokens = string.split(line[:-1], '\t')
+	key = tokens[0]
+	values = string.split(tokens[1], ',')
+
+	uniprot_to_ip[key] = []
+	for v in values:
+	    uniprot_to_ip[key].append(v)
 
     return 0
 
@@ -280,7 +277,7 @@ def readMGI2UNIPROT():
 # Throws: Nothing
 #
 
-def processIP(markerIPSPFile, fpIPSP, mgi_to_uniprot, markerIPRef, markerIPNote):
+def processIP():
 
     #
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
@@ -288,14 +285,20 @@ def processIP(markerIPSPFile, fpIPSP, mgi_to_uniprot, markerIPRef, markerIPNote)
     #
     # each marker has one-or-more uniprot ids (mgi_to_uniprot[sp|tr]):
     #    each uniprot id has one-or-more interpro ids (uniprot_to_ip)
+    #	    print out each unique marker/interpro annotation
     #
 
-    fpIPSP = open(goIPSPFile, 'w')
+    fpIP = open(markerIPFile, 'w')
 
     markerIDs = mgi_to_uniprot.keys()
     markerIDs.sort()
 
     for m in markerIDs:
+
+	# unique set of marker/ip associations for this marker
+	markerIP = []
+
+	# for each uniprot id of a given marker...
 
         for uniprotVal in mgi_to_uniprot[m]:
 
@@ -304,20 +307,29 @@ def processIP(markerIPSPFile, fpIPSP, mgi_to_uniprot, markerIPRef, markerIPNote)
             if not uniprot_to_ip.has_key(uniprotVal):
                 continue
 
-	    print uniprotVal
-	    # for each UNIPROT-2-IP mapping....
+	    # for each interpro id for given uniprot id...
 
-	    #for ipName in uniprot_to_ip[uniprotVal]:
+	    for ipid in uniprot_to_ip[uniprotVal]:
 
-            #    fpIPSP.write(goid + '\t' + \
-	#	             m + '\t' + \
-	#      	             goIPRef + '\t' + \
-	#      	             goEvidence + '\t' + \
-	#      	             '\t' + \
-	#      	             '\t' + \
-	#      	             goEditor + '\t' + \
-	#      	             goDate + '\t' + \
-	#	             goIPNote + '\n')
+		# store unique interpro id for this marker
+		if ipid not in markerIP:
+		    markerIP.append(ipid)
+
+	# print out the unique interpro ids for this marker
+
+	for ipid in markerIP:
+
+            fpIP.write(ipid + '\t' + \
+		       m + '\t' + \
+	      	       markerIPRef + '\t' + \
+	      	       annotEvidence + '\t' + \
+	      	       '\t' + \
+	      	       '\t' + \
+	      	       annotEditor + '\t' + \
+	      	       annotDate + '\t' + \
+		       '\n')
+
+    fpIP.close()
 
     return 0
 
@@ -331,10 +343,7 @@ if initialize() != 0:
 if openFiles() != 0:
     sys.exit(1)
 
-if processIP(markerIPSPFile, fpIPSP, mgi_to_uniprotsp, markerIPSPRef, markerIPSPNote) != 0:
-    sys.exit(1)
-
-if processIP(markerIPTRFile, fpIPTR, mgi_to_uniprottr, markerIPTRRef, markerIPTRNote) != 0:
+if processIP() != 0:
     sys.exit(1)
 
 closeFiles()
