@@ -109,8 +109,47 @@ fi
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Call oadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
 ./loadBuckets.sh 2>&1 >> ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    exit 1
+fi
+
+#
+# Create/load GO annotations
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeGOAnnot.sh 2>&1 >> ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    exit 1
+fi
+
+#
+# Create/load InterPro annotations
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeInterProAnnot.sh 2>&1 >> ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    exit 1
+fi
+
+#
+# Refresh Inferred-From Cache
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeInterProAnnot.sh 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
