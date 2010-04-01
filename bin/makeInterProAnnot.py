@@ -7,9 +7,7 @@
 #
 # Purpose:
 #
-#	Create/load Marker annotation files for the following areas:
-#
-#	  Marker/InterPro	J:53168
+#	Create Marker/InterPro (J:53168) annotation file.
 #
 # Usage:
 #
@@ -100,7 +98,6 @@ uniprot_to_ip = {}
 def initialize():
     global mgi_to_uniprotFile
     global uniprot2ipFile
-    global fpMGI2UNIPROT, fpUNIPROT2IP
     global markerIPFile
     global markerIPRef
     global annotEvidence, annotEditor, annotDate
@@ -156,32 +153,7 @@ def initialize():
         print 'Environment variable not set: ANNOT_DATE'
         rc = 1
 
-    #
-    # Initialize file pointers.
-    #
-
-    fpMGI2UNIPROT = None
-    fpUNIPROT2IP = None
-
     return rc
-
-#
-# Purpose: Close files
-# Returns: Nothing
-# Assumes: Nothing
-# Effects: Nothing
-# Throws: Nothing
-#
-
-def closeFiles():
-
-    if fpMGI2UNIPROT:
-	fpMGI2UNIPROT.close()
-
-    if fpUNIPROT2IP:
-	fpUNIPROT2IP.close()
-
-    return 0
 
 #
 # Purpose: Open Files
@@ -211,13 +183,17 @@ def readMGI2UNIPROT():
     #
     # parse mgi-to-uniprot file
     #
+    # dictionary contains:
+    #   key = MGI id
+    #   value = list of uniprot ids, either SP or TrEMBL
+    #
 
-    global mgi_to_uniprotFile, fpMGI2UNIPROT
+    global mgi_to_uniprotFile
 
-    fpMGI2UNIPROT = open(mgi_to_uniprotFile,'r')
+    fp = open(mgi_to_uniprotFile,'r')
 
     lineNum = 0
-    for line in fpMGI2UNIPROT.readlines():
+    for line in fp.readlines():
 
 	if lineNum == 0:
 	    lineNum = lineNum + 1
@@ -234,6 +210,8 @@ def readMGI2UNIPROT():
         for v in value2:
             mgi_to_uniprot[key].append(v)
 
+    fp.close()
+
     return 0
 
 #
@@ -249,16 +227,14 @@ def readUNIPROT2IP():
     #
     # parse uniprot-to-interpro file
     #
-    # a dictionary where:
-    #	key = UniProt ID
-    #   value = InterPro ID (IPR#####)
+    # dictionary contains:
+    #	key = uniprot id
+    #   value = interpro id (IPR#####)
     #
 
-    global fpUNIPROT2IP
+    fp = open(uniprot2ipFile,'r')
 
-    fpUNIPROT2IP = open(uniprot2ipFile,'r')
-
-    for line in fpUNIPROT2IP.readlines():
+    for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	values = string.split(tokens[1], ',')
@@ -266,6 +242,8 @@ def readUNIPROT2IP():
 	uniprot_to_ip[key] = []
 	for v in values:
 	    uniprot_to_ip[key].append(v)
+
+    fp.close()
 
     return 0
 
@@ -288,7 +266,7 @@ def processIP():
     #	    print out each unique marker/interpro annotation
     #
 
-    fpIP = open(markerIPFile, 'w')
+    fp = open(markerIPFile, 'w')
 
     markerIDs = mgi_to_uniprot.keys()
     markerIDs.sort()
@@ -319,17 +297,17 @@ def processIP():
 
 	for ipid in markerIP:
 
-            fpIP.write(ipid + '\t' + \
-		       m + '\t' + \
-	      	       markerIPRef + '\t' + \
-	      	       annotEvidence + '\t' + \
-	      	       '\t' + \
-	      	       '\t' + \
-	      	       annotEditor + '\t' + \
-	      	       annotDate + '\t' + \
-		       '\n')
+            fp.write(ipid + '\t' + \
+		     m + '\t' + \
+	      	     markerIPRef + '\t' + \
+	      	     annotEvidence + '\t' + \
+	      	     '\t' + \
+	      	     '\t' + \
+	      	     annotEditor + '\t' + \
+	      	     annotDate + '\t' + \
+		     '\n')
 
-    fpIP.close()
+    fp.close()
 
     return 0
 
@@ -346,6 +324,5 @@ if openFiles() != 0:
 if processIP() != 0:
     sys.exit(1)
 
-closeFiles()
 sys.exit(0)
 

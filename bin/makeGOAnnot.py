@@ -7,7 +7,7 @@
 #
 # Purpose:
 #
-#	Create/load GO annotation files for the following areas:
+#	Create GO annotation files for the following areas:
 #
 #	  GO/EC		J:72245
 #	  GO/InterPro	J:72247
@@ -155,9 +155,6 @@ def initialize():
     global ip2goFile, goIPFile
     global spkw2goFile, goSPKWFile
     global uniprot2ipFile, uniprot2spkwFile
-    global fpMGI2UNIPROT, fpUNIPROT2IP, fpUNIPROT2SPKW
-    global fpEC2GO, fpIP2GO, fpSPKW2GO
-    global fpGOEC, fpGOIP, fpGOSPKW
     global goECRef, goIPRef, goSPKWRef
     global annotEvidence, annotEditor, annotDate, annotNote
 
@@ -254,60 +251,7 @@ def initialize():
         print 'Environment variable not set: GO_ANNOTNOTE'
         rc = 1
 
-    #
-    # Initialize file pointers.
-    #
-
-    fpMGI2UNIPROT = None
-    fpUNIPROT2IP = None
-    fpUNIPROT2SPKW = None
-    fpEC2GO = None
-    fpIP2GO = None
-    fpSPKW2GO = None
-    fpGOEC = None
-    fpGOIP = None
-    fpGOSPKW = None
-
     return rc
-
-#
-# Purpose: Close files
-# Returns: Nothing
-# Assumes: Nothing
-# Effects: Nothing
-# Throws: Nothing
-#
-
-def closeFiles():
-
-    if fpMGI2UNIPROT:
-	fpMGI2UNIPROT.close()
-
-    if fpUNIPROT2IP:
-	fpUNIPROT2IP.close()
-
-    if fpUNIPROT2SPKW:
-	fpUNIPROT2SPKW.close()
-
-    if fpEC2GO:
-	fpEC2GO.close()
-
-    if fpGOEC:
-	fpGOEC.close()
-
-    if fpIP2GO:
-	fpIP2GO.close()
-
-    if fpGOIP:
-	fpGOIP.close()
-
-    if fpSPKW2GO:
-	fpSPKW2GO.close()
-
-    if fpGOSPKW:
-	fpGOSPKW.close()
-
-    return 0
 
 #
 # Purpose: Open Files
@@ -383,14 +327,18 @@ def readMGI2UNIPROT():
     #
     # parse mgi-to-uniprot file
     #
+    # dictionary contains:
+    #	key = MGI id
+    #   value = list of uniprot ids, either SP or TrEMBL
+    #
 
     global mgi_to_uniprot
-    global mgi_to_uniprotFile, fpMGI2UNIPROT
+    global mgi_to_uniprotFile
 
-    fpMGI2UNIPROT = open(mgi_to_uniprotFile,'r')
+    fp = open(mgi_to_uniprotFile,'r')
 
     lineNum = 0
-    for line in fpMGI2UNIPROT.readlines():
+    for line in fp.readlines():
 
 	if lineNum == 0:
 	    lineNum = lineNum + 1
@@ -401,11 +349,15 @@ def readMGI2UNIPROT():
 	value1 = string.split(tokens[1], ',')
 	value2 = string.split(tokens[2], ',')
 
-	mgi_to_uniprot[key] = []
+	if not mgi_to_uniprot.has_key(key):
+	    mgi_to_uniprot[key] = []
+
 	for v in value1:
 	    mgi_to_uniprot[key].append(v)
 	for v in value2:
 	    mgi_to_uniprot[key].append(v)
+
+    fp.close()
 
     return 0
 
@@ -422,14 +374,18 @@ def readEC2GO():
     #
     # parse ec2go file...one EC ID can have many GO mappings
     #
+    # dictionary contains:
+    #   key = EC id
+    #   value = list of GO ids
+    #
 
-    global ec_to_go, ec2goFile, fpEC2GO
+    global ec_to_go, ec2goFile
 
     ec2gore = re.compile("(^EC:.+) +> +GO:.* +; +(GO:[0-9]+)")
 
-    fpEC2GO = open(ec2goFile,'r')
+    fp = open(ec2goFile,'r')
 
-    for line in fpEC2GO.readlines():
+    for line in fp.readlines():
 
         r = ec2gore.match(line)
 
@@ -439,6 +395,8 @@ def readEC2GO():
             if not ec_to_go.has_key(ecid):
                 ec_to_go[ecid] = []
             ec_to_go[ecid].append(goid)
+
+    fp.close()
 
     return 0
 
@@ -455,23 +413,22 @@ def readIP2GO():
     #
     # parse ip2go file
     #
-    # a dictionary where:
-    #	key = InterPro ID (IPR#####)
+    # dictiionary contains:
+    #	key = InterPro id (IPR#####)
     #   value = 2-member tuple of the expanded 
-    #           InterPro:IPR####) and GO ID (GO:#####)
+    #           InterPro:IPR####) and GO id (GO:#####)
     #
     # will use the expanded IPR ID in the annotation "inferred from" field
     #
 
     global ip_to_go
     global ip2goFile
-    global fpIP2GO, fpUNIPROT2IP
 
     ip2gore = re.compile("(^InterPro:(IPR[0-9]+)) +.* +> +GO:.* +; +(GO:[0-9]+)")
 
-    fpIP2GO = open(ip2goFile,'r')
+    fp = open(ip2goFile,'r')
 
-    for line in fpIP2GO.readlines():
+    for line in fp.readlines():
 
         r = ip2gore.match(line)
 
@@ -493,6 +450,8 @@ def readIP2GO():
                     ip_to_go[ipName] = []
                 ip_to_go[ipName].append((ipid, goid))
 
+    fp.close()
+
     return 0
 
 #
@@ -508,21 +467,25 @@ def readUNIPROT2IP():
     #
     # parse UniProt-to-InterPro file
     #
-    # a dictionary where:
-    #	key = UniProt ID
-    #	value = InterPro ID (IPR#####)
+    # dictionary contains:
+    #	key = UniProt id
+    #	value = list of InterPro ids (IPR#####)
     #
 
-    fpUNIPROT2IP = open(uniprot2ipFile,'r')
+    fp = open(uniprot2ipFile,'r')
 
-    for line in fpUNIPROT2IP.readlines():
+    for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	values = string.split(tokens[1], ',')
 
-	uniprot_to_ip[key] = []
+	if not uniprot_to_ip.has_key(key):
+	    uniprot_to_ip[key] = []
+
 	for v in values:
 	    uniprot_to_ip[key].append(v)
+
+    fp.close()
 
     return 0
 
@@ -539,23 +502,22 @@ def readSPKW2GO():
     #
     # parse spkw2go file
     #
-    # a dictionary where:
+    # dictionary contains:
     #	key = SP keyword
     #   value = 2-member tuple of the expanded 
-    #           SP KI ID (SP_KW:KW-001) and GO ID (GO:#####)
+    #           SPKW id (SP_KW:KW-001) and GO id (GO:#####)
     #
-    # will use the expanded SP KW ID in the annotation "inferred from" field
+    # will use the expanded SP KW id in the annotation "inferred from" field
     #
 
     global spkw_to_go
     global spkw2goFile
-    global fpSPKW2GO, fpUNIPROT2SPKW
 
     spkw2gore = re.compile("(^SP_KW:KW-[0-9]+) (.+) +> +GO:.* +; +(GO:[0-9]+)")
 
-    fpSPKW2GO = open(spkw2goFile,'r')
+    fp = open(spkw2goFile,'r')
 
-    for line in fpSPKW2GO.readlines():
+    for line in fp.readlines():
 
         r = spkw2gore.match(line)
 
@@ -569,20 +531,31 @@ def readSPKW2GO():
                 spkw_to_go[spkwName] = []
             spkw_to_go[spkwName].append((spkwid, goid))
 
+    fp.close()
+
     #
-    # lookup of uniprot ID -> spkw name, spkw name, ...
+    # lookup of uniprot id -> spkw name, spkw name, ...
+    #
+    # dictionary contains:
+    #	key = UniProt id
+    #   value = list of SPKW key words
+    #           (for example: 'Cell membrane')
     #
 
-    fpUNIPROT2SPKW = open(uniprot2spkwFile,'r')
+    fp = open(uniprot2spkwFile,'r')
 
-    for line in fpUNIPROT2SPKW.readlines():
+    for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	values = string.split(tokens[1], ',')
 
-	uniprot_to_spkw[key] = []
+	if not uniprot_to_spkw.has_key(key):
+	    uniprot_to_spkw[key] = []
+
 	for v in values:
 	    uniprot_to_spkw[key].append(v)
+
+    fp.close()
 
     return 0
 
@@ -596,7 +569,7 @@ def readSPKW2GO():
 
 def processEC2GO():
 
-    global goECFile, fpGOEC
+    global goECFile
 
     #
     # Select all Marker/EC associations from MGD.
@@ -608,7 +581,7 @@ def processEC2GO():
     # to the same GO term does not already exist.
     #
 
-    fpGOEC = open(goECFile, 'w')
+    fp = open(goECFile, 'w')
 
     results = db.sql('''select markerID = a2.accID, accID = "EC:" + a.accID
                 from ACC_Accession a, MRK_Marker m, ACC_Accession a2
@@ -646,7 +619,7 @@ def processEC2GO():
 
 	     # else we want to load this annotation.
 
-	    fpGOEC.write(goid + '\t' + \
+	    fp.write(goid + '\t' + \
 		         markerID + '\t' + \
 	      	         goECRef + '\t' + \
 	      	         annotEvidence + '\t' + \
@@ -655,6 +628,8 @@ def processEC2GO():
 	      	         annotEditor + '\t' + \
 	      	         annotDate + '\t' + \
 	      	         '\n')
+
+    fp.close()
 
     return 0
 
@@ -668,7 +643,7 @@ def processEC2GO():
 
 def processIP2GO():
 
-    global goIPFile, fpGOIP
+    global goIPFile
 
     #
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
@@ -685,7 +660,7 @@ def processIP2GO():
     # to the same GO term does not already exist.
     #
 
-    fpGOIP = open(goIPFile, 'w')
+    fp = open(goIPFile, 'w')
 
     markerIDs = mgi_to_uniprot.keys()
     markerIDs.sort()
@@ -741,15 +716,17 @@ def processIP2GO():
 	#
 
         for goid in go_to_ip.keys():
-            fpGOIP.write(goid + '\t' + \
-		         m + '\t' + \
-	      	         goIPRef + '\t' + \
-	      	         annotEvidence + '\t' + \
-	      	         string.join(go_to_ip[goid], ',') + '\t' + \
-	      	         '\t' + \
-	      	         annotEditor + '\t' + \
-	      	         annotDate + '\t' + \
-		         annotNote + '\n')
+            fp.write(goid + '\t' + \
+		     m + '\t' + \
+	      	     goIPRef + '\t' + \
+	      	     annotEvidence + '\t' + \
+	      	     string.join(go_to_ip[goid], ',') + '\t' + \
+	      	     '\t' + \
+	      	     annotEditor + '\t' + \
+	      	     annotDate + '\t' + \
+		     annotNote + '\n')
+
+    fp.close()
 
     return 0
 
@@ -763,7 +740,7 @@ def processIP2GO():
 
 def processSPKW2GO():
 
-    global goSPKWFile, fpGOSPKW
+    global goSPKWFile
 
     #
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
@@ -780,7 +757,7 @@ def processSPKW2GO():
     # to the same GO term does not already exist.
     #
 
-    fpGOSPKW = open(goSPKWFile, 'w')
+    fp = open(goSPKWFile, 'w')
 
     markerIDs = mgi_to_uniprot.keys()
     markerIDs.sort()
@@ -836,15 +813,17 @@ def processSPKW2GO():
 	#
 
         for goid in go_to_spkw.keys():
-            fpGOSPKW.write(goid + '\t' + \
-		         m + '\t' + \
-	      	         goSPKWRef + '\t' + \
-	      	         annotEvidence + '\t' + \
-	      	         string.join(go_to_spkw[goid], ',') + '\t' + \
-	      	         '\t' + \
-	      	         annotEditor + '\t' + \
-	      	         annotDate + '\t' + \
-		         annotNote + '\n')
+            fp.write(goid + '\t' + \
+		     m + '\t' + \
+	      	     goSPKWRef + '\t' + \
+	      	     annotEvidence + '\t' + \
+	      	     string.join(go_to_spkw[goid], ',') + '\t' + \
+	      	     '\t' + \
+	      	     annotEditor + '\t' + \
+	      	     annotDate + '\t' + \
+		     annotNote + '\n')
+
+    fp.close()
 
     return 0
 
@@ -867,6 +846,5 @@ if processIP2GO() != 0:
 if processSPKW2GO() != 0:
     sys.exit(1)
 
-closeFiles()
 sys.exit(0)
 

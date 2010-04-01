@@ -116,19 +116,19 @@ checkStatus ${STAT} "GO annotation files (makeGOAnnot.sh)"
 
 cd ${OUTPUTDIR}
 
-ECCONFIG_CSH=${UNIPROTLOAD}/ecannot.config
+ECCONFIG_CSH=${UNIPROTLOAD}/goecannot.config
 echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/EC annotation load (makeGOAnnot.sh)"
 
-IPCONFIG_CSH=${UNIPROTLOAD}/ipannot.config
+IPCONFIG_CSH=${UNIPROTLOAD}/goipannot.config
 echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
 STAT=$?
 checkStatus ${STAT} "UniProt GO/InterPro annotation load (makeGOAnnot.sh)"
 
-SPKWCONFIG_CSH=${UNIPROTLOAD}/spkwannot.config
+SPKWCONFIG_CSH=${UNIPROTLOAD}/gospkwannot.config
 echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH}
 STAT=$?
