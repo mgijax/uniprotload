@@ -75,22 +75,6 @@ UNIPROT_ACC1_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc1_assoc.txt
 #
 UNIPROT_ACC2_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc2_assoc.txt
 
-# UniProt to PDB id associations from UniProt input file
-#
-UNIPROT_PDB_ASSOC_FILE=${OUTPUTDIR}/uniprot_pdb_assoc.txt
-
-# UniProt to EC id associations from UniProt input file
-#
-UNIPROT_EC_ASSOC_FILE=${OUTPUTDIR}/uniprot_ec_assoc.txt
-
-# UniProt to GO/InterPro id associations from UniProt input file
-#
-UNIPROT_IP_ASSOC_FILE=${OUTPUTDIR}/uniprot_ip_assoc.txt
-
-# UniProt to SPKW id associations from UniProt input file
-#
-UNIPROT_SPKW_ASSOC_FILE=${OUTPUTDIR}/uniprot_spkw_assoc.txt
-
 # MGI marker to UniProt associations (from 1:1 and 1:N buckets)
 #
 MGI_UNIPROT_LOAD_FILE=${OUTPUTDIR}/mgi_uniprot_load.txt
@@ -112,8 +96,6 @@ export INPUTFILE INFILE_NAME
 export EC2GOFILE IP2GOFILE SPKW2GOFILE
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
-export UNIPROT_PDB_ASSOC_FILE UNIPROT_EC_ASSOC_FILE
-export UNIPROT_IP_ASSOC_FILE UNIPROT_SPKW_ASSOC_FILE
 export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 

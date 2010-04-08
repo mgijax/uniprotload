@@ -8,21 +8,14 @@
 #      This script will use the records in the UniProt input file to create
 #      output files that contain:
 #
-#      0) all of the EntrezGene IDs and Ensembl 
-#         gene model IDs that are associated with each UniProt ID.
+#      1) all of the EntrezGene IDs, Ensembl gene model IDs,
+#         EC ids, PDB ids, InterPro ids, SwissProt key words
+#         that are associated with each UniProt ID.
 #         (all)
 #
-#      1) all of the UniProt IDs that are SwissProt
+#      2) all of the UniProt IDs that are SwissProt
 #
-#      2) all of the UniProt IDs that are TrEMBL
-#
-#      3) PDB ids
-#
-#      4) EC ids
-#
-#      5) GO/InterPro ids
-#
-#      6) GO/KW (go key-words)
+#      3) all of the UniProt IDs that are TrEMBL
 #
 #  Usage:
 #
@@ -37,10 +30,6 @@
 #          UNIPROT_ACC_ASSOC_FILE
 #          UNIPROT_ACC1_ASSOC_FILE
 #          UNIPROT_ACC2_ASSOC_FILE
-#          UNIPROT_PDB_ACCOC_FILE
-#          UNIPROT_EC_ACCOC_FILE
-#          UNIPROT_IP_ACCOC_FILE
-#          UNIPROT_SPKW_ACCOC_FILE
 #
 #  Inputs:
 #
@@ -53,6 +42,10 @@
 #        1) UniProt ID
 #        2) EntrezGene IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
+#        4) EC IDs (comma-separated)
+#        5) PDB IDs (comma-separated)
+#        6) InterPro IDs (comma-separated)
+#        7) SPKW Names (comma-separated)
 #
 #      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
@@ -61,22 +54,6 @@
 #      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
 #        1) UniProt ID (TrEMBL)
-#
-#      - UniProt/PDB association file ($UNIPROT_PDB_ASSOC_FILE) to be used by
-#        1) UniProt ID
-#        2) PDB IDs (comma-separated)
-#
-#      - UniProt/EC association file ($UNIPROT_EC_ASSOC_FILE) to be used by
-#        1) UniProt ID
-#        2) EC IDs (comma-separated)
-#
-#      - UniProt/InterPro association file ($UNIPROT_IP_ASSOC_FILE) to be used by
-#        1) UniProt ID
-#        2) InterPro IDs (comma-separated)
-#
-#      - UniProt/SPKW association file ($UNIPROT_SPKW_ASSOC_FILE) to be used by
-#        1) UniProt ID
-#        2) SPKW Names (comma-separated)
 #
 #  Exit Codes:
 #
@@ -93,8 +70,7 @@
 #      2) Open files.
 #      3) Create a UniProtParser object to get one UniProt record at a time
 #         from the UniProt input file.
-#      4) Write each UniProt ID and its associated EntrezGene IDs and
-#         Ensembl gene model IDs to the association file.
+#      4) Write each UniProt ID and its associated ids to the association file.
 #      5) Close files.
 #
 #  Notes:  None
@@ -118,16 +94,11 @@ def initialize():
     global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
     global uniprotPDBAssocFile, uniprotECAssocFile, uniprotIPAssocFile, uniprotKWAssocFile
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
-    global fpPDBAssoc, fpECAssoc, fpIPAssoc, fpKWAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
     uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
     uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
-    uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
-    uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
-    uniprotIPAssocFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
-    uniprotKWAssocFile = os.getenv('UNIPROT_SPKW_ASSOC_FILE')
 
     rc = 0
 
@@ -150,22 +121,6 @@ def initialize():
         print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
         rc = 1
 
-    if not uniprotPDBAssocFile:
-        print 'Environment variable not set: UNIPROT_PDB_ASSOC_FILE'
-        rc = 1
-
-    if not uniprotECAssocFile:
-        print 'Environment variable not set: UNIPROT_EC_ASSOC_FILE'
-        rc = 1
-
-    if not uniprotIPAssocFile:
-        print 'Environment variable not set: UNIPROT_IP_ASSOC_FILE'
-        rc = 1
-
-    if not uniprotKWAssocFile:
-        print 'Environment variable not set: UNIPROT_SPKW_ASSOC_FILE'
-        rc = 1
-
     #
     # Initialize file pointers.
     #
@@ -173,10 +128,6 @@ def initialize():
     fpAccAssoc = None
     fpAcc1Assoc = None
     fpAcc2Assoc = None
-    fpPDBAssoc = None
-    fpECAssoc = None
-    fpIPAssoc = None
-    fpKWAssoc = None
 
     return rc
 
@@ -228,42 +179,6 @@ def openFiles():
         print 'Cannot open association file: ' + uniprotAcc2AssocFile
         return 1
 
-    #
-    # Open the pdb association file.
-    #
-    try:
-        fpPDBAssoc = open(uniprotPDBAssocFile, 'w')
-    except:
-        print 'Cannot open association file: ' + uniprotPDBAssocFile
-        return 1
-
-    #
-    # Open the ec association file.
-    #
-    try:
-        fpECAssoc = open(uniprotECAssocFile, 'w')
-    except:
-        print 'Cannot open association file: ' + uniprotECAssocFile
-        return 1
-
-    #
-    # Open the ip association file.
-    #
-    try:
-        fpIPAssoc = open(uniprotIPAssocFile, 'w')
-    except:
-        print 'Cannot open association file: ' + uniprotIPAssocFile
-        return 1
-
-    #
-    # Open the kw association file.
-    #
-    try:
-        fpKWAssoc = open(uniprotKWAssocFile, 'w')
-    except:
-        print 'Cannot open association file: ' + uniprotKWAssocFile
-        return 1
-
     return 0
 
 
@@ -287,18 +202,6 @@ def closeFiles():
 
     if fpAcc2Assoc:
         fpAcc2Assoc.close()
-
-    if fpPDBAssoc:
-        fpPDBAssoc.close()
-
-    if fpECAssoc:
-        fpECAssoc.close()
-
-    if fpIPAssoc:
-        fpIPAssoc.close()
-
-    if fpKWAssoc:
-        fpKWAssoc.close()
 
     return 0
 
@@ -351,7 +254,27 @@ def getAssociations():
 	    # all uniprot ids
             fpAccAssoc.write(uniprotID + '\t' + \
                           ','.join(entrezgeneID) + '\t' + \
-                          ','.join(ensemblID) + '\n')
+                          ','.join(ensemblID) + '\t')
+
+	    # EC
+	    if len(ecID) > 0:
+                fpAccAssoc.write(','.join(ecID))
+	    fpAccAssoc.write('\t')
+
+	    # PDB
+	    if len(pdbID) > 0:
+                fpAccAssoc.write(','.join(pdbID))
+	    fpAccAssoc.write('\t')
+
+	    # InterPro
+	    if len(ipID) > 0:
+                fpAccAssoc.write(','.join(ipID))
+	    fpAccAssoc.write('\t')
+
+	    # UniProt/SwissProt key word
+	    if len(kwName) > 0:
+                fpAccAssoc.write(','.join(kwName))
+	    fpAccAssoc.write('\n')
 
 	    # swiss-prot
 	    if not isTrembl:
@@ -360,25 +283,6 @@ def getAssociations():
 	    # trembl 
 	    else:
                 fpAcc2Assoc.write(uniprotID + '\n')
-
-	    # PDB
-	    if len(pdbID) > 0:
-                fpPDBAssoc.write(uniprotID + '\t' + \
-			      ','.join(pdbID) + '\n')
-
-	    # EC
-	    if len(ecID) > 0:
-                fpECAssoc.write(uniprotID + '\t' + \
-			      ','.join(ecID) + '\n')
-
-	    # InterPro
-	    if len(ipID) > 0:
-                fpIPAssoc.write(uniprotID + '\t' + \
-			      ','.join(ipID) + '\n')
-	    # UniProt key word
-	    if len(kwName) > 0:
-                fpKWAssoc.write(uniprotID + '\t' + \
-			      ','.join(kwName) + '\n')
 
         #
         # Get the next record from the parser.

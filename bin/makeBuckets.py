@@ -22,8 +22,6 @@
 #          UNIPROT_ACC_ASSOC_FILE
 #          UNIPROT_ACC1_ASSOC_FILE
 #          UNIPROT_ACC2_ASSOC_FILE
-#          UNIPROT_PDB_ASSOC_FILE
-#          UNIPROT_EC_ASSOC_FILE
 #          BUCKETDIR
 #          BUCKET_PREFIX
 #          MGI_UNIPROT_LOAD_FILE
@@ -36,6 +34,10 @@
 #        1) MGI ID (for a marker)
 #        2) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
+#        4) EC IDs (comma-separated)
+#        5) PDB IDs (comma-separated)
+#        6) InterPro IDs (comma-separated)
+#        7) SPKW Names (comma-separated)
 #
 #      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
 #        the generate a lookup file.
@@ -48,20 +50,6 @@
 #        It has the following tab-delimited fields:
 #
 #        1) UniProt ID
-#
-#      - UniProt PDB association file ($UNIPROT_PDB_ASSOC_FILE) to be used
-#        to generate a lookup file.
-#        It has the following tab-delimited fields:
-#
-#        1) UniProt ID
-#        2) PDB IDs (comma-separated)
-#
-#      - UniProt EC association file ($UNIPROT_EC_ASSOC_FILE) to be used
-#        to generate a lookup file.
-#        It has the following tab-delimited fields:
-#
-#        1) UniProt ID
-#        2) EC IDs (comma-separated)
 #
 #  Outputs:
 #
@@ -133,8 +121,6 @@ bucketizer = None
 
 swissprotLookup = []
 tremblLookup = []
-pdbLookup = {}
-ecLookup = {}
 
 #
 # Purpose: Initialization
@@ -150,14 +136,12 @@ def initialize():
     global bucketRptFile
     global bucketDir, bucketPrefix
     global bucket, bucketRpt
-    global fpSPAssoc, fpTRAssoc, fpPDBAssoc, fpECAssoc
+    global fpSPAssoc, fpTRAssoc
 
     mgiAssocFile = os.getenv('MGI_ACC_ASSOC_FILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
     uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
     uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
-    uniprotPDBAssocFile = os.getenv('UNIPROT_PDB_ASSOC_FILE')
-    uniprotECAssocFile = os.getenv('UNIPROT_EC_ASSOC_FILE')
     bucketDir = os.getenv('BUCKETDIR')
     bucketPrefix = os.getenv('BUCKET_PREFIX')
     bucketRptFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
@@ -183,14 +167,6 @@ def initialize():
         print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
         rc = 1
 
-    if not uniprotPDBAssocFile:
-        print 'Environment variable not set: UNIPROT_PDB_ASSOC_FILE'
-        rc = 1
-
-    if not uniprotECAssocFile:
-        print 'Environment variable not set: UNIPROT_EC_ASSOC_FILE'
-        rc = 1
-
     if not bucketRptFile:
         print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
         rc = 1
@@ -211,8 +187,6 @@ def initialize():
     bucketRpt = None
     fpSPAssoc = None
     fpTRAssoc = None
-    fpPDBAssoc = None
-    fpECAssoc = None
 
     return rc
 
@@ -226,8 +200,8 @@ def initialize():
 #
 def openFiles():
     global bucket, bucketRpt
-    global swissprotLookup, tremblLookup, pdbLookup
-    global fpSPAssoc, fpTRAssoc, fpPDBAssoc, fpECAssoc
+    global swissprotLookup, tremblLookup
+    global fpSPAssoc, fpTRAssoc
 
     #
     # Open the bucket files.
@@ -249,7 +223,7 @@ def openFiles():
         print 'Cannot open report: ' + bucketRptFile
         return 1
 
-    bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tPDB\tEC\n')
+    bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tEC\tPDB\n')
 
     #
     # Open the swissprot association file.
@@ -271,38 +245,6 @@ def openFiles():
             tremblLookup.append(line[:-1])
     except:
         print 'Cannot open trembl association file: ' + uniprotPDBAssocFile
-        return 1
-
-    #
-    # Open the pdb association file.
-    #
-    try:
-        fpPDBAssoc = open(uniprotPDBAssocFile, 'r')
-	for line in fpPDBAssoc.readlines():
-	    tokens = string.split(line[:-1], '\t')
-	    key = tokens[0]
-	    value = tokens[1]
-	    if not pdbLookup.has_key(key):
-		pdbLookup[key] = []
-            pdbLookup[key].append(value)
-    except:
-        print 'Cannot open pdb association file: ' + uniprotPDBAssocFile
-        return 1
-
-    #
-    # Open the ec association file.
-    #
-    try:
-        fpECAssoc = open(uniprotECAssocFile, 'r')
-	for line in fpECAssoc.readlines():
-	    tokens = string.split(line[:-1], '\t')
-	    key = tokens[0]
-	    value = tokens[1]
-	    if not ecLookup.has_key(key):
-		ecLookup[key] = []
-            ecLookup[key].append(value)
-    except:
-        print 'Cannot open ec association file: ' + uniprotPDBAssocFile
         return 1
 
     return 0
@@ -328,12 +270,6 @@ def closeFiles():
 
     if fpTRAssoc:
         fpTRAssoc.close()
-
-    if fpPDBAssoc:
-        fpPDBAssoc.close()
-
-    if fpECAssoc:
-        fpECAssoc.close()
 
     return 0
 
@@ -366,7 +302,7 @@ def bucketize():
     #
     # Create a TableDataSet for the UniProt association file.
     #
-    fields = [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ]
+    fields = [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EC', 'PDB', 'InterPro ID', 'SPKW name' ]
     multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' }
 
     dsUniProt = tabledatasetlib.TextFileTableDataSet(
@@ -540,15 +476,22 @@ def writeBuckets_save():
 def writeReport():
 
     mgiDict = {}
+    ecLookup = {}
+    pdbLookup = {}
 
     #
     # Find unique MGI/UniProt associations in the 1:1 bucket.
     #
+
     for (mgiKey, uniprotKey) in bucketizer.get1_1():
+
         mgiRcd = dsMGI.getRecords(mgiKey)
         mgiID = mgiRcd[0]['MGI ID']
+
         uniprotRcd = dsUniProt.getRecords(uniprotKey)
         uniprotID = uniprotRcd[0]['UniProt ID']
+	ecID = uniprotRcd[0]['EC']
+	pdbID = uniprotRcd[0]['PDB']
 
         if mgiDict.has_key(mgiID):
             list = mgiDict[mgiID]
@@ -558,14 +501,34 @@ def writeReport():
             list.append(uniprotID)
             mgiDict[mgiID] = list
 
+	# create a lookup of mgiID/ecIDs
+	if ecID is not None:
+	    if not ecLookup.has_key(mgiID):
+	        ecLookup[mgiID] = []
+	    if ecID not in ecLookup[mgiID]:
+	        ecLookup[mgiID].append(ecID)
+
+	# create a lookup of mgiID/pdbIDs
+	if pdbID is not None:
+	    if not pdbLookup.has_key(mgiID):
+	        pdbLookup[mgiID] = []
+	    if pdbID not in pdbLookup[mgiID]:
+	        pdbLookup[mgiID].append(pdbID)
+
+    #print ecLookup['MGI:1289298']
+
     #
     # Find unique MGI/UniProt associations in the 1:N bucket.
     #
     for (mgiKey, uniprotKeys) in bucketizer.get1_n():
+
         mgiRcd = dsMGI.getRecords(mgiKey)
         mgiID = mgiRcd[0]['MGI ID']
+
         for uniprotRcd in dsUniProt.getRecords(keys = uniprotKeys):
             uniprotID = uniprotRcd['UniProt ID']
+	    ecID = uniprotRcd['EC']
+	    pdbID = uniprotRcd['PDB']
 
             if mgiDict.has_key(mgiID):
                 list = mgiDict[mgiID]
@@ -574,6 +537,20 @@ def writeReport():
             if list.count(uniprotID) == 0:
                 list.append(uniprotID)
                 mgiDict[mgiID] = list
+
+	    # create a lookup of mgiID/ecIDs
+	    if ecID is not None:
+	        if not ecLookup.has_key(mgiID):
+		    ecLookup[mgiID] = []
+	        if ecID not in ecLookup[mgiID]:
+	            ecLookup[mgiID].append(ecID)
+
+	    # create a lookup of mgiID/pdbIDs
+	    if pdbID is not None:
+	        if not pdbLookup.has_key(mgiID):
+		    pdbLookup[mgiID] = []
+	        if pdbID not in pdbLookup[mgiID]:
+	            pdbLookup[mgiID].append(pdbID)
 
     #
     # Write the MGI/UniProt associations to the file.
@@ -603,21 +580,15 @@ def writeReport():
 	bucketRpt.write(string.join(spIDs, ',') + '\t')
 	bucketRpt.write(string.join(trIDs, ',') + '\t')
 
-	# PDB ids
-	for id in uniprotIDs:
-	    if pdbLookup.has_key(id):
-		bucketRpt.write(pdbLookup[id][0])
+	# EC ids
+        if ecLookup.has_key(m):
+            bucketRpt.write(string.join(ecLookup[m], ','))
         bucketRpt.write('\t')
 
-	# EC ids
-	ecIDs = []
-	for id in uniprotIDs:
-	    if ecLookup.has_key(id):
-		# ignore duplicates
-		e = ecLookup[id][0]
-		if e not in ecIDs:
-		    ecIDs.append(e)
-        bucketRpt.write(string.join(ecIDs, ',') + '\n')
+	# PDB ids
+        if pdbLookup.has_key(m):
+            bucketRpt.write(string.join(pdbLookup[m], ','))
+        bucketRpt.write('\n')
 
     return 0
 
@@ -637,6 +608,10 @@ if bucketize() != 0:
     sys.exit(1)
 
 if writeBuckets() != 0:
+    closeFiles()
+    sys.exit(1)
+
+if writeBuckets_save() != 0:
     closeFiles()
     sys.exit(1)
 
