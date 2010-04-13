@@ -237,6 +237,10 @@ def readUNIPROTACC():
     for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
+
+	if len(tokens[5]) == 0:
+	    continue
+
 	values = string.split(tokens[5], ',')
 
         if not uniprot_to_ip.has_key(key):

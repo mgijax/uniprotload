@@ -123,7 +123,7 @@ touch ${LOG}
 #
 # Load association buckets
 #
-#echo "" >> ${LOG}
+#cho "" >> ${LOG}
 #date >> ${LOG}
 #echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
 #./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
@@ -136,8 +136,7 @@ touch ${LOG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeGOAnnot.sh 2>&1 >> ${LOG}
-./makeGOAnnot.sh
+./makeGOAnnot.sh 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
 
@@ -154,12 +153,12 @@ checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
 #
 # Refresh Inferred-From Cache
 #
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
-${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
+#echo "" >> ${LOG}
+#date >> ${LOG}
+#echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
+#${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
+#STAT=$?
+#checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
 
 #
 # run postload cleanup and email logs

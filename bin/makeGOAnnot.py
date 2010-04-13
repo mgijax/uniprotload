@@ -524,17 +524,19 @@ def readUNIPROTACC():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 
-	values = string.split(tokens[5], ',')
-	if not uniprot_to_ip.has_key(key):
-	    uniprot_to_ip[key] = []
-	for v in values:
-	    uniprot_to_ip[key].append(v)
+	if len(tokens[5]) > 0:
+	    values = string.split(tokens[5], ',')
+	    if not uniprot_to_ip.has_key(key):
+	        uniprot_to_ip[key] = []
+	    for v in values:
+	        uniprot_to_ip[key].append(v)
 
-	values = string.split(tokens[6], ',')
-	if not uniprot_to_spkw.has_key(key):
-	    uniprot_to_spkw[key] = []
-	for v in values:
-	    uniprot_to_spkw[key].append(v)
+	if len(tokens[6]) > 0:
+	    values = string.split(tokens[6], ',')
+	    if not uniprot_to_spkw.has_key(key):
+	        uniprot_to_spkw[key] = []
+	    for v in values:
+	        uniprot_to_spkw[key].append(v)
 
     fp.close()
 
