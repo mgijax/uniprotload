@@ -238,6 +238,7 @@ def readUNIPROTACC():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 
+	# not all uniprot ids have interpro ids...
 	if len(tokens[5]) == 0:
 	    continue
 

@@ -93,42 +93,42 @@ touch ${LOG}
 #
 # Create the UniProt association file.
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeUniProtAssocFile.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeUniProtAssocFile.sh (uniprotload.sh)"
 
 #
 # Create the MGI association file.
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeMGIAssocFile.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeMGIAssocFile.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeMGIAssocFile.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeMGIAssocFile.sh (uniprotload.sh)"
 
 #
 # Bucketized the association files.
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeBuckets.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeBuckets.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
 
 #
 # Load association buckets
 #
-#cho "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-#./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
 
 #
 # Create/load GO annotations
@@ -153,12 +153,12 @@ checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
 #
 # Refresh Inferred-From Cache
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
-#${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
+${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
 
 #
 # run postload cleanup and email logs

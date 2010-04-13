@@ -524,6 +524,7 @@ def readUNIPROTACC():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 
+	# not all uniprot ids have interpro ids...
 	if len(tokens[5]) > 0:
 	    values = string.split(tokens[5], ',')
 	    if not uniprot_to_ip.has_key(key):
@@ -531,6 +532,7 @@ def readUNIPROTACC():
 	    for v in values:
 	        uniprot_to_ip[key].append(v)
 
+	# not all uniprot ids have spkw ids...
 	if len(tokens[6]) > 0:
 	    values = string.split(tokens[6], ',')
 	    if not uniprot_to_spkw.has_key(key):

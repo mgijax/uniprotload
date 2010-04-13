@@ -102,7 +102,7 @@ export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 # Annotations
 ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
 ANNOT_EVIDENCECODE=IEA
-ANNOT_EDITOR=swissload
+ANNOT_EDITOR=uniprotload
 ANNOT_DATE=`date '+%m/%d/%Y'`
 ANNOT_NOTE="gene product:"
 
@@ -150,7 +150,7 @@ export ASSOCLOADER_SH
 J_NUMBER=J:53168
 
 #  The name of the job stream for the load
-JOBSTREAM=swissload_assocload
+JOBSTREAM=uniprotload_assocload
 
 export J_NUMBER JOBSTREAM
 
