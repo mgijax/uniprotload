@@ -23,18 +23,17 @@
 #      file that is sourced by the wrapper script:
 #
 #	  MGI_UNIPROT_LOAD_FILE
+#	  UNIPROT_ACC_ASSOC_FILE
 #
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
 #         GO_EC_ANNOT_REF
 #
 #         IP2GOFILE
-#	  UNIPROT_IP_ASSOC_FILE
 #         GO_IP_ASSOC_FILE
 #         GO_IP_ANNOT_REF
 #
 #         SPKW2GOFILE
-#	  UNIPROT_SPKW_ASSOC_FILE
 #         GO_SPKW_ASSOC_FILE
 #         GO_SPKW_ANNOT_REF
 #
@@ -50,6 +49,8 @@
 #	  3: trembl id
 #	  5: ec
 #
+#       - UniProt Acc files (${UNIPROT_ACC_ASSOC_FILE})
+#
 #	- EC-2-GO file ($EC2GOFILE)
 #
 #	  EC:1 > GO:oxidoreductase activity ; GO:0016491
@@ -61,10 +62,6 @@
 #	- SPKW-2-GO file ($SPKW2GOFILE)
 #
 #	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
-#
-#       - UniProt/InterPro files (${UNIPROT_IP_ASSOC_FILE})
-#
-#       - UniProt/SPKW files (${UNIPROT_SPKW_ASSOC_FILE})
 #
 #       - GO/EC Reference ($GO_EC_ANNOT_REF)
 #
@@ -151,10 +148,10 @@ nonIEA_annotations = []
 
 def initialize():
     global mgi_to_uniprotFile
+    global uniprotFile
     global ec2goFile, goECFile
     global ip2goFile, goIPFile
     global spkw2goFile, goSPKWFile
-    global uniprot2ipFile, uniprot2spkwFile
     global goECRef, goIPRef, goSPKWRef
     global annotEvidence, annotEditor, annotDate, annotNote
 
@@ -167,17 +164,17 @@ def initialize():
 
     mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
 
+    uniprotFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+
     ec2goFile = os.getenv('EC2GOFILE')
     goECFile = os.getenv('GO_EC_ASSOC_FILE')
     goECRef = os.environ['GO_EC_ANNOT_REF']
 
     ip2goFile = os.getenv('IP2GOFILE')
-    uniprot2ipFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
     goIPFile = os.getenv('GO_IP_ASSOC_FILE')
     goIPRef = os.environ['GO_IP_ANNOT_REF']
 
     spkw2goFile = os.getenv('SPKW2GOFILE')
-    uniprot2spkwFile = os.getenv('UNIPROT_SPKW_ASSOC_FILE')
     goSPKWFile = os.getenv('GO_SPKW_ASSOC_FILE')
     goSPKWRef = os.environ['GO_SPKW_ANNOT_REF']
 
@@ -193,6 +190,10 @@ def initialize():
     #
     if not mgi_to_uniprotFile:
         print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
+        rc = 1
+
+    if not uniprotFile:
+        print 'Environment variable not set: UNIPROT_ACC_ASSOC'
         rc = 1
 
     if not ec2goFile:
@@ -211,20 +212,12 @@ def initialize():
         print 'Environment variable not set: IP2GOFILE'
         rc = 1
 
-    if not uniprot2ipFile:
-        print 'Environment variable not set: UNIPROT_IP_ASSOC'
-        rc = 1
-
     if not goIPFile:
         print 'Environment variable not set: GO_IP_ASSOC_FILE'
         rc = 1
 
     if not goIPRef:
         print 'Environment variable not set: GO_IP_ANNOTREF'
-        rc = 1
-
-    if not uniprot2spkwFile:
-        print 'Environment variable not set: UNIPROT_SPKW_ASSOC'
         rc = 1
 
     if not goSPKWFile:
@@ -268,8 +261,8 @@ def openFiles():
     readMGI2UNIPROT()
     readEC2GO()
     readIP2GO()
-    readUNIPROT2IP()
     readSPKW2GO()
+    readUNIPROTACC()
 
     #
     # Non-IEA GO Annotations.
@@ -455,41 +448,6 @@ def readIP2GO():
     return 0
 
 #
-# Purpose: Read UniProt-to-InterPro file & create lookup
-# Returns: Nothing
-# Assumes: Nothing
-# Effects: Nothing
-# Throws: Nothing
-#
-
-def readUNIPROT2IP():
-
-    #
-    # parse UniProt-to-InterPro file
-    #
-    # dictionary contains:
-    #	key = UniProt id
-    #	value = list of InterPro ids (IPR#####)
-    #
-
-    fp = open(uniprot2ipFile,'r')
-
-    for line in fp.readlines():
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
-	values = string.split(tokens[1], ',')
-
-	if not uniprot_to_ip.has_key(key):
-	    uniprot_to_ip[key] = []
-
-	for v in values:
-	    uniprot_to_ip[key].append(v)
-
-    fp.close()
-
-    return 0
-
-#
 # Purpose: Read SPKW-to-GO file & create lookup
 # Returns: Nothing
 # Assumes: Nothing
@@ -533,8 +491,26 @@ def readSPKW2GO():
 
     fp.close()
 
+    return 0
+
+#
+# Purpose: Read UniProt-to-Acc file & create lookups
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readUNIPROTACC():
+
     #
-    # lookup of uniprot id -> spkw name, spkw name, ...
+    # parse UniProt-to-InterPro associations via the UniProt/Acc file
+    #
+    # dictionary contains:
+    #	key = UniProt id
+    #	value = list of InterPro ids (IPR#####)
+    #
+    # parse UniProt-to-SPKW associations via the UniProt/Acc file
     #
     # dictionary contains:
     #	key = UniProt id
@@ -542,16 +518,21 @@ def readSPKW2GO():
     #           (for example: 'Cell membrane')
     #
 
-    fp = open(uniprot2spkwFile,'r')
+    fp = open(uniprotFile,'r')
 
     for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
-	values = string.split(tokens[1], ',')
 
+	values = string.split(tokens[5], ',')
+	if not uniprot_to_ip.has_key(key):
+	    uniprot_to_ip[key] = []
+	for v in values:
+	    uniprot_to_ip[key].append(v)
+
+	values = string.split(tokens[6], ',')
 	if not uniprot_to_spkw.has_key(key):
 	    uniprot_to_spkw[key] = []
-
 	for v in values:
 	    uniprot_to_spkw[key].append(v)
 

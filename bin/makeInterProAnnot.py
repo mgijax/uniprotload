@@ -19,8 +19,8 @@
 #      file that is sourced by the wrapper script:
 #
 #	  MGI_UNIPROT_LOAD_FILE
+#	  UNIPROT_ACC_ASSOC_FILE
 #
-#	  UNIPROT_IP_ASSOC_FILE
 #         MARKER_IP_ASSOC_FILE
 #         MARKER_IP_ANNOT_REF
 #
@@ -35,7 +35,7 @@
 #	  2: swiss-prot id
 #	  3: trembl id
 #
-#       - UniProt/InterPro files (${UNIPROT_IP_ASSOC_FILE})
+#       - UniProt/Acc files (${UNIPROT_ACC_ASSOC_FILE})
 #
 #	- Marker/InterPro Reference (${MARKER_IP_ANNOT_REF})
 #
@@ -97,7 +97,7 @@ uniprot_to_ip = {}
 
 def initialize():
     global mgi_to_uniprotFile
-    global uniprot2ipFile
+    global uniprotFile
     global markerIPFile
     global markerIPRef
     global annotEvidence, annotEditor, annotDate
@@ -111,7 +111,7 @@ def initialize():
 
     mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
 
-    uniprot2ipFile = os.getenv('UNIPROT_IP_ASSOC_FILE')
+    uniprotFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
 
     markerIPFile = os.getenv('MARKER_IP_ASSOC_FILE')
     markerIPRef = os.environ['MARKER_IP_ANNOT_REF']
@@ -129,8 +129,8 @@ def initialize():
         print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
         rc = 1
 
-    if not uniprot2ipFile:
-        print 'Environment variable not set: UNIPROT_IP_ASSOC'
+    if not uniprotFile:
+        print 'Environment variable not set: UNIPROT_ACC_ASSOC'
         rc = 1
 
     if not markerIPFile:
@@ -166,7 +166,7 @@ def initialize():
 def openFiles():
 
     readMGI2UNIPROT()
-    readUNIPROT2IP()
+    readUNIPROTACC()
 
     return 0
 
@@ -215,31 +215,32 @@ def readMGI2UNIPROT():
     return 0
 
 #
-# Purpose: Read UniProt-to-InterPro file & create lookup
+# Purpose: Read UniProt-to-Acc file & create lookup
 # Returns: Nothing
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
 #
 
-def readUNIPROT2IP():
+def readUNIPROTACC():
 
     #
-    # parse uniprot-to-interpro file
+    # parse UniProt-to-InterPro associations via the UniProt/Acc file
     #
     # dictionary contains:
     #	key = uniprot id
     #   value = interpro id (IPR#####)
     #
 
-    fp = open(uniprot2ipFile,'r')
+    fp = open(uniprotFile,'r')
 
     for line in fp.readlines():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
-	values = string.split(tokens[1], ',')
+	values = string.split(tokens[5], ',')
 
-	uniprot_to_ip[key] = []
+        if not uniprot_to_ip.has_key(key):
+            uniprot_to_ip[key] = []
 	for v in values:
 	    uniprot_to_ip[key].append(v)
 

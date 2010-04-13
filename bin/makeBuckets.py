@@ -101,8 +101,6 @@ import os
 import string
 import db
 import tabledatasetlib
-#from tabledatasetlib import *
-
 
 DEFAULT_BUCKETDIR = os.getcwd()
 DEFAULT_BUCKET_PREFIX = 'bucket'
