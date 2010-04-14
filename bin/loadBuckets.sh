@@ -63,11 +63,11 @@ fi
 #
 # Make sure the job key variable was created by the caller
 #
-#if [ ! -f ${JOBKEY} ]
-#then
-#    echo "Missing job key variable: ${JOBKEY}"
-#    exit 1
-#fi
+if [ "${JOBKEY}" = "" ]
+then
+    echo "Missing job key variable: ${JOBKEY}"
+    exit 1
+fi
 
 #
 # Establish the log file.
