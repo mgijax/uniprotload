@@ -44,7 +44,6 @@
 cd `dirname $0`
 
 CONFIG=${UNIPROTLOAD}/uniprotload.config
-JOBKEY=$1
 
 #
 # Make sure the configuration file exists and source it.

@@ -12,7 +12,8 @@ import db
 import tabledatasetlib
 
 
-FIELDS = [ 'MGI ID', 'UniProt ID' ]
+FIELDSNEW = [ 'MGI ID', 'UniProt ID' ]
+FIELDSOLD = [ 'MGI ID', 'SWISS-PROT', 'TrEMBL' ]
 
 DEFAULT_BUCKETDIR = os.getcwd()
 DEFAULT_BUCKET_PREFIX = 'bucket'
@@ -131,7 +132,7 @@ def bucketize():
     dsNew = tabledatasetlib.TextFileTableDataSet(
                 'new',
                 newAssocFile,
-                fieldnames=FIELDS,
+                fieldnames=FIELDSNEW,
                 readNow=1)
 
     dsNew.addIndexes( [ 'UniProt ID' ] )
@@ -142,10 +143,10 @@ def bucketize():
     dsOld = tabledatasetlib.TextFileTableDataSet(
                 'old',
                 oldAssocFile,
-                fieldnames=FIELDS,
+                fieldnames=FIELDSOLD,
                 readNow=1)
 
-    dsOld.addIndexes( [ 'UniProt ID' ] )
+    dsOld.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
 
     #
     # Create a bucketizer for the two datasets and run it.
@@ -154,7 +155,7 @@ def bucketize():
                      dsNew,
                      [ 'UniProt ID' ],
                      dsOld,
-                     [ 'UniProt ID' ])
+                     [ 'SWISS-PROT', 'TrEMBL' ])
     bucketizer.run()
 
     print 'MGI/UniProt Associations (New Bucketization vs SwissProt Load)'
@@ -187,12 +188,12 @@ def writeBuckets():
 
     reporter = tabledatasetlib.TableDataSetBucketizerReporter(bucketizer)
 
-    reporter.write_0_1(bucket[B0_1], FIELDS)
-    reporter.write_1_0(bucket[B1_0], FIELDS)
-    reporter.write_1_1(bucket[B1_1], FIELDS, FIELDS)
-    reporter.write_1_n(bucket[B1_N], FIELDS, FIELDS)
-    reporter.write_n_1(bucket[BN_1], FIELDS, FIELDS)
-    reporter.write_n_m(bucket[BN_N], FIELDS, FIELDS)
+    reporter.write_0_1(bucket[B0_1], FIELDSNEW)
+    reporter.write_1_0(bucket[B1_0], FIELDSNEW)
+    reporter.write_1_1(bucket[B1_1], FIELDS, FIELDSNEW)
+    reporter.write_1_n(bucket[B1_N], FIELDS, FIELDSNEW)
+    reporter.write_n_1(bucket[BN_1], FIELDS, FIELDSNEW)
+    reporter.write_n_m(bucket[BN_N], FIELDS, FIELDSNEW)
 
     return 0
 
