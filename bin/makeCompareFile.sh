@@ -35,7 +35,8 @@
 #
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
-#      3) Call makeCompareFile.py to create the report.
+#      3) Call makeUniProtOldFile.py to create the file on existing UniProt associations.
+#      4) Call makeCompareFile.py to create the comparisons (run the bucketizer).
 #
 #  Notes:  None
 #

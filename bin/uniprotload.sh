@@ -130,9 +130,6 @@ echo "Call makeCompareFile.sh (uniprotload.sh)" | tee -a ${LOG}
 STAT=$?
 checkStatus ${STAT} "makeCompareFile.sh (uniprotload.sh)"
 
-shutDown
-exit 0
-
 #
 # Load association buckets
 #
