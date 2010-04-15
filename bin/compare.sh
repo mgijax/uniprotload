@@ -18,9 +18,9 @@ then
     exit 1
 fi
 
-if [ ! -f ${MGI_UNIPROT_SWISSLOAD} ]
+if [ ! -f ${MGI_UNIPROT_OLDLOAD} ]
 then
-    echo "Missing input file: ${MGI_UNIPROT_SWISSLOAD}"
+    echo "Missing input file: ${MGI_UNIPROT_OLDLOAD}"
     exit 1
 fi
 

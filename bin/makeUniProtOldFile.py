@@ -27,7 +27,8 @@
 #        the following tab-delimited fields:
 #
 #        1) MGI ID (for a marker)
-#        2) UniProt ID
+#        2) SwissProt ID
+#        3) TrEMBL ID
 #
 #  Exit Codes:
 #
@@ -51,6 +52,7 @@
 
 import sys 
 import os
+import string
 import db
 
 
@@ -130,25 +132,57 @@ def getAssociations():
     #
     # Get all the MGI/UniProt association 
     #
-    results = db.sql('select a1.accID "mgiID", a2.accID "uniprotID" ' + \
-                     'from ACC_Accession a1, ACC_Accession a2 ' + \
-                     'where a1._MGIType_key = 2 and ' + \
-                           'a1._LogicalDB_key = 1 and ' + \
-                           'a1.prefixPart = "MGI:" and ' + \
-                           'a1.preferred = 1 and ' + \
-                           'a1._Object_key = a2._Object_key and ' + \
-                           'a2._MGIType_key = 2 and ' + \
-                           'a2._LogicalDB_key in (13,41) and ' + \
-                           'a2._CreatedBy_key = 1442 ' + \
-                     'order by a1.accID, a2.accID', 'auto')
+    results = db.sql('''
+		     select a1.accID "mgiID", a2.accID "uniprotID", a2._LogicalDB_key
+                     from ACC_Accession a1, ACC_Accession a2 
+                     where a1._MGIType_key = 2
+                           and a1._LogicalDB_key = 1 
+                           and a1.prefixPart = "MGI:" 
+                           and a1.preferred = 1 
+                           and a1._Object_key = a2._Object_key 
+                           and a2._MGIType_key = 2 
+                           and a2._LogicalDB_key in (13,41) 
+                           and a2._CreatedBy_key = 1442 
+                     order by a1.accID, a1._LogicalDB_key, a2.accID
+		     ''', 'auto')
 
     #
     # Write the MGI/UniProt associations to the file.
     #
+
+    mgiList = []
+    spList = {}
+    trList = {}
+
     for r in results:
+
         mgiID = r['mgiID']
         uniprotID = r['uniprotID']
-        fpOldAssoc.write(mgiID + '\t' + uniprotID + '\n')
+	ldb = r['_LogicalDB_key']
+
+	if mgiID not in mgiList:
+	    mgiList.append(mgiID)
+
+	if ldb == 13:
+	    if not spList.has_key(mgiID):
+	        spList[mgiID] = []
+            spList[mgiID].append(uniprotID)
+
+	if ldb == 41:
+	    if not trList.has_key(mgiID):
+	        trList[mgiID] = []
+            trList[mgiID].append(uniprotID)
+
+    for mgiID in mgiList:
+        fpOldAssoc.write(mgiID + '\t')
+
+	if spList.has_key(mgiID):
+	    fpOldAssoc.write(string.join(spList[mgiID], ','))
+        fpOldAssoc.write('\t')
+
+	if trList.has_key(mgiID):
+	    fpOldAssoc.write(string.join(trList[mgiID], ','))
+        fpOldAssoc.write('\n')
 
     return 0
 

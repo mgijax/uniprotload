@@ -67,7 +67,8 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create MGI/UniProt association report" | tee -a ${LOG}
-./makeUniProtOldFile.py 2>&1 >> ${LOG}
+#./makeUniProtOldFile.py 2>&1 >> ${LOG}
+./makeUniProtOldFile.py
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

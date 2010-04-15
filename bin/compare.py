@@ -12,8 +12,7 @@ import db
 import tabledatasetlib
 
 
-FIELDSNEW = [ 'MGI', 'SWISS-PROT', 'TrEMBL' ]
-FIELDSOLD = [ 'MGI', 'UniProt ID' ]
+FIELDS = [ 'MGI ID', 'SWISS-PROT', 'TrEMBL' ]
 
 DEFAULT_BUCKETDIR = os.getcwd()
 DEFAULT_BUCKET_PREFIX = 'bucket'
@@ -44,7 +43,7 @@ def initialize():
     global bucket
 
     newAssocFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
-    oldAssocFile = os.getenv('MGI_UNIPROT_SWISSLOAD')
+    oldAssocFile = os.getenv('MGI_UNIPROT_OLDLOAD')
     bucketDir = os.getenv('BUCKETDIR')
     bucketPrefix = 'compare'
 
@@ -57,7 +56,7 @@ def initialize():
         print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
         rc = 1
     if not oldAssocFile:
-        print 'Environment variable not set: MGI_UNIPROT_SWISSLOAD'
+        print 'Environment variable not set: MGI_UNIPROT_OLDLOAD'
         rc = 1
 
     #
@@ -129,10 +128,13 @@ def bucketize():
     #
     # Create a TableDataSet for the new association file.
     #
+    multiFields = { 'SWISS-PROT' : ',' , 'TrEMBL' : ',' }
+
     dsNew = tabledatasetlib.TextFileTableDataSet(
                 'new',
                 newAssocFile,
-                fieldnames=FIELDSNEW,
+                fieldnames=FIELDS,
+		multiValued=multiFields,
                 readNow=1)
 
     dsNew.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
@@ -143,10 +145,11 @@ def bucketize():
     dsOld = tabledatasetlib.TextFileTableDataSet(
                 'old',
                 oldAssocFile,
-                fieldnames=FIELDSOLD,
+                fieldnames=FIELDS,
+		multiValued=multiFields,
                 readNow=1)
 
-    dsOld.addIndexes( [ 'UniProt ID' ] )
+    dsOld.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
 
     #
     # Create a bucketizer for the two datasets and run it.
@@ -155,7 +158,7 @@ def bucketize():
                      dsNew,
                      [ 'SWISS-PROT', 'TrEMBL' ],
                      dsOld,
-                     [ 'UniProt ID' ])
+                     [ 'SWISS-PROT', 'TrEMBL' ])
     bucketizer.run()
 
     print 'MGI/UniProt Associations (New Bucketization vs SwissProt Load)'
@@ -188,12 +191,12 @@ def writeBuckets():
 
     reporter = tabledatasetlib.TableDataSetBucketizerReporter(bucketizer)
 
-    reporter.write_0_1(bucket[B0_1], FIELDSOLD)
-    reporter.write_1_0(bucket[B1_0], FIELDSNEW)
-    reporter.write_1_1(bucket[B1_1], FIELDSNEW, FIELDSOLD)
-    reporter.write_1_n(bucket[B1_N], FIELDSNEW, FIELDSOLD)
-    reporter.write_n_1(bucket[BN_1], FIELDSNEW, FIELDSOLD)
-    reporter.write_n_m(bucket[BN_N], FIELDSNEW, FIELDSOLD)
+    reporter.write_0_1(bucket[B0_1], FIELDS)
+    reporter.write_1_0(bucket[B1_0], FIELDS)
+    reporter.write_1_1(bucket[B1_1], FIELDS, FIELDS)
+    reporter.write_1_n(bucket[B1_N], FIELDS, FIELDS)
+    reporter.write_n_1(bucket[BN_1], FIELDS, FIELDS)
+    reporter.write_n_m(bucket[BN_N], FIELDS, FIELDS)
 
     return 0
 
