@@ -45,7 +45,7 @@ def initialize():
     newAssocFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
     oldAssocFile = os.getenv('MGI_UNIPROT_OLDLOAD')
     bucketDir = os.getenv('BUCKETDIR')
-    bucketPrefix = 'compare'
+    bucketPrefix = sys.argv[1]
 
     rc = 0
 
