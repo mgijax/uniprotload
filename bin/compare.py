@@ -3,7 +3,7 @@
 #
 # This script will compare the MGI/UniProt associations that were generated
 # by the new bucketization process versus the MGI/UniProt associations that
-# were loaded in the database by the current SwissProt load.
+# were loaded in the database.
 #
 
 import sys 
@@ -12,8 +12,8 @@ import db
 import tabledatasetlib
 
 
-FIELDSNEW = [ 'MGI ID', 'UniProt ID' ]
-FIELDSOLD = [ 'MGI ID', 'SWISS-PROT', 'TrEMBL' ]
+FIELDSNEW = [ 'MGI', 'SWISS-PROT', 'TrEMBL' ]
+FIELDSOLD = [ 'MGI', 'UniProt ID' ]
 
 DEFAULT_BUCKETDIR = os.getcwd()
 DEFAULT_BUCKET_PREFIX = 'bucket'
@@ -135,7 +135,7 @@ def bucketize():
                 fieldnames=FIELDSNEW,
                 readNow=1)
 
-    dsNew.addIndexes( [ 'UniProt ID' ] )
+    dsNew.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
 
     #
     # Create a TableDataSet for the old association file.
@@ -146,16 +146,16 @@ def bucketize():
                 fieldnames=FIELDSOLD,
                 readNow=1)
 
-    dsOld.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
+    dsOld.addIndexes( [ 'UniProt ID' ] )
 
     #
     # Create a bucketizer for the two datasets and run it.
     #
     bucketizer = tabledatasetlib.TableDataSetBucketizer(
                      dsNew,
-                     [ 'UniProt ID' ],
+                     [ 'SWISS-PROT', 'TrEMBL' ],
                      dsOld,
-                     [ 'SWISS-PROT', 'TrEMBL' ])
+                     [ 'UniProt ID' ])
     bucketizer.run()
 
     print 'MGI/UniProt Associations (New Bucketization vs SwissProt Load)'
@@ -188,12 +188,12 @@ def writeBuckets():
 
     reporter = tabledatasetlib.TableDataSetBucketizerReporter(bucketizer)
 
-    reporter.write_0_1(bucket[B0_1], FIELDSNEW)
+    reporter.write_0_1(bucket[B0_1], FIELDSOLD)
     reporter.write_1_0(bucket[B1_0], FIELDSNEW)
-    reporter.write_1_1(bucket[B1_1], FIELDS, FIELDSNEW)
-    reporter.write_1_n(bucket[B1_N], FIELDS, FIELDSNEW)
-    reporter.write_n_1(bucket[BN_1], FIELDS, FIELDSNEW)
-    reporter.write_n_m(bucket[BN_N], FIELDS, FIELDSNEW)
+    reporter.write_1_1(bucket[B1_1], FIELDSNEW, FIELDSOLD)
+    reporter.write_1_n(bucket[B1_N], FIELDSNEW, FIELDSOLD)
+    reporter.write_n_1(bucket[BN_1], FIELDSNEW, FIELDSOLD)
+    reporter.write_n_m(bucket[BN_N], FIELDSNEW, FIELDSOLD)
 
     return 0
 

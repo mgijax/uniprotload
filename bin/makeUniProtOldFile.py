@@ -1,24 +1,23 @@
 #!/usr/local/bin/python
 #
-#  makeSwissProtFile.py
+#  makeUniProtOldFile.py
 ###########################################################################
 #
 #  Purpose:
 #
 #      This script will create an output file that contains all of the
-#      MGI/UniProt associations in the database that were created by the
-#      SwissProt load.
+#      MGI/UniProt associations in the database.
 #
 #  Usage:
 #
-#      makeSwissProtFile.py
+#      makeUniProtOldFile.py
 #
 #  Env Vars:
 #
 #      The following environment variables are set by the configuration
 #      file that is sourced by the wrapper script:
 #
-#          MGI_UNIPROT_SWISSLOAD
+#          MGI_UNIPROT_OLDLOAD
 #
 #  Inputs:  None
 #
@@ -44,7 +43,6 @@
 #      1) Initialize variables.
 #      2) Open files.
 #      3) Create a file of MGI/UniProt associations in the database	
-#         that were created by the SwissProt load.
 #      4) Close files.
 #
 #  Notes:  None
@@ -64,23 +62,23 @@ import db
 # Throws: Nothing
 #
 def initialize():
-    global swissAssocFile, fpSwissAssoc
+    global oldAssocFile, fpOldAssoc
 
-    swissAssocFile = os.getenv('MGI_UNIPROT_SWISSLOAD')
+    oldAssocFile = os.getenv('MGI_UNIPROT_OLDLOAD')
 
     rc = 0
 
     #
     # Make sure the required environment variables are set.
     #
-    if not swissAssocFile:
-        print 'Environment variable not set: MGI_UNIPROT_SWISSLOAD'
+    if not oldAssocFile:
+        print 'Environment variable not set: MGI_UNIPROT_OLDLOAD'
         rc = 1
 
     #
     # Initialize file pointers.
     #
-    fpSwissAssoc = None
+    fpOldAssoc = None
 
     return rc
 
@@ -93,15 +91,15 @@ def initialize():
 # Throws: Nothing
 #
 def openFiles():
-    global fpSwissAssoc
+    global fpOldAssoc
 
     #
     # Open the report files.
     #
     try:
-        fpSwissAssoc = open(swissAssocFile, 'w')
+        fpOldAssoc = open(oldAssocFile, 'w')
     except:
-        print 'Cannot open report: ' + swissAssocFile
+        print 'Cannot open report: ' + oldAssocFile
         return 1
 
     return 0
@@ -115,15 +113,14 @@ def openFiles():
 # Throws: Nothing
 #
 def closeFiles():
-    if fpSwissAssoc:
-        fpSwissAssoc.close()
+    if fpOldAssoc:
+        fpOldAssoc.close()
 
     return 0
 
 
 #
 # Purpose: Create a file of the MGI/UniProt associations in the database
-#          that were created by the SwissProt load.
 # Returns: Nothing
 # Assumes: Nothing
 # Effects: Nothing
@@ -131,8 +128,7 @@ def closeFiles():
 #
 def getAssociations():
     #
-    # Get all the MGI/UniProt association that were created by the
-    # SwissProt load.
+    # Get all the MGI/UniProt association 
     #
     results = db.sql('select a1.accID "mgiID", a2.accID "uniprotID" ' + \
                      'from ACC_Accession a1, ACC_Accession a2 ' + \
@@ -152,7 +148,7 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         uniprotID = r['uniprotID']
-        fpSwissAssoc.write(mgiID + '\t' + uniprotID + '\n')
+        fpOldAssoc.write(mgiID + '\t' + uniprotID + '\n')
 
     return 0
 

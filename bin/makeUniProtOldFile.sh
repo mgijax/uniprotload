@@ -1,17 +1,16 @@
 #!/bin/sh
 #
-#  makeSwissProtFile.sh
+#  makeUniProtOldFile.sh
 ###########################################################################
 #
 #  Purpose:
 #
 #      This script is a wrapper around the process that creates a report
-#      of MGI/UniProt associations in the database that were created by
-#      the SwissProt load.
+#      of MGI/UniProt associations in the database
 #
 #  Usage:
 #
-#      makeSwissProtFile.sh
+#      makeUniProtOldFile.sh
 #
 #  Env Vars:
 #
@@ -36,7 +35,7 @@
 #
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
-#      3) Call makeSwissProtRpt.py to create the report.
+#      3) Call makeUniProtOldRpt.py to create the report.
 #
 #  Notes:  None
 #
@@ -68,7 +67,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create MGI/UniProt association report" | tee -a ${LOG}
-./makeSwissProtFile.py 2>&1 >> ${LOG}
+./makeUniProtOldFile.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
