@@ -135,7 +135,8 @@ def bucketize():
                 newAssocFile,
                 fieldnames=FIELDS,
 		multiValued=multiFields,
-                readNow=1)
+                readNow=1,
+		numheaderlines=1)
 
     dsNew.addIndexes( [ 'SWISS-PROT',  'TrEMBL' ] )
 
