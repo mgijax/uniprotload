@@ -35,7 +35,7 @@
 #
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
-#      3) Call makeCompareRpt.py to create the report.
+#      3) Call makeCompareFile.py to create the report.
 #
 #  Notes:  None
 #
@@ -99,12 +99,12 @@ fi
 
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Compare MGI/UniProt associations" | tee -a ${LOG}
-./makeCompare.py ${BUCKETPREFIX} 2>&1 >> ${LOG}
+echo "Compare MGI/UniProt associations with new Buckets" | tee -a ${LOG}
+./makeCompareFile.py ${BUCKETPREFIX} 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error: Compare MGI/UniProt associations" | tee -a ${LOG}
+    echo "Error: Compare MGI/UniProt associations with new Buckets" | tee -a ${LOG}
     exit 1
 fi
 

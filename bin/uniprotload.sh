@@ -125,10 +125,13 @@ checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Call makeUniProtOldFile.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeUniProtOldFile.sh compare 2>&1 >> ${LOG}
+echo "Call makeCompareFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeCompareFile.sh compare 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "makeUniProtOldFile.sh (uniprotload.sh)"
+checkStatus ${STAT} "makeCompareFile.sh (uniprotload.sh)"
+
+shutDown
+exit 0
 
 #
 # Load association buckets
