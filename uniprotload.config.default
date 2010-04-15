@@ -81,9 +81,13 @@ MGI_UNIPROT_LOAD_FILE=${OUTPUTDIR}/mgi_uniprot_load.txt
 # ASSOCLOAD expects this parameter name
 INFILE_NAME=${MGI_UNIPROT_LOAD_FILE}
 
-# MGI marker to UniProt associations (from current SwissProt load)
+# Minimum number of lines expected in the association file.
 #
-MGI_UNIPROT_SWISSLOAD=${OUTPUTDIR}/mgi_uniprot_swissload.txt
+INFILE_MINIMUM_SIZE=20000
+
+# MGI marker to UniProt associations (that currently exist in the database)
+#
+MGI_UNIPROT_OLDLOAD=${OUTPUTDIR}/mgi_uniprot_oldload.txt
 
 # Log files
 #
@@ -92,11 +96,11 @@ LOG_DIAG=${LOGDIR}/uniprotload.diag.log
 LOG_CUR=${LOGDIR}/uniprotload.cur.log
 LOG_VAL=${LOGDIR}/uniprotload.val.log
 
-export INPUTFILE INFILE_NAME
+export INPUTFILE INFILE_NAME INFILE_MINIMUM_SIZE
 export EC2GOFILE IP2GOFILE SPKW2GOFILE
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
-export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_SWISSLOAD
+export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_OLDLOAD
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
 # Annotations

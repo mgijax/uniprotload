@@ -75,6 +75,21 @@ fi
 LOG=${LOG_DIAG}
 
 #
+# Make sure the association file has a minimum number of lines before the
+# association loader is called. If there was a problem with the input file,
+# we don't want to remove the existing associations.
+#
+COUNT=`cat ${INFILE_NAME} | wc -l | sed 's/ //g'`
+if [ ${COUNT} -lt ${INFILE_MINIMUM_SIZE} ]
+then
+    echo "\n**** WARNING ****" >> ${LOG}
+    echo "${INFILE_NAME} has ${COUNT} lines." >> ${LOG}
+    echo "Expecting at least ${INFILE_MINIMUM_SIZE} lines." >> ${LOG}
+    echo "Sanity error detected in association file" | tee -a ${LOG}
+    exit 1
+fi
+
+#
 #
 # run association load
 #
