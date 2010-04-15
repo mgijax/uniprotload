@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  makeUniProtOldFile.sh
+#  makeCompareFile.sh
 ###########################################################################
 #
 #  Purpose:
@@ -10,7 +10,7 @@
 #
 #  Usage:
 #
-#      makeUniProtOldFile.sh
+#      makeCompareFile.sh
 #
 #  Env Vars:
 #
@@ -35,7 +35,7 @@
 #
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
-#      3) Call makeUniProtOldRpt.py to create the report.
+#      3) Call makeCompareRpt.py to create the report.
 #
 #  Notes:  None
 #

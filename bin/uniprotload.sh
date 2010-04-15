@@ -121,6 +121,16 @@ STAT=$?
 checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
 
 #
+# Make/compare "old"/existing database uniprot ids with "new" buckets
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeUniProtOldFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeUniProtOldFile.sh compare 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeUniProtOldFile.sh (uniprotload.sh)"
+
+#
 # Load association buckets
 #
 echo "" >> ${LOG}
