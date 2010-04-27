@@ -136,9 +136,8 @@ export MARKER_IP_ASSOC_FILE MARKER_IP_ANNOT_REF
 ###########################################################################
 
 BUCKETDIR=${OUTPUTDIR}
-BUCKET_PREFIX=mgi_uniprot
 
-export BUCKETDIR BUCKET_PREFIX
+export BUCKETDIR
 
 ###########################################################################
 #
