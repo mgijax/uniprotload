@@ -66,15 +66,6 @@ then
 fi
 
 #
-# Make sure the bucket prefix is set
-#
-if [ "${BUCKETPREFIX}" = "" ]
-then
-    echo "Missing bucket prefix variable: ${BUCKETPREFIX}"
-    exit 1
-fi
-
-#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
@@ -86,7 +77,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create MGI/SwissProt association report & compare the differences" | tee -a ${LOG}
-./makeSwissDiffFile.py ${BUCKETPREFIX} 2>&1 >> ${LOG}
+./makeSwissDiffFile.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
