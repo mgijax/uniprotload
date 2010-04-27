@@ -1,22 +1,23 @@
 #!/bin/sh
 #
-#  makeCompareFile.sh
+#  makeSwissDiffFile.sh
 ###########################################################################
 #
 #  Purpose:
 #
 #      This script is a wrapper around the process that creates a report
-#      of MGI/UniProt associations in the database
+#      of MGI/SwissProt associations in the database
+#      and compares it to new MGI/UniProt bucketizer files.
 #
 #  Usage:
 #
-#      makeCompareFile.sh
+#      makeSwissDiffFile.sh
 #
 #  Env Vars:
 #
 #      See the configuration file (uniprotload.config)
 #
-#  Inputs:  None
+#  Inputs:
 #
 #  Outputs:
 #
@@ -36,7 +37,7 @@
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
 #      3) Call makeUniProtOldFile.py to create the file on existing UniProt associations.
-#      4) Call makeCompareFile.py to create the comparisons (run the bucketizer).
+#      4) Call makeSwissDiffFile.py to create the comparisons (run the bucketizer).
 #
 #  Notes:  None
 #
@@ -64,12 +65,6 @@ then
     exit 1
 fi
 
-if [ ! -f ${MGI_UNIPROT_OLDLOAD} ]
-then
-    echo "Missing input file: ${MGI_UNIPROT_OLDLOAD}"
-    exit 1
-fi
-
 #
 # Make sure the bucket prefix is set
 #
@@ -85,27 +80,17 @@ fi
 LOG=${LOG_DIAG}
 
 #
-# Call the Python script to create the report of MGI/UniProt associations.
+# Call the Python script to create the report of MGI/SwissProt associations.
+# Then, compare the differences between SwissProt and new MGI/UniProt buckets.
 #
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Create MGI/UniProt association report" | tee -a ${LOG}
-./makeUniProtOldFile.py 2>&1 >> ${LOG}
+echo "Create MGI/SwissProt association report & compare the differences" | tee -a ${LOG}
+./makeSwissDiffFile.py ${BUCKETPREFIX} 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
-    echo "Error: Create MGI/UniProt association report" | tee -a ${LOG}
-    exit 1
-fi
-
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Compare MGI/UniProt associations with new Buckets" | tee -a ${LOG}
-./makeCompareFile.py ${BUCKETPREFIX} 2>&1 >> ${LOG}
-STAT=$?
-if [ ${STAT} -ne 0 ]
-then
-    echo "Error: Compare MGI/UniProt associations with new Buckets" | tee -a ${LOG}
+    echo "Error: Create MGI/SwissProt association report & compare the differences" | tee -a ${LOG}
     exit 1
 fi
 

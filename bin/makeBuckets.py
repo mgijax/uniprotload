@@ -28,8 +28,9 @@
 #
 #  Inputs:
 #
-#      - MGI association file ($MGI_ACC_ASSOC_FILE, $MGI_ACC2_ASSOC_FILE)
-#        to be used by the TableDataSet class. It has the following tab-delimited fields:
+#      - MGI association file ($MGI_ACC_ASSOC_FILE)
+#        to be used by the TableDataSet class. 
+#        It has the following tab-delimited fields:
 #
 #        1) MGI ID (for a marker)
 #        2) EntrezGene IDs and NBCI gene model IDs (comma-separated)
@@ -39,14 +40,14 @@
 #        6) InterPro IDs (comma-separated)
 #        7) SPKW Names (comma-separated)
 #
-#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
-#        the generate a lookup file.
+#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) 
+#        to be used to generate a lookup file of SwissProt associations.
 #        It has the following tab-delimited fields:
 #
 #        1) UniProt ID
 #
-#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE) to be used by
-#        the generate a lookup file.
+#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE)
+#        to be used to generate a lookup file of TrEMBL associations.
 #        It has the following tab-delimited fields:
 #
 #        1) UniProt ID
@@ -64,13 +65,14 @@
 #        ${BUCKET_PREFIX}.n_n.txt
 #
 #      - A file of unique MGI/UniProt associations from the 1:1 and 1:N
-#        buckets ($MGI_UNIPROT_LOAD_FILE). It has the following tab-delimited
-#        fields:
+#        buckets ($MGI_UNIPROT_LOAD_FILE). 
+#        It has the following tab-delimited fields:
 #
-#        header:  MGI\tSWISS-PROT\tTrEMBL\tPDB\tEC
+#        header:  MGI\tSWISS-PROT\tTrEMBL\tEC\tPDB
 #        1) MGI ID (for a marker)
 #        2) UniProt ID
-#        3) PDB ID
+#        3) EC ID
+#        4) PDB ID
 #
 #  Exit Codes:
 #
@@ -88,8 +90,7 @@
 #      3) Create a TableDataSet object for each of the input files.
 #      4) Create a bucketizer for the TableDataSet objects and run it.
 #      5) Write the contents of the buckets to the output files.
-#      6) Write the MGI/UniProt associations from the 1:1 and 1:N buckets
-#         the a file.
+#      6) Write the MGI/UniProt associations from the 1:1 and 1:N buckets to a file.
 #      7) Close files.
 #
 #  Notes:  None
@@ -512,8 +513,6 @@ def writeReport():
 	        pdbLookup[mgiID] = []
 	    if pdbID not in pdbLookup[mgiID]:
 	        pdbLookup[mgiID].append(pdbID)
-
-    #print ecLookup['MGI:1289298']
 
     #
     # Find unique MGI/UniProt associations in the 1:N bucket.

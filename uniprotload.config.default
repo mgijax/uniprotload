@@ -78,6 +78,7 @@ UNIPROT_ACC2_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc2_assoc.txt
 # MGI marker to UniProt associations (from 1:1 and 1:N buckets)
 #
 MGI_UNIPROT_LOAD_FILE=${OUTPUTDIR}/mgi_uniprot_load.txt
+
 # ASSOCLOAD expects this parameter name
 INFILE_NAME=${MGI_UNIPROT_LOAD_FILE}
 
@@ -85,9 +86,9 @@ INFILE_NAME=${MGI_UNIPROT_LOAD_FILE}
 #
 INFILE_MINIMUM_SIZE=20000
 
-# MGI marker to UniProt associations (that currently exist in the database)
+# MGI marker to SwissProt associations
 #
-MGI_UNIPROT_OLDLOAD=${OUTPUTDIR}/mgi_uniprot_oldload.txt
+MGI_SWISSPROT_LOAD_FILE=${OUTPUTDIR}/mgi_swissprot_load.txt
 
 # Log files
 #
@@ -100,7 +101,7 @@ export INPUTFILE INFILE_NAME INFILE_MINIMUM_SIZE
 export EC2GOFILE IP2GOFILE SPKW2GOFILE
 export MGI_ACC_ASSOC_FILE 
 export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC1_ASSOC_FILE UNIPROT_ACC2_ASSOC_FILE
-export MGI_UNIPROT_LOAD_FILE MGI_UNIPROT_OLDLOAD
+export MGI_UNIPROT_LOAD_FILE MGI_SWISSPROT_LOAD_FILE
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
 # Annotations

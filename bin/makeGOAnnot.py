@@ -701,6 +701,19 @@ def processIP2GO():
 	#
 
         for goid in go_to_ip.keys():
+
+	    # ip list must be <= 255 to fit into inferredFrom field
+	    #while (string.join(go_to_ip[goid], ',') > 255)
+	    #ipList = string.join(go_to_ip[goid], ',')
+	    #while ipList > 255:
+	    #    go_to_ip[goid].remove(ipid)
+	    #    ipList = string.join(go_to_ip[goid], ',')
+            #for i in go_to_ip[goid]:
+	    #    if len(ipList + ',' + i) > 255:
+	    #        break
+	    #    ipList = i + ','
+	    #        ipList[:-1]
+
             fp.write(goid + '\t' + \
 		     m + '\t' + \
 	      	     goIPRef + '\t' + \
