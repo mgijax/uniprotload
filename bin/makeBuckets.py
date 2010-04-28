@@ -204,13 +204,20 @@ def openFiles():
 
     #
     # Open the bucket files.
+    # Before opening new buckets...
+    #   Save a copy the existing buckets, so we can use them later
+    #   to do "diffs" between the old and new bucketts
     #
     for i in BUCKETLIST:
         file = bucketDir + '/' + bucketPrefix + '.' + i + '.txt'
+        savedfile = bucketDir + '/' + bucketPrefix + '.' + i + '.txt.save'
+
         try:
+            os.remove(savedfile)
+            os.rename(file, savedfile)
             bucket[i] = open(file, 'w')
         except:
-            print 'Cannot open bucket: ' + file
+            print 'Cannot rename/open bucket: ' + file
             return 1
 
     #
@@ -349,7 +356,7 @@ def bucketize():
 # Effects: Nothing
 # Throws: Nothing
 #
-def writeBuckets():
+def writeBuckets_format1():
 
     reporter = tabledatasetlib.TableDataSetBucketizerReporter(bucketizer)
 
@@ -385,7 +392,7 @@ def writeBuckets():
 # Effects: Nothing
 # Throws: Nothing
 #
-def writeBuckets_save():
+def writeBuckets_format2():
     #
     # Load the 0:1 bucket.
     #
@@ -604,11 +611,11 @@ if bucketize() != 0:
     closeFiles()
     sys.exit(1)
 
-if writeBuckets() != 0:
+if writeBuckets_format1() != 0:
     closeFiles()
     sys.exit(1)
 
-if writeBuckets_save() != 0:
+if writeBuckets_format2() != 0:
     closeFiles()
     sys.exit(1)
 

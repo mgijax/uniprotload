@@ -58,6 +58,15 @@ else
 fi
 
 #
+# Make sure the bucket prefix file exists
+#
+if [ "${BUCKET_PREFIX}" = "" ]
+then
+    echo "Missing bucket prefix variable: ${BUCKET_PREFIX}"
+    exit 1
+fi
+
+#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
@@ -68,7 +77,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
-./makeBuckets.py 2>&1 >> ${LOG}
+./makeBuckets.py ${BUCKET_PREFIX} 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
