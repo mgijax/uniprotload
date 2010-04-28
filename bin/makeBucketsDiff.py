@@ -190,7 +190,7 @@ def openFiles():
             bucketLose[i] = open(fileLose, 'w')
             bucketLose[i].write('#\n# LOSE file:  %s\n' % (fileLose))
 	    bucketLose[i].write('#\n# field 1:  MGI or UniProt ID\n')
-	    bucketLose[i].write('# field 2:  what bucket am I in now?\n')
+	    bucketLose[i].write('# field 2:  what bucket was I in before?\n')
             bucketLose[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
 	    bucketLose[i].write('#\n')
 
@@ -200,7 +200,7 @@ def openFiles():
             bucketGain[i] = open(fileGain, 'w')
             bucketGain[i].write('#\n# GAIN file: %s\n' % (fileGain))
 	    bucketGain[i].write('#\n# field 1:  MGI or UniProt ID\n')
-	    bucketGain[i].write('# field 2:  what bucket am I in now?\n')
+	    bucketGain[i].write('# field 2:  what bucket was I in before?\n')
             bucketGain[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
 	    bucketGain[i].write('#\n')
 
