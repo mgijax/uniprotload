@@ -249,6 +249,9 @@ def bucketDiff():
 	loseSet = bucketOld[i].difference(bucketNew[i])
 	gainSet = bucketNew[i].difference(bucketOld[i])
 
+	bucketLose[i].write('# total number of records: %s\n#\n' % (len(loseSet)))
+	bucketGain[i].write('# total number of records: %s\n#\n' % (len(gainSet)))
+
 	for id in loseSet:
 
 	    # determine if this id exists in another bucketNew set
