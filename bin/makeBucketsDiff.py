@@ -1,0 +1,293 @@
+#!/usr/local/bin/python
+#
+#  makeBucketsDiff.py
+###########################################################################
+#
+#  Purpose:
+#
+#      This script will compare the old/saved buckets
+#      with the new/current buckets and generate ouput files
+#      that display:
+#
+#          lose Markers
+#	   gain Markers
+#          in which bucket the lose/gain Markers now reside
+#
+#  Usage:
+#
+#      makeBucketsDiff.py
+#
+#  Env Vars:
+#
+#      The following environment variables are set by the configuration
+#      file that is sourced by the wrapper script:
+#
+#          BUCKETDIR
+#          BUCKET_PREFIX
+#
+#  Inputs:
+#
+#      - Cardinality files (buckets) from the MGI/UniProt comparison.
+#        Each file name is prefixed as follows:
+#
+#        ${BUCKET_PREFIX}.0_1.txt
+#        ${BUCKET_PREFIX}.1_0.txt
+#        ${BUCKET_PREFIX}.1_1.txt
+#        ${BUCKET_PREFIX}.1_N.txt
+#        ${BUCKET_PREFIX}.N_1.txt
+#        ${BUCKET_PREFIX}.N_N.txt
+#
+#      - Save files from the previous buckets:
+#
+#        ${BUCKET_PREFIX}.0_1.txt.save
+#        ${BUCKET_PREFIX}.1_0.txt.save
+#        ${BUCKET_PREFIX}.1_1.txt.save
+#        ${BUCKET_PREFIX}.1_N.txt.save
+#        ${BUCKET_PREFIX}.N_1.txt.save
+#        ${BUCKET_PREFIX}.N_N.txt.save
+#
+#  Outputs:
+#
+#      - Comparison between old bucket vs. new bucket
+#        Each file name is prefixed as follows:
+#
+#        ${BUCKET_PREFIX}.1_1.txt.lose
+#        ${BUCKET_PREFIX}.1_1.txt.gain
+#
+#        ${BUCKET_PREFIX}.1_N.txt.lose
+#        ${BUCKET_PREFIX}.1_N.txt.gain
+#
+#        ${BUCKET_PREFIX}.0_1.txt.lose
+#        ${BUCKET_PREFIX}.0_1.txt.gain
+#
+#        ${BUCKET_PREFIX}.1_0.txt.lose
+#        ${BUCKET_PREFIX}.1_0.txt.gain
+#
+#        ${BUCKET_PREFIX}.N_1.txt.lose
+#        ${BUCKET_PREFIX}.N_1.txt.gain
+#
+#        ${BUCKET_PREFIX}.N_N.txt.lose
+#        ${BUCKET_PREFIX}.N_N.txt.gain
+#
+#  Exit Codes:
+#
+#      0:  Successful completion
+#      1:  An exception occurred
+#
+#  Assumes:  Nothing
+#
+#  Implementation:
+#
+#      This script will perform following steps:
+#
+#      1) Initialize variables.
+#      2) Open files.
+#      3) Create sets for old bucket and new bucket.
+#      4) Compare the lose/gain Marker/UniProt ids for each bucket.
+#      5) Create output files for each bucket (one for lose, one for gain).
+#      7) Close files.
+#
+#  Notes:  None
+#
+###########################################################################
+
+import sys 
+import os
+import string
+from sets import Set
+import db
+
+B0_1 = '0_1'
+B1_0 = '1_0'
+B1_1 = '1_1'
+B1_N = '1_N'
+BN_1 = 'N_1'
+BN_N = 'N_N'
+
+BUCKETLIST = [ B0_1, B1_0, B1_1, B1_N, BN_1, BN_N ]
+
+bucketOld = {}
+bucketNew = {}
+bucketLose = {}
+bucketGain = {}
+
+#
+# Purpose: Initialization
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+def initialize():
+    global bucketDir, bucketPrefix
+    global bucketOld, bucketNew
+    global bucketLose, bucketGain
+
+    bucketDir = os.getenv('BUCKETDIR')
+    bucketPrefix = os.getenv('BUCKET_PREFIX')
+
+    rc = 0
+
+    #
+    # Initialize file pointers.
+    #
+    for i in BUCKETLIST:
+        bucketOld[i] = None
+        bucketNew[i] = None
+        bucketLose[i] = None
+        bucketGain[i] = None
+
+    return rc
+
+
+#
+# Purpose: Open files.
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+def openFiles():
+    global bucketOld, bucketNew
+    global bucketLose, bucketGain
+
+    #
+    # Open the bucket files.
+    # Load the ids into a Set (bucketOld[], bucketNew[])
+    # Create files for lose, gain (bucketLose[], bucketGain[])
+    #
+    for i in BUCKETLIST:
+
+        fileOld = bucketDir + '/' + bucketPrefix + '.' + i + '.txt.save'
+        fileNew = bucketDir + '/' + bucketPrefix + '.' + i + '.txt'
+        fileLose = bucketDir + '/' + bucketPrefix + '.' + i + '.txt.lose'
+        fileGain = bucketDir + '/' + bucketPrefix + '.' + i + '.txt.gain'
+
+        try:
+            fp = open(fileOld, 'r')
+	    bucketList = []
+	    for line in fp.readlines():
+                tokens = string.split(line[:-1], '\t')
+                id = tokens[0]
+		if i == B0_1 or string.find(id, 'MGI:') >= 0:
+	            bucketList.append(id)
+	    fp.close()
+	    bucketOld[i] = Set(bucketList)
+
+            fp = open(fileNew, 'r')
+	    bucketList = []
+	    for line in fp.readlines():
+                tokens = string.split(line[:-1], '\t')
+                id = tokens[0]
+		if i == B0_1 or string.find(id, 'MGI:') >= 0:
+	            bucketList.append(id)
+	    fp.close()
+	    bucketNew[i] = Set(bucketList)
+
+            #
+            # Open the lose file.
+            #
+            bucketLose[i] = open(fileLose, 'w')
+            bucketLose[i].write('#\n# LOSE file:  %s\n' % (fileLose))
+	    bucketLose[i].write('#\n# field 1:  MGI or UniProt ID\n')
+	    bucketLose[i].write('# field 2:  what bucket am I in now?\n')
+            bucketLose[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+	    bucketLose[i].write('#\n')
+
+            #
+            # Open the gain file.
+            #
+            bucketGain[i] = open(fileGain, 'w')
+            bucketGain[i].write('#\n# GAIN file: %s\n' % (fileGain))
+	    bucketGain[i].write('#\n# field 1:  MGI or UniProt ID\n')
+	    bucketGain[i].write('# field 2:  what bucket am I in now?\n')
+            bucketGain[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+	    bucketGain[i].write('#\n')
+
+        except:
+            print 'Cannot read bucket: ' + fileOld
+            print 'Cannot read bucket: ' + fileNew
+            print 'Cannot create bucket lose: ' + fileLose
+            print 'Cannot create bucket gain: ' + fileGain
+            return 1
+
+    return 0
+
+
+#
+# Purpose: Close files.
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+def closeFiles():
+    for i in BUCKETLIST:
+        bucketLose[i].close();
+        bucketGain[i].close();
+
+    return 0
+
+
+#
+# Purpose: Bucket differences between old and new buckets
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+def bucketDiff():
+
+    #
+    # for each record in bucketOld
+    #   find/write set of ids lost
+    #   find/write set of ids gained
+    #
+
+    for i in BUCKETLIST:
+
+	loseSet = bucketOld[i].difference(bucketNew[i])
+	gainSet = bucketNew[i].difference(bucketOld[i])
+
+	for id in loseSet:
+
+	    # determine if this id exists in another bucketNew set
+	    otherBucket = ''
+	    for j in BUCKETLIST:
+		if j == i:
+		    continue
+                if id in bucketNew[j]:
+		    otherBucket = j
+
+	    bucketLose[i].write(id + '\t' + otherBucket + '\n')
+
+	for id in gainSet:
+
+	    # determine if this id exists in another bucketOld set
+	    otherBucket = ''
+	    for j in BUCKETLIST:
+		if j == i:
+		    continue
+                if id in bucketOld[j]:
+		    otherBucket = j
+
+	    bucketGain[i].write(id + '\t' + otherBucket + '\n')
+
+    return 0
+
+#
+#  MAIN
+#
+
+if initialize() != 0:
+    sys.exit(1)
+
+if openFiles() != 0:
+    sys.exit(1)
+
+if bucketDiff() != 0:
+    closeFiles()
+    sys.exit(1)
+
+closeFiles()
+sys.exit(0)
