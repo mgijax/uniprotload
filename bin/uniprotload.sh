@@ -93,22 +93,22 @@ touch ${LOG}
 #
 # Create the UniProt association file.
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeUniProtAssocFile.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeUniProtAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeUniProtAssocFile.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeUniProtAssocFile.sh (uniprotload.sh)"
 
 #
 # Create the MGI association file.
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeMGIAssocFile.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeMGIAssocFile.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeMGIAssocFile.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeMGIAssocFile.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeMGIAssocFile.sh (uniprotload.sh)"
 
 #
 # Bucketized the association files.
@@ -121,54 +121,54 @@ STAT=$?
 checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
 
 #
-# Make/compare "old"/existing database uniprot ids with "new" buckets
+# Run "diff" reports to compare "old" vs. "new" buckets
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeCompareFile.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeCompareFile.sh compare 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeCompareFile.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeBucketsDiff.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeBucketsDiff.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeBucketsDiff.sh (uniprotload.sh)"
 
 #
 # Load association buckets
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
-#./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call loadBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
+./loadBuckets.sh ${JOBKEY} 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "loadBuckets.sh (uniprotload.sh)"
 
 #
 # Create/load GO annotations
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeGOAnnot.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeGOAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeGOAnnot.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeGOAnnot.sh (uniprotload.sh)"
 
 #
 # Create/load InterPro annotations
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
-#./makeInterProAnnot.sh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call makeInterProAnnot.sh (uniprotload.sh)" | tee -a ${LOG}
+./makeInterProAnnot.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "makeInterProAnnot.sh (uniprotload.sh)"
 
 #
 # Refresh Inferred-From Cache
 #
-#echo "" >> ${LOG}
-#date >> ${LOG}
-#echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
-#${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Call Inferred From/Accession cache load (uniprotload.sh)" | tee -a ${LOG}
+${MGICACHELOAD}/inferredfrom.csh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
 
 #
 # run postload cleanup and email logs
