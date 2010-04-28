@@ -371,6 +371,13 @@ def writeBuckets_format1():
 
     reporter = tabledatasetlib.TableDataSetBucketizerReporter(bucketizer)
 
+    bucket[B0_1].write('total number of unique records:  %s\n\n' % (len(bucketizer.get0_1())))
+    bucket[B1_0].write('total number of unique records:  %s\n\n' % (len(bucketizer.get1_0())))
+    bucket[B1_1].write('total number of unique records:  %s\n\n' % (len(bucketizer.get1_1())))
+    bucket[B1_N].write('total number of unique records:  %s\n\n' % (len(bucketizer.get1_n())))
+    bucket[BN_1].write('total number of unique records:  %s\n\n' % (len(bucketizer.getn_1())))
+    bucket[BN_N].write('total number of unique records:  %s\n\n' % (len(bucketizer.getn_m())))
+
     reporter.write_0_1(bucket[B0_1],
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
@@ -404,25 +411,6 @@ def writeBuckets_format1():
 # Throws: Nothing
 #
 def writeBuckets_format2():
-    #
-    # Load the 0:1 bucket.
-    #
-    for uniprotKey in bucketizer.get0_1():
-        uniprotRcd = dsUniProt.getRecords(uniprotKey)
-        uniprotID = uniprotRcd[0]['UniProt ID']
-        entrezgeneIDs = ','.join(uniprotRcd[0]['EntrezGene ID'])
-        ensemblIDs = ','.join(uniprotRcd[0]['Ensembl ID'])
-        bucket[B0_1].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\n')
-
-    #
-    # Load the 1:0 bucket.
-    #
-    for mgiKey in bucketizer.get1_0():
-        mgiRcd = dsMGI.getRecords(mgiKey)
-        mgiID = mgiRcd[0]['MGI ID']
-        entrezgeneIDs = ','.join(mgiRcd[0]['EntrezGene ID'])
-        ensemblIDs = ','.join(mgiRcd[0]['Ensembl ID'])
-        bucket[B1_0].write(mgiID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\n')
 
     #
     # Load the 1:1 bucket.

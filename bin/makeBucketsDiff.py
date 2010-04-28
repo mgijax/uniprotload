@@ -82,7 +82,7 @@
 #
 #      1) Initialize variables.
 #      2) Open files.
-#      3) Create sets for old bucket and new bucket.
+#      3) Create a set of old bucket and a set of new bucket.
 #      4) Compare the lose/gain Marker/UniProt ids for each bucket.
 #      5) Create output files for each bucket (one for lose, one for gain).
 #      7) Close files.
