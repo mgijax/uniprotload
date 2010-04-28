@@ -189,9 +189,14 @@ def openFiles():
             #
             bucketLose[i] = open(fileLose, 'w')
             bucketLose[i].write('#\n# LOSE file:  %s\n' % (fileLose))
-	    bucketLose[i].write('#\n# field 1:  MGI or UniProt ID\n')
-	    bucketLose[i].write('# field 2:  what bucket was I in before?\n')
-            bucketLose[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+
+	    if i != B0_1:
+	        bucketLose[i].write('#\n# field 1:  MGI ID\n')
+	        bucketLose[i].write('# field 2:  what bucket was I in before?\n')
+                bucketLose[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+            else:
+	        bucketLose[i].write('#\n# field 1:  UniProt ID\n')
+
 	    bucketLose[i].write('#\n')
 
             #
@@ -199,9 +204,14 @@ def openFiles():
             #
             bucketGain[i] = open(fileGain, 'w')
             bucketGain[i].write('#\n# GAIN file: %s\n' % (fileGain))
-	    bucketGain[i].write('#\n# field 1:  MGI or UniProt ID\n')
-	    bucketGain[i].write('# field 2:  what bucket was I in before?\n')
-            bucketGain[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+
+	    if i != B0_1:
+	        bucketGain[i].write('#\n# field 1:  MGI ID\n')
+	        bucketGain[i].write('# field 2:  what bucket was I in before?\n')
+                bucketGain[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
+            else:
+	        bucketGain[i].write('#\n# field 1:  UniProt ID\n')
+
 	    bucketGain[i].write('#\n')
 
         except:
