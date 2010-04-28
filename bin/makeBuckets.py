@@ -60,9 +60,18 @@
 #        ${BUCKET_PREFIX}.0_1.txt
 #        ${BUCKET_PREFIX}.1_0.txt
 #        ${BUCKET_PREFIX}.1_1.txt
-#        ${BUCKET_PREFIX}.1_n.txt
-#        ${BUCKET_PREFIX}.n_1.txt
-#        ${BUCKET_PREFIX}.n_n.txt
+#        ${BUCKET_PREFIX}.1_N.txt
+#        ${BUCKET_PREFIX}.N_1.txt
+#        ${BUCKET_PREFIX}.N_N.txt
+#
+#      - Save files from the previous buckets:
+#
+#        ${BUCKET_PREFIX}.0_1.txt.save
+#        ${BUCKET_PREFIX}.1_0.txt.save
+#        ${BUCKET_PREFIX}.1_1.txt.save
+#        ${BUCKET_PREFIX}.1_N.txt.save
+#        ${BUCKET_PREFIX}.N_1.txt.save
+#        ${BUCKET_PREFIX}.N_N.txt.save
 #
 #      - A file of unique MGI/UniProt associations from the 1:1 and 1:N
 #        buckets ($MGI_UNIPROT_LOAD_FILE). 
@@ -213,8 +222,10 @@ def openFiles():
         savedfile = bucketDir + '/' + bucketPrefix + '.' + i + '.txt.save'
 
         try:
-            os.remove(savedfile)
-            os.rename(file, savedfile)
+	    if os.path.isfile(savedfile):
+                os.remove(savedfile)
+	    if os.path.isfile(file):
+                os.rename(file, savedfile)
             bucket[i] = open(file, 'w')
         except:
             print 'Cannot rename/open bucket: ' + file
