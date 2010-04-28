@@ -96,6 +96,14 @@
 #               field 8: Date (MM/DD/YYYY)
 #               field 9: Notes (max length 255)
 #
+#  Implementation:
+#
+#      This script will perform following steps:
+#
+#      1) Initialize variables.
+#      2) Open files.
+#      3) Close files.
+#
 # History:
 #
 # 03/25/2010	lec
