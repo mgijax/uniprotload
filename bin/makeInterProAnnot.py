@@ -71,8 +71,9 @@
 #      This script will perform following steps:
 #
 #      1) Initialize variables.
-#      2) Open files.
-#      3) Close files.
+#      2) Open files, read files and create lookups.
+#      3) Process Marker/InterPro data & create annotation file.
+#      4) Close files.
 #
 # History:
 #

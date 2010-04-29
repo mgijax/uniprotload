@@ -101,8 +101,11 @@
 #      This script will perform following steps:
 #
 #      1) Initialize variables.
-#      2) Open files.
-#      3) Close files.
+#      2) Open files, read files and create lookups.
+#      3) Process EC-to-GO data & create annotation file.
+#      4) Process IP-to-GO data & create annotation file.
+#      5) Process SPKW-to-GO data & create annotation file.
+#      6) Close files.
 #
 # History:
 #
