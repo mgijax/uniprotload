@@ -34,17 +34,17 @@
 #
 #      1) Source the configuration file to establish the environment.
 #      2) Establish the log file.
-#      4) Call makeUniProtAssocFile.sh to make an association file
+#      3) Call makeUniProtAssocFile.sh to make an association file
 #         from the UniProt input file.
-#      5) Call makeMGIAssocFile.sh to make an association file from
+#      4) Call makeMGIAssocFile.sh to make an association file from
 #         the database.
-#      6) Call makeBuckets.sh to bucketize the association files.
-#      7) Call makeBucketsDiff.sh to run diff of old/new buckets.
-#      8) Call loadBuckets.sh to load associations created by bucketizer.
-#      9) Call makeGOAnnot.sh to generate/load marker-to-GO annotations.
-#      10) Call makeInterProAnnot.sh to generate/load InterPro vocabulary
-#          and marker-to-interpro annotations.
-#      11) Call ${MGICACHELOAD}/inferredfrom.csh to refresh the inferred-from cache.
+#      5) Call makeBuckets.sh to bucketize the association files.
+#      6) Call makeBucketsDiff.sh to run diff of old/new buckets.
+#      7) Call loadBuckets.sh to load associations created by bucketizer.
+#      8) Call makeGOAnnot.sh to generate/load marker-to-GO annotations.
+#      9) Call makeInterProAnnot.sh to generate/load InterPro vocabulary
+#         and marker-to-interpro annotations.
+#      10) Call ${MGICACHELOAD}/inferredfrom.csh to refresh the inferred-from cache.
 #
 #  Notes:  None
 #

@@ -35,6 +35,12 @@
 #        1) MGI ID (for a marker)
 #        2) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
+#
+#      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
+#        the TableDataSet class. It has the following tab-delimited fields:
+#        1) UniProt ID
+#        2) EntrezGene IDs (comma-separated)
+#        3) Ensembl gene model IDs (comma-separated)
 #        4) EC IDs (comma-separated)
 #        5) PDB IDs (comma-separated)
 #        6) InterPro IDs (comma-separated)
@@ -79,9 +85,10 @@
 #
 #        header:  MGI\tSWISS-PROT\tTrEMBL\tEC\tPDB
 #        1) MGI ID (for a marker)
-#        2) UniProt ID
-#        3) EC ID
-#        4) PDB ID
+#        2) SwissProt ID
+#        3) TrEMBL ID
+#        4) EC ID
+#        5) PDB ID
 #
 #  Exit Codes:
 #
