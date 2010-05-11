@@ -1,3 +1,10 @@
+TAG: uniprotload-4-3-3-11
+DATE: 05/11/2010
+STAFF: lec
+CHANGES:
+1) TR 9777/new
+2) remove TrEMBL associations from makeInterProAnnot.py, makeGOAnnot.py
+
 TAG: uniprotload-4-3-3-10
 TAG: uniprotload-4-3-3-9
 TAG: uniprotload-4-3-3-8
