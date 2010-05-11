@@ -211,13 +211,14 @@ def readMGI2UNIPROT():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	value1 = string.split(tokens[1], ',')
-	value2 = string.split(tokens[2], ',')
+	#value2 = string.split(tokens[2], ',')
 
         mgi_to_uniprot[key] = []
         for v in value1:
             mgi_to_uniprot[key].append(v)
-        for v in value2:
-            mgi_to_uniprot[key].append(v)
+
+        #for v in value2:
+        #    mgi_to_uniprot[key].append(v)
 
     fp.close()
 
