@@ -335,8 +335,7 @@ def readMGI2UNIPROT():
     #	key = MGI id
     #   value = list of uniprot ids, either SP or TrEMBL
     #
-    # we are only interested in SwissProt ids
-    # ignore TrEMBL ids
+    # we are only interested in both SwissProt & TrEMBL ids
     #
 
     global mgi_to_uniprot
@@ -354,11 +353,14 @@ def readMGI2UNIPROT():
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
 	value1 = string.split(tokens[1], ',')
+	value2 = string.split(tokens[2], ',')
 
 	if not mgi_to_uniprot.has_key(key):
 	    mgi_to_uniprot[key] = []
 
 	for v in value1:
+	    mgi_to_uniprot[key].append(v)
+	for v in value2:
 	    mgi_to_uniprot[key].append(v)
 
     fp.close()
