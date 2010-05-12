@@ -129,7 +129,9 @@ import db
 # globals
 
 # MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
-mgi_to_uniprot = {}
+mgi_to_uniprot_sptr = {}
+# MGI UniProt load mapping/SP only (MGI id -> UniProt id)
+mgi_to_uniprot_sp = {}
 
 # EC to GO mapping (EC id -> GO id)
 ec_to_go = {}		
@@ -329,16 +331,18 @@ def openFiles():
 def readMGI2UNIPROT():
 
     #
-    # parse mgi-to-uniprot file
+    # parse mgi-to-uniprot1 file
+    # parse mgi-to-uniprot2 file
     #
     # dictionary contains:
     #	key = MGI id
     #   value = list of uniprot ids, either SP or TrEMBL
     #
-    # we are only interested in both SwissProt & TrEMBL ids
+    # mgi_to_uniprot_sptr contains swissprot + trembl
+    # mgi_to_uniprot_sp contains swissprot only
     #
 
-    global mgi_to_uniprot
+    global mgi_to_uniprot_sptr, mgi_to_uniprot_sp
     global mgi_to_uniprotFile
 
     fp = open(mgi_to_uniprotFile,'r')
@@ -355,13 +359,23 @@ def readMGI2UNIPROT():
 	value1 = string.split(tokens[1], ',')
 	value2 = string.split(tokens[2], ',')
 
-	if not mgi_to_uniprot.has_key(key):
-	    mgi_to_uniprot[key] = []
+	# swissprot + trembl
+
+	if not mgi_to_uniprot_sptr.has_key(key):
+	    mgi_to_uniprot_sptr[key] = []
 
 	for v in value1:
-	    mgi_to_uniprot[key].append(v)
+	    mgi_to_uniprot_sptr[key].append(v)
 	for v in value2:
-	    mgi_to_uniprot[key].append(v)
+	    mgi_to_uniprot_sptr[key].append(v)
+
+	# swissprot only
+
+	if not mgi_to_uniprot_sp.has_key(key):
+	    mgi_to_uniprot_sp[key] = []
+
+	for v in value1:
+	    mgi_to_uniprot_sp[key].append(v)
 
     fp.close()
 
@@ -647,20 +661,21 @@ def processIP2GO():
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
     # Generate a GO annotation file from the Marker/InterPro associations.
     #
-    # each marker has one-or-more uniprot ids (mgi_to_uniprot):
+    # each marker has one-or-more uniprot ids (mgi_to_uniprot_sp):
     #    each uniprot id has one-or-more interpro ids (uniprot_to_ip)
     #        each interpro id has one-or-more go ids (ip_to_go)
     #              go id 1
     #              go id 2
     #	           etc...
     #
+    # Uses mgi_to_uniprot_sp, swissprot only.
     # Only consider loading a Marker/GO IEA InterPro annotation if a non-IEA GO annotation
     # to the same GO term does not already exist.
     #
 
     fp = open(goIPFile, 'w')
 
-    markerIDs = mgi_to_uniprot.keys()
+    markerIDs = mgi_to_uniprot_sp.keys()
     markerIDs.sort()
 
     for m in markerIDs:
@@ -673,7 +688,7 @@ def processIP2GO():
     
         go_to_ip = {}		
 
-        for uniprotVal in mgi_to_uniprot[m]:
+        for uniprotVal in mgi_to_uniprot_sp[m]:
 
             # if there is no uniprot_to_ip mapping, then skip it
 
@@ -757,20 +772,21 @@ def processSPKW2GO():
     # Select all Marker/UniProt associations from the Marker/UniProt association file.
     # Generate a GO annotation file from the Marker/SPKW associations.
     #
-    # each marker has one-or-more uniprot ids (mgi_to_uniprot):
+    # each marker has one-or-more uniprot ids (mgi_to_uniprot_sptr):
     #    each uniprot id has one-or-more sp-kw ids (uniprot_to_spkw)
     #        each sp-kw id has one-or-more go ids (spkw_to_go)
     #              go id 1
     #              go id 2
     #	           etc...
     #
+    # Uses mgi_to_uniprot_sptr, swissprot + trembl.
     # Only consider loading a Marker/GO IEA SP-KW annotation if a non-IEA GO annotation
     # to the same GO term does not already exist.
     #
 
     fp = open(goSPKWFile, 'w')
 
-    markerIDs = mgi_to_uniprot.keys()
+    markerIDs = mgi_to_uniprot_sptr.keys()
     markerIDs.sort()
 
     for m in markerIDs:
@@ -783,7 +799,7 @@ def processSPKW2GO():
     
         go_to_spkw = {}		
 
-        for uniprotVal in mgi_to_uniprot[m]:
+        for uniprotVal in mgi_to_uniprot_sptr[m]:
 
             # if there is no uniprot_to_spkw mapping, then skip it
 
