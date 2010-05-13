@@ -28,8 +28,9 @@
 #        TableDataSet class. It has the following tab-delimited fields:
 #
 #        1) MGI ID (for a marker)
-#        2) EntrezGene IDs (comma-separated)
-#        3) Ensembl gene model IDs (comma-separated)
+#        2) Symbol
+#        3) EntrezGene IDs (comma-separated)
+#        4) Ensembl gene model IDs (comma-separated)
 #
 #  Exit Codes:
 #
@@ -142,7 +143,7 @@ def getAssociations():
     # Get all of the EntrezGene IDs, Ensembl gene model IDs that are
     # associated with markers and load them into a temp table.
     #
-    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID" 
+    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID", m.symbol
               into #assoc 
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
@@ -215,7 +216,7 @@ def getAssociations():
     #
     # Get a unique list of all MGI IDs from the temp table.
     #
-    cmd = '''select distinct mgiID 
+    cmd = '''select distinct mgiID, symbol
              from #assoc 
              order by mgiID'''
     results = db.sql(cmd, 'auto')
@@ -227,6 +228,8 @@ def getAssociations():
     for r in results:
 
         mgiID = r['mgiID']
+        symbol = r['symbol']
+
         if entrezgeneDict.has_key(mgiID):
             entrezgeneID = entrezgeneDict[mgiID]
         else:
@@ -242,8 +245,9 @@ def getAssociations():
         # appropriate field.
         #
         fpAssoc.write(mgiID + '\t' + \
-                     ','.join(entrezgeneID) + '\t' + \
-                     ','.join(ensemblID) + '\n')
+		      symbol + '\t' + \
+                      ','.join(entrezgeneID) + '\t' + \
+                      ','.join(ensemblID) + '\n')
 
     return 0
 

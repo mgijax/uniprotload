@@ -6,7 +6,7 @@
 #  Purpose:
 #
 #      This script will compare the old/saved buckets
-#      with the new/current buckets and generate ouput files
+#      with the new/current buckets and generate output files
 #      that display:
 #
 #          lose Markers
@@ -110,6 +110,7 @@ bucketOld = {}
 bucketNew = {}
 bucketLose = {}
 bucketGain = {}
+mgiLookup = {}
 
 #
 # Purpose: Initialization
@@ -150,6 +151,7 @@ def initialize():
 def openFiles():
     global bucketOld, bucketNew
     global bucketLose, bucketGain
+    global mgiLookup
 
     #
     # Open the bucket files.
@@ -171,6 +173,11 @@ def openFiles():
                 id = tokens[0]
 		if i == B0_1 or string.find(id, 'MGI:') >= 0:
 	            bucketList.append(id)
+		if string.find(id, 'MGI:') >= 0:
+                    symbol = tokens[1]
+		    if not mgiLookup.has_key(id):
+		        mgiLookup[id] = []
+		    mgiLookup[id].append(symbol)
 	    fp.close()
 	    bucketOld[i] = Set(bucketList)
 
@@ -181,6 +188,11 @@ def openFiles():
                 id = tokens[0]
 		if i == B0_1 or string.find(id, 'MGI:') >= 0:
 	            bucketList.append(id)
+		if string.find(id, 'MGI:') >= 0:
+                    symbol = tokens[1]
+		    if not mgiLookup.has_key(id):
+		        mgiLookup[id] = []
+		    mgiLookup[id].append(symbol)
 	    fp.close()
 	    bucketNew[i] = Set(bucketList)
 
@@ -192,7 +204,8 @@ def openFiles():
 
 	    if i != B0_1:
 	        bucketLose[i].write('#\n# field 1:  MGI ID\n')
-	        bucketLose[i].write('# field 2:  what bucket was I in before?\n')
+	        bucketLose[i].write('# field 2:  Symbol\n')
+	        bucketLose[i].write('# field 3:  what bucket was I in before?\n')
                 bucketLose[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
             else:
 	        bucketLose[i].write('#\n# field 1:  UniProt ID\n')
@@ -207,7 +220,8 @@ def openFiles():
 
 	    if i != B0_1:
 	        bucketGain[i].write('#\n# field 1:  MGI ID\n')
-	        bucketGain[i].write('# field 2:  what bucket was I in before?\n')
+	        bucketGain[i].write('# field 2:  Symbol\n')
+	        bucketGain[i].write('# field 3:  what bucket was I in before?\n')
                 bucketGain[i].write('#\n# left-hand side of the bucket name is MGI; right-hand side is UniProt\n') 
             else:
 	        bucketGain[i].write('#\n# field 1:  UniProt ID\n')
@@ -272,7 +286,7 @@ def bucketDiff():
                 if id in bucketNew[j]:
 		    otherBucket = j
 
-	    bucketLose[i].write(id + '\t' + otherBucket + '\n')
+	    bucketLose[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
 
 	for id in gainSet:
 
@@ -284,7 +298,7 @@ def bucketDiff():
                 if id in bucketOld[j]:
 		    otherBucket = j
 
-	    bucketGain[i].write(id + '\t' + otherBucket + '\n')
+	    bucketGain[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
 
     return 0
 
