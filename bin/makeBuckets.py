@@ -140,7 +140,7 @@ tremblLookup = []
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -209,7 +209,7 @@ def initialize():
 
 #
 # Purpose: Open files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing

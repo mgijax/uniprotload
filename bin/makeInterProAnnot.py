@@ -98,7 +98,7 @@ uniprot_to_ip = {}
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -166,7 +166,7 @@ def initialize():
 
 #
 # Purpose: Open Files
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -181,7 +181,7 @@ def openFiles():
 
 #
 # Purpose: Read MGI-to-UniProt file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -227,7 +227,7 @@ def readMGI2UNIPROT():
 
 #
 # Purpose: Read UniProt-to-Acc file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -266,7 +266,7 @@ def readUNIPROTACC():
 
 #
 # Purpose: Process Marker/InterPro data & create annotation file
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing

@@ -85,7 +85,7 @@ import UniProtParser
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -134,7 +134,7 @@ def initialize():
 
 #
 # Purpose: Open files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -184,7 +184,7 @@ def openFiles():
 
 #
 # Purpose: Close files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -209,7 +209,7 @@ def closeFiles():
 #
 # Purpose: Use a UniProtParser object to get IDs from the UniProt input
 #          file and create the association file.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing

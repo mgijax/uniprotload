@@ -97,7 +97,7 @@ bucketizer = None
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -153,7 +153,7 @@ def initialize():
 
 #
 # Purpose: Open files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -183,7 +183,7 @@ def openFiles():
 
 #
 # Purpose: Close files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -198,7 +198,7 @@ def closeFiles():
 
 #
 # Purpose: Create a file of the MGI/SwissProt associations in the database
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -266,7 +266,7 @@ def getAssociations():
 
 #
 # Purpose: Bucketize the files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -332,7 +332,7 @@ def bucketize():
 
 #
 # Purpose: Write the bucketizing results to the bucket files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing

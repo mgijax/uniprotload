@@ -62,7 +62,7 @@ import db
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -92,7 +92,7 @@ def initialize():
 
 #
 # Purpose: Open files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -114,7 +114,7 @@ def openFiles():
 
 #
 # Purpose: Close files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -132,7 +132,7 @@ def closeFiles():
 #
 # Purpose: Query the database to get associations to MGI markers and
 #          create the association file.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing

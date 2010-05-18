@@ -153,7 +153,7 @@ nonIEA_annotations = []
 
 #
 # Purpose: Initialization
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -261,7 +261,7 @@ def initialize():
 
 #
 # Purpose: Open Files
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -322,7 +322,7 @@ def openFiles():
 
 #
 # Purpose: Read MGI-to-UniProt file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -383,7 +383,7 @@ def readMGI2UNIPROT():
 
 #
 # Purpose: Read EC-to-GO file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -422,7 +422,7 @@ def readEC2GO():
 
 #
 # Purpose: Read IP-to-GO file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -476,7 +476,7 @@ def readIP2GO():
 
 #
 # Purpose: Read SPKW-to-GO file & create lookup
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -522,7 +522,7 @@ def readSPKW2GO():
 
 #
 # Purpose: Read UniProt-to-Acc file & create lookups
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -573,7 +573,7 @@ def readUNIPROTACC():
 
 #
 # Purpose: Process EC-to-GO data & create annotation file
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -647,7 +647,7 @@ def processEC2GO():
 
 #
 # Purpose: Process IP-to-GO data & create annotation file
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -758,7 +758,7 @@ def processIP2GO():
 
 #
 # Purpose: Process SPKW-to-GO data & create annotation file
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
