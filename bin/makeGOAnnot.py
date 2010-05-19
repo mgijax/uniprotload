@@ -639,6 +639,12 @@ def processEC2GO():
     # Only consider loading a Marker/GO IEA EC annotation if a non-IEA GO annotation
     # to the same GO term does not already exist.
     #
+    # for each Marker/EC association in MGD:
+    #	if there is no EC-2-GO mapping for the EC ID, then skip it
+    #	else for each EC-2-GO mapping....
+    #      if a non-IEA annotation exists, skip
+    #      else we want to load this annotation
+    #
 
     fp = open(goECFile, 'w')
 
@@ -718,6 +724,17 @@ def processIP2GO():
     # Uses mgi_to_uniprot_sp, swissprot only.
     # Only consider loading a Marker/GO IEA InterPro annotation if a non-IEA GO annotation
     # to the same GO term does not already exist.
+    #
+    # for each Marker/UniProt association in the Marker/UniProt association file:
+    # 	for the given marker, collect a set of GO id -> interpro ids
+    # 	the GO annotation loader is driven by Marker/GO id/set of interpro ids
+    # 	we want one set of interpro ids per GO id per Marker
+    #	
+    #	for each uniProt value in the MGI-to-UniProtSP
+    #		if there is no uniprot_to_ip mapping, then skip
+    #		for each UNIPROT-2-IP mapping....
+    #			if a non-IEA annotation exists, skip
+    #			else we want to load this annotation
     #
 
     fp = open(goIPFile, 'w')
