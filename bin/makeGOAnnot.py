@@ -128,8 +128,54 @@ import db
 
 # globals
 
+# file name MGI_UNIPROT_LOAD_FILE
+mgi_to_uniprotFile = None
+
+# file name UNIPROT_ACC_ASSOC_FILE
+uniprotFile = None
+
+# file name EC2GOFILE
+ec2goFile = None
+
+# file name GO_EC_ASSOC_FILE
+goECFile = None
+
+# file name IP2GOFILE
+ip2goFile = None
+
+# file name GO_IP_ASSOC_FILE
+goIPFile = None
+
+# file name SPKW2GOFILE
+spkw2goFile = None
+
+# file name GO_SPKW_ASSOC_FILE
+goSPKWFile = None
+
+# variable name GO_EC_ANNOT_REF 
+goECRef = None
+
+# variable name GO_IP_ANNOT_REF
+goIPRef = None
+
+# variable name GO_SPKW_ANNOT_REF
+goSPKWRef = None
+
+# variable name ANNOT_EVIDENCECODE
+annotEvidence = None
+
+# variable name ANNOT_EDITOR
+annotEditor = None
+
+# variable name ANNOT_DATE
+annotDate = None
+
+# variable name ANNOT_NOTE
+annotNote = None
+
 # MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
 mgi_to_uniprot_sptr = {}
+
 # MGI UniProt load mapping/SP only (MGI id -> UniProt id)
 mgi_to_uniprot_sp = {}
 
@@ -149,6 +195,7 @@ uniprot_to_ip = {}
 uniprot_to_spkw = {}
 
 # non-IEA MGI Marker/GO ID annotations
+# where list key = mgiID + accID
 nonIEA_annotations = []	
 
 #

@@ -90,6 +90,27 @@ import db
 
 # globals
 
+# file name MGI_UNIPROT_LOAD_FILE
+mgi_to_uniprotFile = None
+
+# file name UNIPROT_ACC_ASSOC_FILE
+uniprotFile = None
+
+# file name MARKER_IP_ASSOC_FILE
+markerIPFile = None
+
+# file name MARKER_IP_ANNOT_REF
+markerIPRef = None
+
+# variable name ANNOT_EVIDENCECODE
+annotEvidence = None
+
+# variable name ANNOT_EDITOR
+annotEditor = None
+
+# variable name ANNOT_DATE
+annotDate = None
+
 # MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
 mgi_to_uniprot = {}
 

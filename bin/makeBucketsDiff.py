@@ -106,10 +106,21 @@ BN_N = 'N_N'
 
 BUCKETLIST = [ B0_1, B1_0, B1_1, B1_N, BN_1, BN_N ]
 
+# BUCKETDIR
+bucketDir = None
+
+# BUCKET_PREFIX
+bucketPrefix = None
+
+# file pointers...one for each bucket in BUCKETLIST
 bucketOld = {}
 bucketNew = {}
 bucketLose = {}
 bucketGain = {}
+
+# reads a bucket that contains an MGI ID
+# dictionary mapping MGI IDs to Marker Symbol
+# looks like:  {MGI ID: [symbol]...}
 mgiLookup = {}
 
 #

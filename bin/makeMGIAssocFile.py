@@ -59,6 +59,11 @@ import sys
 import os
 import db
 
+# file name MGI_ACC_ASSOC_FILE
+mgiAssocFile = None
+
+# file pointer
+fpAssoc = None
 
 #
 # Purpose: Initialization

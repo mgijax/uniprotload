@@ -82,6 +82,23 @@ import os
 
 import UniProtParser
 
+# INPUTFILE
+uniprotFile = None
+
+# UNIPROT_ACC_ASSOC_FILE
+uniprotAccAssocFile = None
+
+# UNIPROT_ACC1_ASSOC_FILE
+uniprotAcc1AssocFile = None
+
+# UNIPROT_ACC2_ASSOC_FILE
+uniprotAcc2AssocFile = None
+
+# file pointers
+fpUniProt = None
+fpAccAssoc = None
+fpAcc1Assoc = None
+fpAcc2Assoc = None
 
 #
 # Purpose: Initialization
@@ -92,7 +109,6 @@ import UniProtParser
 #
 def initialize():
     global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global uniprotPDBAssocFile, uniprotECAssocFile, uniprotIPAssocFile, uniprotKWAssocFile
     global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
 
     uniprotFile = os.getenv('INPUTFILE')

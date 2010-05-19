@@ -132,11 +132,50 @@ BN_N = 'N_N'
 
 BUCKETLIST = [ B0_1, B1_0, B1_1, B1_N, BN_1, BN_N ]
 
+# file pointers...one for each bucket in BUCKETLIST
+# bucket[B0_1] = open()
+# bucket[B1_0] = open()
+# etc.
 bucket = {}
+
+# a bucketizer for the two datasets
 bucketizer = None
 
+# MGI_ACC_ASSOC_FILE
+mgiAssocFile = None
+
+# UNIPROT_ACC_ASSOC_FILE
+uniprotAccAssocFile = None
+
+# UNIPROT_ACC1_ASSOC_FILE
+uniprotAcc1AssocFile = None
+
+# UNIPROT_ACC2_ASSOC_FILE
+uniprotAcc2AssocFile = None
+
+# reads UNIPROT_ACC1_ASSOC_FILE/uniprotAcc1AssocFile
+# dictionary mapping SwissProt ids
+# looks like:  [Q9CQV8, P62259, ...]
 swissprotLookup = []
+
+# reads UNIPROT_ACC2_ASSOC_FILE/uniprotAcc2AssocFile
+# dictionary mapping TrEMBL ids
+# looks like:  [A0A4V6, A0A4W8, ...]
 tremblLookup = []
+
+# MGI_UNIPROT_LOAD_FILE
+bucketRptFile = None
+
+# BUCKETDIR
+bucketDir = None
+
+# BUCKET_PREFIX
+bucketPrefix = None
+
+# file pointers
+bucketRpt = None
+fpSPAssoc = None
+fpTRAssoc = None
 
 #
 # Purpose: Initialization
@@ -148,7 +187,6 @@ tremblLookup = []
 def initialize():
     global mgiAssocFile
     global uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global uniprotPDBAssocFile, uniprotECAssocFile
     global bucketRptFile
     global bucketDir, bucketPrefix
     global bucket, bucketRpt
@@ -200,6 +238,7 @@ def initialize():
     #
     for i in BUCKETLIST:
         bucket[i] = None
+
     bucketRpt = None
     fpSPAssoc = None
     fpTRAssoc = None
@@ -258,7 +297,7 @@ def openFiles():
 	for line in fpSPAssoc.readlines():
             swissprotLookup.append(line[:-1])
     except:
-        print 'Cannot open swissprot association file: ' + uniprotPDBAssocFile
+        print 'Cannot open swissprot association file: ' + uniprotAcc1AssocFile
         return 1
 
     #
@@ -269,7 +308,7 @@ def openFiles():
 	for line in fpTRAssoc.readlines():
             tremblLookup.append(line[:-1])
     except:
-        print 'Cannot open trembl association file: ' + uniprotPDBAssocFile
+        print 'Cannot open trembl association file: ' + uniprotAcc2AssocFile
         return 1
 
     return 0
@@ -277,7 +316,7 @@ def openFiles():
 
 #
 # Purpose: Close files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -301,7 +340,7 @@ def closeFiles():
 
 #
 # Purpose: Bucketize the MGI/UniProt IDs from the association files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -370,7 +409,7 @@ def bucketize():
 
 #
 # Purpose: Write the bucketizing results to the bucket files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -413,7 +452,7 @@ def writeBuckets_format1():
 
 #
 # Purpose: Write the bucketizing results to the bucket files.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -484,7 +523,7 @@ def writeBuckets_format2():
 #
 # Purpose: Write the unique MGI/UniProt associations to a file using the
 #          1:1 and 1:N buckets only.
-# Returns: Nothing
+# Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
