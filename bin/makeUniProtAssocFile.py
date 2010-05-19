@@ -28,8 +28,8 @@
 #
 #          INPUTFILE
 #          UNIPROT_ACC_ASSOC_FILE
-#          UNIPROT_ACC1_ASSOC_FILE
-#          UNIPROT_ACC2_ASSOC_FILE
+#          UNIPROT_SP_ASSOC_FILE
+#          UNIPROT_TR_ASSOC_FILE
 #
 #  Inputs:
 #
@@ -47,11 +47,11 @@
 #        6) InterPro IDs (comma-separated)
 #        7) SPKW Names (comma-separated)
 #
-#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) to be used by
+#      - SwissProt association file ($UNIPROT_SP_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
 #        1) UniProt ID
 #
-#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE) to be used by
+#      - TrEMBL association file ($UNIPROT_TR_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
 #        1) UniProt ID (TrEMBL)
 #
@@ -88,17 +88,17 @@ uniprotFile = None
 # UNIPROT_ACC_ASSOC_FILE
 uniprotAccAssocFile = None
 
-# UNIPROT_ACC1_ASSOC_FILE
-uniprotAcc1AssocFile = None
+# UNIPROT_SP_ASSOC_FILE
+uniprotSPAssocFile = None
 
-# UNIPROT_ACC2_ASSOC_FILE
-uniprotAcc2AssocFile = None
+# UNIPROT_TR_ASSOC_FILE
+uniprotTRAssocFile = None
 
 # file pointers
 fpUniProt = None
 fpAccAssoc = None
-fpAcc1Assoc = None
-fpAcc2Assoc = None
+fpSPAssoc = None
+fpTRAssoc = None
 
 #
 # Purpose: Initialization
@@ -108,13 +108,13 @@ fpAcc2Assoc = None
 # Throws: Nothing
 #
 def initialize():
-    global uniprotFile, uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
-    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
+    global uniprotFile, uniprotAccAssocFile, uniprotSPAssocFile, uniprotTRAssocFile
+    global fpUniProt, fpAccAssoc, fpSPAssoc, fpTRAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
-    uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
-    uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
+    uniprotSPAssocFile = os.getenv('UNIPROT_SP_ASSOC_FILE')
+    uniprotTRAssocFile = os.getenv('UNIPROT_TR_ASSOC_FILE')
 
     rc = 0
 
@@ -129,12 +129,12 @@ def initialize():
         print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
         rc = 1
 
-    if not uniprotAcc1AssocFile:
-        print 'Environment variable not set: UNIPROT_ACC1_ASSOC_FILE'
+    if not uniprotSPAssocFile:
+        print 'Environment variable not set: UNIPROT_SP_ASSOC_FILE'
         rc = 1
 
-    if not uniprotAcc2AssocFile:
-        print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
+    if not uniprotTRAssocFile:
+        print 'Environment variable not set: UNIPROT_TR_ASSOC_FILE'
         rc = 1
 
     #
@@ -142,8 +142,8 @@ def initialize():
     #
     fpUniProt = None
     fpAccAssoc = None
-    fpAcc1Assoc = None
-    fpAcc2Assoc = None
+    fpSPAssoc = None
+    fpTRAssoc = None
 
     return rc
 
@@ -156,7 +156,7 @@ def initialize():
 # Throws: Nothing
 #
 def openFiles():
-    global fpUniProt, fpAccAssoc, fpAcc1Assoc, fpAcc2Assoc
+    global fpUniProt, fpAccAssoc, fpSPAssoc, fpTRAssoc
     global fpPDBAssoc, fpECAssoc, fpIPAssoc, fpKWAssoc
 
     #
@@ -181,18 +181,18 @@ def openFiles():
     # Open the acc association file.
     #
     try:
-        fpAcc1Assoc = open(uniprotAcc1AssocFile, 'w')
+        fpSPAssoc = open(uniprotSPAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotAcc1AssocFile
+        print 'Cannot open association file: ' + uniprotSPAssocFile
         return 1
 
     #
     # Open the acc association file.
     #
     try:
-        fpAcc2Assoc = open(uniprotAcc2AssocFile, 'w')
+        fpTRAssoc = open(uniprotTRAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotAcc2AssocFile
+        print 'Cannot open association file: ' + uniprotTRAssocFile
         return 1
 
     return 0
@@ -213,11 +213,11 @@ def closeFiles():
     if fpAccAssoc:
         fpAccAssoc.close()
 
-    if fpAcc1Assoc:
-        fpAcc1Assoc.close()
+    if fpSPAssoc:
+        fpSPAssoc.close()
 
-    if fpAcc2Assoc:
-        fpAcc2Assoc.close()
+    if fpTRAssoc:
+        fpTRAssoc.close()
 
     return 0
 
@@ -294,11 +294,11 @@ def getAssociations():
 
 	    # swiss-prot
 	    if not isTrembl:
-                fpAcc1Assoc.write(uniprotID + '\n')
+                fpSPAssoc.write(uniprotID + '\n')
 
 	    # trembl 
 	    else:
-                fpAcc2Assoc.write(uniprotID + '\n')
+                fpTRAssoc.write(uniprotID + '\n')
 
         #
         # Get the next record from the parser.

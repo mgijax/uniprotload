@@ -20,8 +20,8 @@
 #
 #          MGI_ACC_ASSOC_FILE
 #          UNIPROT_ACC_ASSOC_FILE
-#          UNIPROT_ACC1_ASSOC_FILE
-#          UNIPROT_ACC2_ASSOC_FILE
+#          UNIPROT_SP_ASSOC_FILE
+#          UNIPROT_TR_ASSOC_FILE
 #          BUCKETDIR
 #          BUCKET_PREFIX
 #          MGI_UNIPROT_LOAD_FILE
@@ -47,13 +47,13 @@
 #        6) InterPro IDs (comma-separated)
 #        7) SPKW Names (comma-separated)
 #
-#      - SwissProt association file ($UNIPROT_ACC1_ASSOC_FILE) 
+#      - SwissProt association file ($UNIPROT_SP_ASSOC_FILE) 
 #        to be used to generate a lookup file of SwissProt associations.
 #        It has the following tab-delimited fields:
 #
 #        1) UniProt ID
 #
-#      - TrEMBL association file ($UNIPROT_ACC2_ASSOC_FILE)
+#      - TrEMBL association file ($UNIPROT_TR_ASSOC_FILE)
 #        to be used to generate a lookup file of TrEMBL associations.
 #        It has the following tab-delimited fields:
 #
@@ -147,18 +147,18 @@ mgiAssocFile = None
 # UNIPROT_ACC_ASSOC_FILE
 uniprotAccAssocFile = None
 
-# UNIPROT_ACC1_ASSOC_FILE
-uniprotAcc1AssocFile = None
+# UNIPROT_SP_ASSOC_FILE
+uniprotSPAssocFile = None
 
-# UNIPROT_ACC2_ASSOC_FILE
-uniprotAcc2AssocFile = None
+# UNIPROT_TR_ASSOC_FILE
+uniprotTRAssocFile = None
 
-# reads UNIPROT_ACC1_ASSOC_FILE/uniprotAcc1AssocFile
+# reads UNIPROT_SP_ASSOC_FILE/uniprotSPAssocFile
 # dictionary mapping SwissProt ids
 # looks like:  [Q9CQV8, P62259, ...]
 swissprotLookup = []
 
-# reads UNIPROT_ACC2_ASSOC_FILE/uniprotAcc2AssocFile
+# reads UNIPROT_TR_ASSOC_FILE/uniprotTRAssocFile
 # dictionary mapping TrEMBL ids
 # looks like:  [A0A4V6, A0A4W8, ...]
 tremblLookup = []
@@ -186,7 +186,7 @@ fpTRAssoc = None
 #
 def initialize():
     global mgiAssocFile
-    global uniprotAccAssocFile, uniprotAcc1AssocFile, uniprotAcc2AssocFile
+    global uniprotAccAssocFile, uniprotSPAssocFile, uniprotTRAssocFile
     global bucketRptFile
     global bucketDir, bucketPrefix
     global bucket, bucketRpt
@@ -194,8 +194,8 @@ def initialize():
 
     mgiAssocFile = os.getenv('MGI_ACC_ASSOC_FILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
-    uniprotAcc1AssocFile = os.getenv('UNIPROT_ACC1_ASSOC_FILE')
-    uniprotAcc2AssocFile = os.getenv('UNIPROT_ACC2_ASSOC_FILE')
+    uniprotSPAssocFile = os.getenv('UNIPROT_SP_ASSOC_FILE')
+    uniprotTRAssocFile = os.getenv('UNIPROT_TR_ASSOC_FILE')
     bucketDir = os.getenv('BUCKETDIR')
     bucketPrefix = os.getenv('BUCKET_PREFIX')
     bucketRptFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
@@ -213,12 +213,12 @@ def initialize():
         print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
         rc = 1
 
-    if not uniprotAcc1AssocFile:
-        print 'Environment variable not set: UNIPROT_ACC1_ASSOC_FILE'
+    if not uniprotSPAssocFile:
+        print 'Environment variable not set: UNIPROT_SP_ASSOC_FILE'
         rc = 1
 
-    if not uniprotAcc2AssocFile:
-        print 'Environment variable not set: UNIPROT_ACC2_ASSOC_FILE'
+    if not uniprotTRAssocFile:
+        print 'Environment variable not set: UNIPROT_TR_ASSOC_FILE'
         rc = 1
 
     if not bucketRptFile:
@@ -293,22 +293,22 @@ def openFiles():
     # Open the swissprot association file.
     #
     try:
-        fpSPAssoc = open(uniprotAcc1AssocFile, 'r')
+        fpSPAssoc = open(uniprotSPAssocFile, 'r')
 	for line in fpSPAssoc.readlines():
             swissprotLookup.append(line[:-1])
     except:
-        print 'Cannot open swissprot association file: ' + uniprotAcc1AssocFile
+        print 'Cannot open swissprot association file: ' + uniprotSPAssocFile
         return 1
 
     #
     # Open the trembl association file.
     #
     try:
-        fpTRAssoc = open(uniprotAcc2AssocFile, 'r')
+        fpTRAssoc = open(uniprotTRAssocFile, 'r')
 	for line in fpTRAssoc.readlines():
             tremblLookup.append(line[:-1])
     except:
-        print 'Cannot open trembl association file: ' + uniprotAcc2AssocFile
+        print 'Cannot open trembl association file: ' + uniprotTRAssocFile
         return 1
 
     return 0
