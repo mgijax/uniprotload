@@ -186,12 +186,9 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
-        if entrezgeneDict.has_key(mgiID):
-            list = entrezgeneDict[mgiID]
-        else:
-            list = []
-        list.append(accID)
-        entrezgeneDict[mgiID] = list
+        if not entrezgeneDict.has_key(mgiID):
+            entrezgeneDict[mgiID] = []
+        entrezgeneDict[mgiID].append(accID)
 
     #
     # Get the MGI ID of the marker and the unique Ensembl gene model IDs
@@ -211,12 +208,9 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
-        if ensemblDict.has_key(mgiID):
-            list = ensemblDict[mgiID]
-        else:
-            list = []
-        list.append(accID)
-        ensemblDict[mgiID] = list
+        if not ensemblDict.has_key(mgiID):
+            ensemblDict[mgiID] = []
+        ensemblDict[mgiID].append(accID)
 
     #
     # Get a unique list of all MGI IDs from the temp table.
@@ -239,6 +233,7 @@ def getAssociations():
             entrezgeneID = entrezgeneDict[mgiID]
         else:
             entrezgeneID = []
+
         if ensemblDict.has_key(mgiID):
             ensemblID = ensemblDict[mgiID]
         else:
