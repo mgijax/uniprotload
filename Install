@@ -6,6 +6,7 @@
 # 1) cp uniprotload.config.default uniprotload.config
 # 2) cp uniprotload.config.csh.default uniprotload.config.csh
 # 3) Install 
+# 4) Create empty "save" files
 #
 
 Usage=Install
@@ -67,4 +68,18 @@ if [ ! -d ${INPUTDIR} ]
 then
     mkdir -p ${INPUTDIR}
 fi
+
+#
+# Create empty "save" files so that makeBucketsDiff.py will run correctly.
+#
+
+. ${MAIN_CONFIG}
+for i in 0_1 1_0 1_1 1_N N_1 N_N
+do
+    SAVE_FILE="${BUCKETDIR}/${BUCKET_PREFIX}.${i}.txt.save"
+    if [ ! -f ${SAVE_FILE} ]
+    then
+        touch ${SAVE_FILE}
+    fi
+done
 

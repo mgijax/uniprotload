@@ -192,6 +192,11 @@ def openFiles():
 	    fp.close()
 	    bucketOld[i] = Set(bucketList)
 
+        except:
+            print 'Cannot read bucket: ' + fileOld
+            return 1
+
+        try:
             fp = open(fileNew, 'r')
 	    bucketList = []
 	    for line in fp.readlines():
@@ -207,6 +212,11 @@ def openFiles():
 	    fp.close()
 	    bucketNew[i] = Set(bucketList)
 
+        except:
+            print 'Cannot read bucket: ' + fileNew
+            return 1
+
+	try:
             #
             # Open the lose file.
             #
@@ -223,6 +233,11 @@ def openFiles():
 
 	    bucketLose[i].write('#\n')
 
+        except:
+            print 'Cannot create bucket lose: ' + fileLose
+	    return 1
+
+	try:
             #
             # Open the gain file.
             #
@@ -240,9 +255,6 @@ def openFiles():
 	    bucketGain[i].write('#\n')
 
         except:
-            print 'Cannot read bucket: ' + fileOld
-            print 'Cannot read bucket: ' + fileNew
-            print 'Cannot create bucket lose: ' + fileLose
             print 'Cannot create bucket gain: ' + fileGain
             return 1
 
@@ -289,6 +301,9 @@ def bucketDiff():
 
 	for id in loseSet:
 
+	    if id == '':
+		break
+
 	    # determine if this id exists in another bucketNew set
 	    otherBucket = ''
 	    for j in BUCKETLIST:
@@ -300,6 +315,9 @@ def bucketDiff():
 	    bucketLose[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
 
 	for id in gainSet:
+
+	    if id == '':
+		break
 
 	    # determine if this id exists in another bucketOld set
 	    otherBucket = ''
