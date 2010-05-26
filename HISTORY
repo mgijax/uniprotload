@@ -1,3 +1,9 @@
+TAG: uniprotload-4-3-3-19
+DATE: 05/26/2010
+STAFF: lec
+CHANGES:
+1) TR10231/makeMGIAssocFile.py, makeBuckets.py, makeGOAnnot.py
+
 TAG: uniprotload-4-3-3-18
 TAG: uniprotload-4-3-3-17
 DATE: 05/25/2010
