@@ -29,8 +29,9 @@
 #
 #        1) MGI ID (for a marker)
 #        2) Symbol
-#        3) EntrezGene IDs (comma-separated)
-#        4) Ensembl gene model IDs (comma-separated)
+#	 3) Marker Types
+#        4) EntrezGene IDs (comma-separated)
+#        5) Ensembl gene model IDs (comma-separated)
 #
 #  Exit Codes:
 #
@@ -148,7 +149,7 @@ def getAssociations():
     # Get all of the EntrezGene IDs, Ensembl gene model IDs that are
     # associated with markers and load them into a temp table.
     #
-    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID", m.symbol
+    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID", m.symbol, m._Marker_Type_key
               into #assoc 
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
@@ -215,7 +216,7 @@ def getAssociations():
     #
     # Get a unique list of all MGI IDs from the temp table.
     #
-    cmd = '''select distinct mgiID, symbol
+    cmd = '''select distinct mgiID, symbol, _Marker_Type_key
              from #assoc 
              order by mgiID'''
     results = db.sql(cmd, 'auto')
@@ -228,6 +229,7 @@ def getAssociations():
 
         mgiID = r['mgiID']
         symbol = r['symbol']
+        markerType = r['_Marker_Type_key']
 
         if entrezgeneDict.has_key(mgiID):
             entrezgeneID = entrezgeneDict[mgiID]
@@ -246,6 +248,7 @@ def getAssociations():
         #
         fpAssoc.write(mgiID + '\t' + \
 		      symbol + '\t' + \
+		      str(markerType) + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
                       ','.join(ensemblID) + '\n')
 

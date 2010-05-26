@@ -34,8 +34,9 @@
 #
 #        1) MGI ID (for a marker)
 #        2) Marker Symbol
-#        3) EntrezGene IDs and NBCI gene model IDs (comma-separated)
-#        4) Ensembl gene model IDs (comma-separated)
+#        3) Marker Type
+#        4) EntrezGene IDs and NBCI gene model IDs (comma-separated)
+#        5) Ensembl gene model IDs (comma-separated)
 #
 #      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
@@ -351,7 +352,7 @@ def bucketize():
     #
     # Create a TableDataSet for the MGI association file.
     #
-    fields = [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ]
+    fields = [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ]
     multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' }
 
     dsMGI = tabledatasetlib.TextFileTableDataSet(
@@ -429,22 +430,22 @@ def writeBuckets_format1():
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
     reporter.write_1_0(bucket[B1_0],
-                       [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ])
 
     reporter.write_1_1(bucket[B1_1],
-                       [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ],
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
     reporter.write_1_n(bucket[B1_N],
-                       [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ],
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
     reporter.write_n_1(bucket[BN_1],
-                       [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ],
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
     reporter.write_n_m(bucket[BN_N],
-                       [ 'MGI ID', 'Symbol', 'EntrezGene ID', 'Ensembl ID' ],
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
                        [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
 
     return 0

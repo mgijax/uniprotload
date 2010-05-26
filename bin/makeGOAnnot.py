@@ -24,6 +24,7 @@
 #
 #	  MGI_UNIPROT_LOAD_FILE
 #	  UNIPROT_ACC_ASSOC_FILE
+#	  MGI_ACC_ASSOC_FILE
 #
 #         EC2GOFILE
 #         GO_EC_ASSOC_FILE
@@ -50,6 +51,16 @@
 #	  5: ec
 #
 #       - UniProt Acc files (${UNIPROT_ACC_ASSOC_FILE})
+#
+#      - MGI association file ($MGI_ACC_ASSOC_FILE)
+#        to be used by the TableDataSet class. 
+#        It has the following tab-delimited fields:
+#
+#        1) MGI ID (for a marker)
+#        2) Marker Symbol
+#        3) Marker Type
+#        4) EntrezGene IDs and NBCI gene model IDs (comma-separated)
+#        5) Ensembl gene model IDs (comma-separated)
 #
 #	- EC-2-GO file ($EC2GOFILE)
 #
@@ -109,6 +120,9 @@
 #
 # History:
 #
+# 05/26/2010	lec
+#	- TR 10231/output should contain marker type 'gene' only
+#
 # 03/25/2010	lec
 #	- TR 9777; original program "swissecload"
 #
@@ -133,6 +147,9 @@ mgi_to_uniprotFile = None
 
 # file name UNIPROT_ACC_ASSOC_FILE
 uniprotFile = None
+
+# file name MGI_ACC_ASSOC_FILE
+mgi_to_markertypeFile = None
 
 # file name EC2GOFILE
 ec2goFile = None
@@ -179,6 +196,9 @@ mgi_to_uniprot_sptr = {}
 # MGI UniProt load mapping/SP only (MGI id -> UniProt id)
 mgi_to_uniprot_sp = {}
 
+# MGI / Marker Type (MGI id -> Marker Type)
+mgi_to_markertype = {}
+
 # EC to GO mapping (EC id -> GO id)
 ec_to_go = {}		
 
@@ -208,6 +228,7 @@ nonIEA_annotations = []
 
 def initialize():
     global mgi_to_uniprotFile
+    global mgi_to_markertypeFile
     global uniprotFile
     global ec2goFile, goECFile
     global ip2goFile, goIPFile
@@ -223,6 +244,7 @@ def initialize():
     db.set_sqlLogFunction(db.sqlLogAll)
 
     mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
+    mgi_to_markertypeFile = os.getenv('MGI_ACC_ASSOC_FILE')
 
     uniprotFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
 
@@ -254,6 +276,10 @@ def initialize():
 
     if not uniprotFile:
         print 'Environment variable not set: UNIPROT_ACC_ASSOC'
+        rc = 1
+
+    if not mgi_to_markertypeFile:
+        print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
         rc = 1
 
     if not ec2goFile:
@@ -319,6 +345,7 @@ def openFiles():
     global nonIEA_annotations
 
     readMGI2UNIPROT()
+    readMGI2MARKERTYPE()
     readEC2GO()
     readIP2GO()
     readSPKW2GO()
@@ -423,6 +450,46 @@ def readMGI2UNIPROT():
 
 	for v in value1:
 	    mgi_to_uniprot_sp[key].append(v)
+
+    fp.close()
+
+    return 0
+
+#
+# Purpose: Read MGI-to-MarkerType file & create lookup
+# Returns: 1 if file does not exist or is not readable, else 0
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+
+def readMGI2MARKERTYPE():
+
+    #
+    # parse mgi-to-markertype file
+    #
+    # dictionary contains:
+    #	key = MGI id
+    #   value = marker type key
+    #
+
+    global mgi_to_markertype
+    global mgi_to_markertypeFile
+
+    fp = open(mgi_to_markertypeFile,'r')
+
+    lineNum = 0
+    for line in fp.readlines():
+
+	if lineNum == 0:
+	    lineNum = lineNum + 1
+	    continue
+
+	tokens = string.split(line[:-1], '\t')
+	key = tokens[0]
+	value = tokens[2]
+
+	mgi_to_markertype[key] = value
 
     fp.close()
 
@@ -641,6 +708,7 @@ def processEC2GO():
     #
     # for each Marker/EC association in MGD:
     #	if there is no EC-2-GO mapping for the EC ID, then skip it
+    #   if the marker is not of type 'gene', then skip it
     #	else for each EC-2-GO mapping....
     #      if a non-IEA annotation exists, skip
     #      else we want to load this annotation
@@ -671,6 +739,10 @@ def processEC2GO():
 
         if not ec_to_go.has_key(ec):
             continue
+
+	# if the marker is not of type 'gene', then skip it
+	if mgi_to_markertype[markerID] != '1':
+	    continue
 
 	# for each EC-2-GO mapping....
 
@@ -726,6 +798,7 @@ def processIP2GO():
     # to the same GO term does not already exist.
     #
     # for each Marker/UniProt association in the Marker/UniProt association file:
+    #   if the marker is not of type 'gene', then skip it
     # 	for the given marker, collect a set of GO id -> interpro ids
     # 	the GO annotation loader is driven by Marker/GO id/set of interpro ids
     # 	we want one set of interpro ids per GO id per Marker
@@ -750,6 +823,10 @@ def processIP2GO():
 	# we want one set of interpro ids per GO id per Marker
         #
     
+	# if the marker is not of type 'gene', then skip it
+	if mgi_to_markertype[m] != '1':
+	    continue
+
         go_to_ip = {}		
 
         for uniprotVal in mgi_to_uniprot_sp[m]:
@@ -837,6 +914,7 @@ def processSPKW2GO():
     # Generate a GO annotation file from the Marker/SPKW associations.
     #
     # each marker has one-or-more uniprot ids (mgi_to_uniprot_sptr):
+    #    if the marker is not of type 'gene', then skip it
     #    each uniprot id has one-or-more sp-kw ids (uniprot_to_spkw)
     #        each sp-kw id has one-or-more go ids (spkw_to_go)
     #              go id 1
@@ -854,6 +932,10 @@ def processSPKW2GO():
     markerIDs.sort()
 
     for m in markerIDs:
+
+	# if the marker is not of type 'gene', then skip it
+	if mgi_to_markertype[m] != '1':
+	    continue
 
         #
         # for the given marker, collect a set of GO id -> SP-KW ids
