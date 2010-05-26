@@ -54,6 +54,10 @@
 #
 #  Notes:  None
 #
+# 05/26/2010    lec
+#       - TR 10231/output should contain marker type 'gene' only
+#	  marker type field added
+#
 ###########################################################################
 
 import sys 
