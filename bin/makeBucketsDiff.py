@@ -182,6 +182,8 @@ def openFiles():
 	    for line in fp.readlines():
                 tokens = string.split(line[:-1], '\t')
                 id = tokens[0]
+		if string.find(id, 'total number') >= 0:
+		    continue
 		if i == B0_1 or string.find(id, 'MGI:') >= 0:
 	            bucketList.append(id)
 		if string.find(id, 'MGI:') >= 0:
@@ -202,6 +204,8 @@ def openFiles():
 	    for line in fp.readlines():
                 tokens = string.split(line[:-1], '\t')
                 id = tokens[0]
+		if string.find(id, 'total number') >= 0:
+		    continue
 		if i == B0_1 or string.find(id, 'MGI:') >= 0:
 	            bucketList.append(id)
 		if string.find(id, 'MGI:') >= 0:
@@ -312,7 +316,10 @@ def bucketDiff():
                 if id in bucketNew[j]:
 		    otherBucket = j
 
-	    bucketLose[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
+	    if mgiLookup.has_key(id):
+	        bucketLose[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
+	    else:
+		bucketLose[i].write(id + '\t' + '\t' + otherBucket + '\n')
 
 	for id in gainSet:
 
@@ -327,7 +334,10 @@ def bucketDiff():
                 if id in bucketOld[j]:
 		    otherBucket = j
 
-	    bucketGain[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
+	    if mgiLookup.has_key(id):
+	        bucketGain[i].write(id + '\t' + mgiLookup[id][0] + '\t' + otherBucket + '\n')
+	    else:
+	        bucketGain[i].write(id + '\t' + '\t' + otherBucket + '\n')
 
     return 0
 
