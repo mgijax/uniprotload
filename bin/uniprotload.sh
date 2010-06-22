@@ -86,7 +86,7 @@ fi
 #
 # createArchive
 #
-preload
+preload ${OUTPUTDIR}
 
 #
 # Establish the log file.
