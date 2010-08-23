@@ -1,3 +1,11 @@
+TAG: uniprotload-4-3-3-22
+DATE: 08/23/2010
+STAFF: lec
+CHANGES:
+1) makeGOAnnot.py
+   TR 5430/change nonIEA_annot from list to dictionary for speed
+   and remove the test query from the openFiles/nonIEA_annot dictionary
+
 TAG: uniprotload-4-3-3-21
 TAG: uniprotload-4-3-3-20
 DATE: 06/22/2010

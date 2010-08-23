@@ -120,6 +120,10 @@
 #
 # History:
 #
+# 08/23/2010	lec
+#	- TR 5430/change nonIEA_annot from list to dictionary for speed
+#	  and remove the test query from the openFiles/nonIEA_annot dictionary
+#
 # 05/26/2010	lec
 #	- TR 10231/output should contain marker type 'gene' only
 #
@@ -216,7 +220,7 @@ uniprot_to_spkw = {}
 
 # non-IEA MGI Marker/GO ID annotations
 # where list key = mgiID + accID
-nonIEA_annotations = []	
+nonIEA_annotations = {}
 
 #
 # Purpose: Initialization
@@ -363,7 +367,6 @@ def openFiles():
 	where a._AnnotType_key = 1000 
 	and a._Term_key = ac._Object_key 
 	and ac._MGIType_key = 13 
-	and a._Object_key = 3
 	''', None)
     db.sql('create index idx1 on #annots(_Annot_key)', None)
 
@@ -378,7 +381,7 @@ def openFiles():
     # get Marker MGI ID/GO ID pairs for markers of type "gene" only
 
     results = db.sql('''select mgiID = a.accID, e.accID 
-	from #evidence e, ACC_Accession a, MRK_Marker m 
+	from #evidence e, ACC_Accession a, MRK_Marker m
 	where e._Object_key = a._Object_key 
 	and a._MGIType_key = 2 
 	and a._LogicalDB_key = 1 
@@ -386,11 +389,10 @@ def openFiles():
 	and a.preferred = 1 
 	and a._Object_key = m._Marker_key 
 	and m._Marker_Type_key = 1
-	and m._Marker_key = 3
 	''', 'auto')
     for r in results:
         key = r['mgiID'] + r['accID']
-        nonIEA_annotations.append(key)
+        nonIEA_annotations[key] = []
 
     return 0
 
@@ -751,7 +753,7 @@ def processEC2GO():
 	    # if a non-IEA annotation exists, skip
 
 	    nonIEAkey = markerID + goid
-	    if nonIEAkey in nonIEA_annotations:
+	    if nonIEA_annotations.has_key(nonIEAkey):
 	        continue
 
 	     # else we want to load this annotation.
@@ -854,7 +856,7 @@ def processIP2GO():
 
 	            # if a non-IEA annotation exists, skip
 	            nonIEAkey = m + goid
-	            if nonIEAkey in nonIEA_annotations:
+	            if nonIEA_annotations.has_key(nonIEAkey):
 		        continue
 
 		    # else we want to load this annotation.
@@ -970,7 +972,7 @@ def processSPKW2GO():
 
 	            # if a non-IEA annotation exists, skip
 	            nonIEAkey = m + goid
-	            if nonIEAkey in nonIEA_annotations:
+	            if nonIEA_annotations.has_key(nonIEAkey):
 		        continue
 
 		    # else we want to load this annotation.
