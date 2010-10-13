@@ -1,3 +1,9 @@
+TAG: uniprotload-4-4-0-1
+DATE: 10/13/2010
+STAFF: lec
+CHANGES:
+1) TR10411/UniProtParser.py/strip out "." in DR records
+
 TAG: uniprotload-4-3-3-22
 DATE: 08/23/2010
 STAFF: lec
