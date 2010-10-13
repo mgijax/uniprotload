@@ -75,6 +75,7 @@ class Parser:
             if self.line[0:13] == 'DR   Ensembl;':
                 for str in re.split(';',self.line[13:]):
                     if str.strip()[0:7] == 'ENSMUSG':
+		        str = string.replace(str.strip(), '.', '')
                         if not self.record.hasEnsemblID(str.strip()):
                             self.record.addEnsemblID(str.strip())
 
