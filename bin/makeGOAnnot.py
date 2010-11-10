@@ -88,6 +88,10 @@
 #
 #       - GO Date ($ANNOT_DATE)
 #
+#       - GO Note ($ANNOT_NOTE)
+#
+#       - GO Note Prefix ($ANNOT_NOTEPREFIX)
+#
 # Outputs:
 #
 #	A tab-delimtied file, one for each of these areas:
@@ -914,7 +918,7 @@ def processIP2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], ':') + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], ',') + '\n')
 
     fp.close()
 
@@ -1025,7 +1029,7 @@ def processSPKW2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], ':') + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], ',') + '\n')
 
     fp.close()
 
