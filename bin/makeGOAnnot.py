@@ -41,6 +41,8 @@
 #         ANNOT_EVIDENCECODE
 #         ANNOT_EDITOR
 #         ANNOT_DATE
+#	  ANNOT_NOTE
+#	  ANNOT_NOTEPREFIX
 #
 # Inputs:
 #
@@ -120,6 +122,9 @@
 #
 # History:
 #
+# 11/10/2010	lec
+#	- TR 10443/attach correct uniprot ids to notes (go_to_uniprot) for IP and SP annotations
+#
 # 08/23/2010	lec
 #	- TR 5430/change nonIEA_annot from list to dictionary for speed
 #	  and remove the test query from the openFiles/nonIEA_annot dictionary
@@ -194,6 +199,9 @@ annotDate = None
 # variable name ANNOT_NOTE
 annotNote = None
 
+# variable name ANNOT_NOTEPREFIX
+annotNotePrefix = None
+
 # MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
 mgi_to_uniprot_sptr = {}
 
@@ -238,7 +246,7 @@ def initialize():
     global ip2goFile, goIPFile
     global spkw2goFile, goSPKWFile
     global goECRef, goIPRef, goSPKWRef
-    global annotEvidence, annotEditor, annotDate, annotNote
+    global annotEvidence, annotEditor, annotDate, annotNote, annotNotePrefix
 
     #
     #  initialize caches
@@ -268,6 +276,7 @@ def initialize():
     annotEditor = os.environ['ANNOT_EDITOR']
     annotDate = os.environ['ANNOT_DATE']
     annotNote = os.environ['ANNOT_NOTE']
+    annotNotePrefix = os.environ['ANNOT_NOTEPREFIX']
 
     rc = 0
 
@@ -319,19 +328,23 @@ def initialize():
         rc = 1
 
     if not annotEvidence:
-        print 'Environment variable not set: GO_EVIDENCECODE'
+        print 'Environment variable not set: ANNOT_EVIDENCECODE'
         rc = 1
 
     if not annotEditor:
-        print 'Environment variable not set: GO_ANNOTEDITOR'
+        print 'Environment variable not set: ANNOT_EDITOR'
         rc = 1
 
     if not annotDate:
-        print 'Environment variable not set: GO_ANNOTDATE'
+        print 'Environment variable not set: ANNOT_DATE'
         rc = 1
 
     if not annotNote:
-        print 'Environment variable not set: GO_ANNOTNOTE'
+        print 'Environment variable not set: ANNOT_NOTE'
+        rc = 1
+
+    if not annotNotePrefix:
+        print 'Environment variable not set: ANNOT_NOTEPREFIX'
         rc = 1
 
     return rc
@@ -831,6 +844,9 @@ def processIP2GO():
 
         go_to_ip = {}		
 
+	# the uniprot id where this interpro id was found
+        go_to_uniprot = {}		
+
         for uniprotVal in mgi_to_uniprot_sp[m]:
 
             # if there is no uniprot_to_ip mapping, then skip it
@@ -866,6 +882,11 @@ def processIP2GO():
                     if ipid not in go_to_ip[goid]:
                         go_to_ip[goid].append(ipid)
 
+	            if not go_to_uniprot.has_key(goid):
+	                go_to_uniprot[goid] = []
+                    if annotNotePrefix + uniprotVal not in go_to_uniprot[goid]:
+                        go_to_uniprot[goid].append(annotNotePrefix + uniprotVal)
+
 	#
 	# the GO annotation loader is driven by Marker/GO id/set of interpro ids
 	# we want one set of interpro ids per GO id per Marker
@@ -893,7 +914,7 @@ def processIP2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-		     annotNote + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], ':') + '\n')
 
     fp.close()
 
@@ -947,6 +968,9 @@ def processSPKW2GO():
     
         go_to_spkw = {}		
 
+	# the uniprot id where this SP-KW id was found
+        go_to_uniprot = {}		
+
         for uniprotVal in mgi_to_uniprot_sptr[m]:
 
             # if there is no uniprot_to_spkw mapping, then skip it
@@ -982,6 +1006,11 @@ def processSPKW2GO():
                     if spkwid not in go_to_spkw[goid]:
                         go_to_spkw[goid].append(spkwid)
 
+	            if not go_to_uniprot.has_key(goid):
+	                go_to_uniprot[goid] = []
+                    if annotNotePrefix + uniprotVal not in go_to_uniprot[goid]:
+                        go_to_uniprot[goid].append(annotNotePrefix + uniprotVal)
+
 	#
 	# the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
 	# we want one set of SP-KW ids per GO id per Marker
@@ -996,7 +1025,7 @@ def processSPKW2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-		     annotNote + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], ':') + '\n')
 
     fp.close()
 
