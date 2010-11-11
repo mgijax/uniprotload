@@ -7,7 +7,7 @@
 setenv ANNOTDATADIR		${OUTPUTDIR}
 setenv ANNOTMODE		new
 setenv ANNOTTYPENAME		"GO/Marker"
-setenv ANNOTPROPERTY            0
+setenv ANNOTPROPERTY            81
 setenv ANNOTINPUTFILE		${GO_IP_ASSOC_FILE}
 setenv ANNOTLOG			${LOGDIR}/go_ip.log
 setenv DELETEREFERENCE		${GO_IP_ANNOT_REF}
