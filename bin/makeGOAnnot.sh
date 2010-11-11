@@ -91,7 +91,7 @@ cd ${OUTPUTDIR}
 ECCONFIG_CSH=${UNIPROTLOAD}/goecannot.config
 date >> ${LOG}
 echo "Running UniProt GO/EC annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${ECCONFIG_CSH}
+${ANNOTLOADER_CSH} ${ECCONFIG_CSH} go
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
@@ -102,7 +102,7 @@ fi
 IPCONFIG_CSH=${UNIPROTLOAD}/goipannot.config
 echo "Running UniProt GO/InterPro annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 date >> ${LOG}
-${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
+${ANNOTLOADER_CSH} ${IPCONFIG_CSH} go
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
@@ -113,7 +113,7 @@ fi
 SPKWCONFIG_CSH=${UNIPROTLOAD}/gospkwannot.config
 echo "Running UniProt GO/SP-KW annotation load (makeGOAnnot.sh)" >> ${LOG_DIAG}
 date >> ${LOG}
-${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH}
+${ANNOTLOADER_CSH} ${SPKWCONFIG_CSH} go
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

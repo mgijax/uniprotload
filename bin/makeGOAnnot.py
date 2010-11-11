@@ -128,6 +128,7 @@
 #
 # 11/10/2010	lec
 #	- TR 10443/attach correct uniprot ids to notes (go_to_uniprot) for IP and SP annotations
+#	- attach uniprot id to EC notes
 #
 # 08/23/2010	lec
 #	- TR 5430/change nonIEA_annot from list to dictionary for speed
@@ -735,7 +736,8 @@ def processEC2GO():
 
     fp = open(goECFile, 'w')
 
-    results = db.sql('''select markerID = a2.accID, accID = "EC:" + a.accID
+    db.sql('''select m._Marker_key, markerID = a2.accID, accID = "EC:" + a.accID
+		into #ec
                 from ACC_Accession a, MRK_Marker m, ACC_Accession a2
                 where a._MGIType_key = 2
                 and a._LogicalDB_key = 8
@@ -747,8 +749,27 @@ def processEC2GO():
                 and a2._LogicalDB_key = 1
 		and a2.prefixPart = "MGI:"
 		and a2.preferred = 1
-		''', 'auto')
+		''', None)
+    db.sql('create index idx1 on #ec(_Marker_key)', None)
 
+    # create a lookup of marker-to-uniprot (swissprot only)
+    # this information will be added the note field
+    results = db.sql('''select e.markerID, spID = s.accID
+                from #ec e, ACC_Accession s
+                where e._Marker_key = s._Object_key
+		and s._MGIType_key = 2
+		and s._LogicalDB_key = 13
+		''', 'auto')
+    mgd_to_uniprot = {}		
+    for r in results:
+	key = r['markerID']
+	value = r['spID']
+        if not mgd_to_uniprot.has_key(key):
+            mgd_to_uniprot[key] = []
+        if annotNotePrefix + value not in mgd_to_uniprot[key]:
+            mgd_to_uniprot[key].append(annotNotePrefix + value)
+
+    results = db.sql('select * from #ec', 'auto')
     for r in results:
 
 	markerID = r['markerID']
@@ -782,8 +803,11 @@ def processEC2GO():
 	      	         ec + '\t' + \
 	      	         '\t' + \
 	      	         annotEditor + '\t' + \
-	      	         annotDate + '\t' + \
-	      	         '\n')
+	      	         annotDate + '\t')
+
+	    if mgd_to_uniprot.has_key(markerID):
+	      	 fp.write(annotNote + string.join(mgd_to_uniprot[markerID], '|'))
+	    fp.write('\n')
 
     fp.close()
 
@@ -918,7 +942,7 @@ def processIP2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], ',') + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], '|') + '\n')
 
     fp.close()
 
@@ -1029,7 +1053,7 @@ def processSPKW2GO():
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], ',') + '\n')
+	      	     annotNote + string.join(go_to_uniprot[goid], '|') + '\n')
 
     fp.close()
 
@@ -1048,11 +1072,11 @@ if openFiles() != 0:
 if processEC2GO() != 0:
     sys.exit(1)
 
-if processIP2GO() != 0:
-    sys.exit(1)
+#if processIP2GO() != 0:
+#    sys.exit(1)
 
-if processSPKW2GO() != 0:
-    sys.exit(1)
+#if processSPKW2GO() != 0:
+#    sys.exit(1)
 
 sys.exit(0)
 
