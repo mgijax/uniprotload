@@ -1,6 +1,7 @@
+TAG: uniprotload-4-4-0-4
 TAG: uniprotload-4-4-0-3
 TAG: uniprotload-4-4-0-2
-DATE: 11/10/2010
+DATE: 11/10/2010, 11/11/2010
 STAFF: lec
 CHANGES:
 1) TR10443/makeGOAnnot.py/attach correct UniProtKB to IP/SP annotations

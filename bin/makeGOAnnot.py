@@ -758,7 +758,7 @@ def processEC2GO():
                 from #ec e, ACC_Accession s
                 where e._Marker_key = s._Object_key
 		and s._MGIType_key = 2
-		and s._LogicalDB_key = 13
+		and s._LogicalDB_key in (13,41)
 		''', 'auto')
     mgd_to_uniprot = {}		
     for r in results:
