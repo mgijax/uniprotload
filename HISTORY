@@ -1,11 +1,13 @@
+TAG: uniprotload-4-4-0-6
 TAG: uniprotload-4-4-0-5
 TAG: uniprotload-4-4-0-4
 TAG: uniprotload-4-4-0-3
 TAG: uniprotload-4-4-0-2
-DATE: 11/10/2010, 11/11/2010
+DATE: 11/10/2010, 11/11/2010, 12/01/2010
 STAFF: lec
 CHANGES:
 1) TR10443/makeGOAnnot.py/attach correct UniProtKB to IP/SP annotations
+2) processIP2GO,processSPKW2GO was commented out during last test
 
 TAG: uniprotload-4-4-0-1
 DATE: 10/13/2010
