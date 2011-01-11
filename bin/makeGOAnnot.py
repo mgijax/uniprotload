@@ -126,6 +126,9 @@
 #
 # History:
 #
+# 01/11/2011
+#	- TR 10521/prevent use of GO:0005515 in IEA
+#
 # 11/10/2010	lec
 #	- TR 10443/attach correct uniprot ids to notes (go_to_uniprot) for IP and SP annotations
 #	- attach uniprot id to EC notes
@@ -237,7 +240,7 @@ nonIEA_annotations = {}
 
 #
 # Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0 if file initialization is successful, else returns 1
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -356,7 +359,7 @@ def initialize():
 
 #
 # Purpose: Open Files
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -416,7 +419,7 @@ def openFiles():
 
 #
 # Purpose: Read MGI-to-UniProt file & create lookup
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -477,7 +480,7 @@ def readMGI2UNIPROT():
 
 #
 # Purpose: Read MGI-to-MarkerType file & create lookup
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -517,7 +520,7 @@ def readMGI2MARKERTYPE():
 
 #
 # Purpose: Read EC-to-GO file & create lookup
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -556,7 +559,7 @@ def readEC2GO():
 
 #
 # Purpose: Read IP-to-GO file & create lookup
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -610,7 +613,7 @@ def readIP2GO():
 
 #
 # Purpose: Read SPKW-to-GO file & create lookup
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -656,7 +659,7 @@ def readSPKW2GO():
 
 #
 # Purpose: Read UniProt-to-Acc file & create lookups
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -707,7 +710,7 @@ def readUNIPROTACC():
 
 #
 # Purpose: Process EC-to-GO data & create annotation file
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -794,6 +797,10 @@ def processEC2GO():
 	    if nonIEA_annotations.has_key(nonIEAkey):
 	        continue
 
+	    # if the go id = GO:0005515, then skip it
+	    if goid in ('GO:0005515'):
+	        continue
+
 	     # else we want to load this annotation.
 
 	    fp.write(goid + '\t' + \
@@ -815,7 +822,7 @@ def processEC2GO():
 
 #
 # Purpose: Process IP-to-GO data & create annotation file
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -903,6 +910,10 @@ def processIP2GO():
 	            if nonIEA_annotations.has_key(nonIEAkey):
 		        continue
 
+	            # if the go id = GO:0005515, skip
+	            if goid in ('GO:0005515'):
+	                continue
+
 		    # else we want to load this annotation.
 
 	            if not go_to_ip.has_key(goid):
@@ -950,7 +961,7 @@ def processIP2GO():
 
 #
 # Purpose: Process SPKW-to-GO data & create annotation file
-# Returns: 1 if file does not exist or is not readable, else 0
+# Returns: 0, if successful
 # Assumes: Nothing
 # Effects: Nothing
 # Throws: Nothing
@@ -1026,6 +1037,10 @@ def processSPKW2GO():
 	            nonIEAkey = m + goid
 	            if nonIEA_annotations.has_key(nonIEAkey):
 		        continue
+
+	            # if the go id = GO:0005515, skip
+	            if goid in ('GO:0005515'):
+	                continue
 
 		    # else we want to load this annotation.
 

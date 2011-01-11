@@ -7,6 +7,7 @@
 setenv ANNOTDATADIR		${OUTPUTDIR}
 setenv ANNOTMODE		new
 setenv ANNOTTYPENAME		"InterPro/Marker"
+setenv ANNOTPROPERTY            82
 setenv ANNOTINPUTFILE		${MARKER_IP_ASSOC_FILE}
 setenv ANNOTLOG			${LOGDIR}/ip.log
 setenv DELETEREFERENCE		${MARKER_IP_ANNOT_REF}

@@ -111,7 +111,7 @@ ANNOT_EDITOR=uniprotload
 ANNOT_DATE=`date '+%m/%d/%Y'`
 ANNOT_NOTE="gene product:"
 ANNOT_NOTEPREFIX="UniProtKB:"
-ANNOT_PROPERTY="gene product:"
+ANNOT_PROPERTY="gene product&=&"
 ANNOT_PROPERTYPREFIX="UniProtKB:"
 
 GO_EC_ASSOC_FILE=${OUTPUTDIR}/go_ec_annot.txt
