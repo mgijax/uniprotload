@@ -126,6 +126,9 @@
 #
 # History:
 #
+# 02/28/2011	lec
+#	- EC:if not mgi_to_markertype.has_key(markerID), then skip
+#
 # 01/11/2011
 #	- TR 10521/prevent use of GO:0005515 in IEA
 #
@@ -782,6 +785,10 @@ def processEC2GO():
 
         if not ec_to_go.has_key(ec):
             continue
+
+	# if the marker does not exist in the marker type check, then skip it
+	if not mgi_to_markertype.has_key(markerID):
+	    continue
 
 	# if the marker is not of type 'gene', then skip it
 	if mgi_to_markertype[markerID] != '1':

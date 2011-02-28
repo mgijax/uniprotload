@@ -1,3 +1,9 @@
+TAG: uniprotload-4-4-1-2
+DATE: 02/28/2011
+STAFF: lec
+CHANGES:
+1) makeGOAnnot.py; EC; if markers is not in mgi_acc_assoc.txt, then skip
+
 TAG: uniprotload-4-4-1-1
 DATE: 01/11/2011
 STAFF: lec
