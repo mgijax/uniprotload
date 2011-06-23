@@ -126,6 +126,9 @@
 #
 # History:
 #
+# 06/23/2011	lec
+#	- readMGI2MARKERTYPE/no need to skip a line
+#
 # 02/28/2011	lec
 #	- EC:if not mgi_to_markertype.has_key(markerID), then skip
 #
@@ -504,12 +507,7 @@ def readMGI2MARKERTYPE():
 
     fp = open(mgi_to_markertypeFile,'r')
 
-    lineNum = 0
     for line in fp.readlines():
-
-	if lineNum == 0:
-	    lineNum = lineNum + 1
-	    continue
 
 	tokens = string.split(line[:-1], '\t')
 	key = tokens[0]
