@@ -85,4 +85,19 @@ then
     exit 1
 fi
 
+#
+# run the post-bucket reports
+#
+
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Run report (mgi_uniprot.1_0.py)" | tee -a ${LOG}
+./mgi_uniprot.1_0.py 2>&1 >> ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: running uniprot report (mgi_uniprot.1_0.py)" | tee -a ${LOG}
+    exit 1
+fi
+
 exit 0
