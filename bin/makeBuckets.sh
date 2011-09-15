@@ -92,7 +92,7 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Run report (mgi_uniprot.1_0.py)" | tee -a ${LOG}
-./mgi_uniprot.1_0.py 2>&1 >> ${LOG}
+./mgi_uniprot.1_0.py 2>> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
