@@ -84,16 +84,22 @@ else
 fi
 
 #
-# createArchive
-#
-preload ${OUTPUTDIR}
-
-#
 # Establish the log file.
 #
 LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
+
+#
+# createArchive
+#
+echo "archiving..." >> ${LOG}
+date >> ${LOG}
+preload ${OUTPUTDIR}
+rm -rf ${OUTPUTDIR}/*.diagnostics
+rm -rf ${OUTPUTDIR}/*.error
+echo "archiving complete" >> ${LOG}
+date >> ${LOG}
 
 #
 # Create the UniProt association file.

@@ -126,6 +126,9 @@
 #
 # History:
 #
+# 01/03/2012
+#	- TR10934/replace comma-inferredFrom with pipe (|)
+#
 # 06/23/2011	lec
 #	- readMGI2MARKERTYPE/no need to skip a line
 #
@@ -939,11 +942,11 @@ def processIP2GO():
         for goid in go_to_ip.keys():
 
 	    # ip list must be <= 255 to fit into inferredFrom field
-	    #while (string.join(go_to_ip[goid], ',') > 255)
-	    #ipList = string.join(go_to_ip[goid], ',')
+	    #while (string.join(go_to_ip[goid], '|') > 255)
+	    #ipList = string.join(go_to_ip[goid], '|')
 	    #while ipList > 255:
 	    #    go_to_ip[goid].remove(ipid)
-	    #    ipList = string.join(go_to_ip[goid], ',')
+	    #    ipList = string.join(go_to_ip[goid], '|')
             #for i in go_to_ip[goid]:
 	    #    if len(ipList + ',' + i) > 255:
 	    #        break
@@ -954,7 +957,7 @@ def processIP2GO():
 		     m + '\t' + \
 	      	     goIPRef + '\t' + \
 	      	     annotEvidence + '\t' + \
-	      	     string.join(go_to_ip[goid], ',') + '\t' + \
+	      	     string.join(go_to_ip[goid], '|') + '\t' + \
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \
@@ -1069,7 +1072,7 @@ def processSPKW2GO():
 		     m + '\t' + \
 	      	     goSPKWRef + '\t' + \
 	      	     annotEvidence + '\t' + \
-	      	     string.join(go_to_spkw[goid], ',') + '\t' + \
+	      	     string.join(go_to_spkw[goid], '|') + '\t' + \
 	      	     '\t' + \
 	      	     annotEditor + '\t' + \
 	      	     annotDate + '\t' + \

@@ -1,3 +1,12 @@
+TAG: uniprotload-4-4-1-6
+DATE: 01/03/2012
+STAFF: lec
+CHANGES:
+1) TR10934/makeGOAnnot.py
+   change comma delimiter to pipe
+2) uniprotload.sh
+   remove *.diagnostic and *.error
+
 TAG: uniprotload-4-4-1-5
 TAG: uniprotload-4-4-1-4
 DATE: 09/15/2011
