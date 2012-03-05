@@ -1,3 +1,13 @@
+TAG: uniprotload-4-4-1-7
+DATE: 03/05/2012
+STAFF: lec
+CHANGES:
+1) TR10950
+/data/downloads/ftp.geneontology.org/pub/go/external2go/spkw2go 
+	changed to 'uniprotkb_kw2go'
+within this file:
+field 1: 'SP_KW' changed to 'UniProtKB-KW'
+
 TAG: uniprotload-4-4-1-6
 DATE: 01/03/2012
 STAFF: lec

@@ -74,7 +74,7 @@
 #
 #	- SPKW-2-GO file ($SPKW2GOFILE)
 #
-#	  SP_KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
+#	  UniProtKB-KW:KW-0001 2Fe-2S > GO:2 iron, 2 sulfur cluster binding ; GO:0051537
 #
 #       - GO/EC Reference ($GO_EC_ANNOT_REF)
 #
@@ -125,6 +125,9 @@
 #      6) Close files.
 #
 # History:
+#
+# 03/01/2012	lec
+#	- TR 10950/spkw2go/SP_KW changed to uniprotkb_kw2go/UniProtKB-KW
 #
 # 01/03/2012
 #	- TR10934/replace comma-inferredFrom with pipe (|)
@@ -631,7 +634,7 @@ def readSPKW2GO():
     # dictionary contains:
     #	key = SP keyword
     #   value = 2-member tuple of the expanded 
-    #           SPKW id (SP_KW:KW-001) and GO id (GO:#####)
+    #           SPKW id (UniProtKB-KW:KW-001) and GO id (GO:#####)
     #
     # will use the expanded SP KW id in the annotation "inferred from" field
     #
@@ -639,7 +642,7 @@ def readSPKW2GO():
     global spkw_to_go
     global spkw2goFile
 
-    spkw2gore = re.compile("(^SP_KW:KW-[0-9]+) (.+) +> +GO:.* +; +(GO:[0-9]+)")
+    spkw2gore = re.compile("(^UniProtKB-KW:KW-[0-9]+) (.+) +> +GO:.* +; +(GO:[0-9]+)")
 
     fp = open(spkw2goFile,'r')
 
@@ -649,8 +652,8 @@ def readSPKW2GO():
 
         if (r is not None):
 
-            spkwid = r.group(1)        # SP_KW:####
-            spkwName = r.group(2)      # "Cytoplasm,Phosphoprotein"
+            spkwid = r.group(1)      # UniProtKB-KW:####
+            spkwName = r.group(2)    # "Cytoplasm,Phosphoprotein"
             goid = r.group(3)        # GO:#####
 
             if not spkw_to_go.has_key(spkwName):

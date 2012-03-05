@@ -55,7 +55,7 @@ IP2GOFILE=${DATADOWNLOADS}/go_translation/interpro2go
 
 # SPKW-2-GO input file from GO
 #
-SPKW2GOFILE=${DATADOWNLOADS}/go_translation/spkw2go
+SPKW2GOFILE=${DATADOWNLOADS}/go_translation/uniprotkw2go
 
 # MGI marker to EntrezGene/Ensembl/NCBI associations from the database
 #
