@@ -126,6 +126,7 @@
 #
 # History:
 #
+# 04/11/2012
 # 04/03/2012
 #	- TR 11030/prevent use of GO:0005488 in IEA
 #
@@ -926,7 +927,8 @@ def processIP2GO():
 		        continue
 
 	            # if the go id = GO:0005515, skip
-	            if goid in ('GO:0005515'):
+	    	    # if the go id = GO:0005488, then skip it
+	    	    if goid in ('GO:0005515', 'GO:0005488'):
 	                continue
 
 		    # else we want to load this annotation.
@@ -1054,7 +1056,8 @@ def processSPKW2GO():
 		        continue
 
 	            # if the go id = GO:0005515, skip
-	            if goid in ('GO:0005515'):
+	    	    # if the go id = GO:0005488, then skip it
+	    	    if goid in ('GO:0005515', 'GO:0005488'):
 	                continue
 
 		    # else we want to load this annotation.
