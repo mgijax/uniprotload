@@ -28,6 +28,7 @@
 #
 #          INPUTFILE
 #          UNIPROT_ACC_ASSOC_FILE
+#          UNIPROT_ACC_ASSOC_ERR_FILE
 #          UNIPROT_SP_ASSOC_FILE
 #          UNIPROT_TR_ASSOC_FILE
 #
@@ -39,6 +40,17 @@
 #
 #      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
+#        1) UniProt ID
+#        2) EntrezGene IDs (comma-separated)
+#        3) Ensembl gene model IDs (comma-separated)
+#        4) EC IDs (comma-separated)
+#        5) PDB IDs (comma-separated)
+#        6) InterPro IDs (comma-separated)
+#        7) SPKW Names (comma-separated)
+#
+#      - UniProt association error file ($UNIPROT_ACC_ASSOC_ERR_FILE)
+#	 Contains the list of UniProt ids that do not contain EntrezGene nor Ensembl ids
+#        It has the following tab-delimited fields:
 #        1) UniProt ID
 #        2) EntrezGene IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
@@ -75,6 +87,9 @@
 #
 #  Notes:  None
 #
+#  05/09/2012	lec
+#	- TR11037/add UniProt association error file ($UNIPROT_ACC_ASSOC_ERR_FILE)
+#
 ###########################################################################
 
 import sys 
@@ -88,6 +103,9 @@ uniprotFile = None
 # UNIPROT_ACC_ASSOC_FILE
 uniprotAccAssocFile = None
 
+# UNIPROT_ACC_ASSOC_ERR_FILE
+uniprotAccAssocErrFile = None
+
 # UNIPROT_SP_ASSOC_FILE
 uniprotSPAssocFile = None
 
@@ -97,6 +115,7 @@ uniprotTRAssocFile = None
 # file pointers
 fpUniProt = None
 fpAccAssoc = None
+fpAccAssocErr = None
 fpSPAssoc = None
 fpTRAssoc = None
 
@@ -108,11 +127,13 @@ fpTRAssoc = None
 # Throws: Nothing
 #
 def initialize():
-    global uniprotFile, uniprotAccAssocFile, uniprotSPAssocFile, uniprotTRAssocFile
-    global fpUniProt, fpAccAssoc, fpSPAssoc, fpTRAssoc
+    global uniprotFile, uniprotAccAssocFile, uniprotAccAssocErrFile
+    global uniprotSPAssocFile, uniprotTRAssocFile
+    global fpUniProt, fpAccAssoc, fpAccAssocErr, fpSPAssoc, fpTRAssoc
 
     uniprotFile = os.getenv('INPUTFILE')
     uniprotAccAssocFile = os.getenv('UNIPROT_ACC_ASSOC_FILE')
+    uniprotAccAssocErrFile = os.getenv('UNIPROT_ACC_ASSOC_ERR_FILE')
     uniprotSPAssocFile = os.getenv('UNIPROT_SP_ASSOC_FILE')
     uniprotTRAssocFile = os.getenv('UNIPROT_TR_ASSOC_FILE')
 
@@ -129,6 +150,10 @@ def initialize():
         print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
         rc = 1
 
+    if not uniprotAccAssocErrFile:
+        print 'Environment variable not set: UNIPROT_ACC_ASSOC_ERR_FILE'
+        rc = 1
+
     if not uniprotSPAssocFile:
         print 'Environment variable not set: UNIPROT_SP_ASSOC_FILE'
         rc = 1
@@ -142,6 +167,7 @@ def initialize():
     #
     fpUniProt = None
     fpAccAssoc = None
+    fpAccAssocErr = None
     fpSPAssoc = None
     fpTRAssoc = None
 
@@ -156,7 +182,7 @@ def initialize():
 # Throws: Nothing
 #
 def openFiles():
-    global fpUniProt, fpAccAssoc, fpSPAssoc, fpTRAssoc
+    global fpUniProt, fpAccAssoc, fpAccAssocErr, fpSPAssoc, fpTRAssoc
     global fpPDBAssoc, fpECAssoc, fpIPAssoc, fpKWAssoc
 
     #
@@ -175,6 +201,15 @@ def openFiles():
         fpAccAssoc = open(uniprotAccAssocFile, 'w')
     except:
         print 'Cannot open association file: ' + uniprotAccAssocFile
+        return 1
+
+    #
+    # Open the acc association error file.
+    #
+    try:
+        fpAccAssocErr = open(uniprotAccAssocErrFile, 'w')
+    except:
+        print 'Cannot open association error file: ' + uniprotAccAssocErrFile
         return 1
 
     #
@@ -212,6 +247,9 @@ def closeFiles():
 
     if fpAccAssoc:
         fpAccAssoc.close()
+
+    if fpAccAssocErr:
+        fpAccAssocErr.close()
 
     if fpSPAssoc:
         fpSPAssoc.close()
@@ -259,46 +297,61 @@ def getAssociations():
         ipID = rec.getInterProID()
         kwName = rec.getKWName()
 
+	#
+	# construct the report rows
+	#
+
+	reportRow = ''
+
+	# all uniprot ids
+        reportRow = uniprotID + '\t' + \
+                      ','.join(entrezgeneID) + '\t' + \
+                      ','.join(ensemblID) + '\t'
+
+	# EC
+	if len(ecID) > 0:
+            reportRow = reportRow + ','.join(ecID)
+	reportRow = reportRow + '\t'
+
+	# PDB
+	if len(pdbID) > 0:
+            reportRow = reportRow + ','.join(pdbID)
+	reportRow = reportRow + '\t'
+
+	# InterPro
+	if len(ipID) > 0:
+            reportRow = reportRow + ','.join(ipID)
+	reportRow = reportRow + '\t'
+
+	# UniProt/SwissProt key word
+	if len(kwName) > 0:
+            reportRow = reportRow + ','.join(kwName)
+	reportRow = reportRow + '\n'
+
         #
-        # Write the IDs to the association file as long as there is at least
+        # Write the reportRow to the association file as long as there is at least
         # one EntrezGene ID or Ensembl ID. If there is more than one
         # EntrezGene ID or Ensembl gene model ID, they are comma-separated
         # within the appropriate field.
         #
+
         if len(entrezgeneID) > 0 or len(ensemblID) > 0:
 
-	    # all uniprot ids
-            fpAccAssoc.write(uniprotID + '\t' + \
-                          ','.join(entrezgeneID) + '\t' + \
-                          ','.join(ensemblID) + '\t')
-
-	    # EC
-	    if len(ecID) > 0:
-                fpAccAssoc.write(','.join(ecID))
-	    fpAccAssoc.write('\t')
-
-	    # PDB
-	    if len(pdbID) > 0:
-                fpAccAssoc.write(','.join(pdbID))
-	    fpAccAssoc.write('\t')
-
-	    # InterPro
-	    if len(ipID) > 0:
-                fpAccAssoc.write(','.join(ipID))
-	    fpAccAssoc.write('\t')
-
-	    # UniProt/SwissProt key word
-	    if len(kwName) > 0:
-                fpAccAssoc.write(','.join(kwName))
-	    fpAccAssoc.write('\n')
+            fpAccAssoc.write(reportRow)
 
 	    # swiss-prot
 	    if not isTrembl:
                 fpSPAssoc.write(uniprotID + '\n')
-
+    
 	    # trembl 
 	    else:
                 fpTRAssoc.write(uniprotID + '\n')
+
+	#
+	# else, write reportRow to error file
+	#
+        else:
+            fpAccAssocErr.write(reportRow)
 
         #
         # Get the next record from the parser.

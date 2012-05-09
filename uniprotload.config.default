@@ -66,6 +66,11 @@ MGI_ACC_ASSOC_FILE=${OUTPUTDIR}/mgi_acc_assoc.txt
 UNIPROT_ACC_ASSOC_FILE=${OUTPUTDIR}/uniprot_acc_assoc.txt
 
 # UniProt to EntrezGene/Ensembl associations from UniProt input file
+# error file of those UniProt ids that do not contain EntrezGene nor Ensembl ids
+#
+UNIPROT_ACC_ASSOC_ERR_FILE=${OUTPUTDIR}/uniprot_acc_assoc_err.txt
+
+# UniProt to EntrezGene/Ensembl associations from UniProt input file
 # Swiss-Prot
 #
 UNIPROT_SP_ASSOC_FILE=${OUTPUTDIR}/uniprot_sp_assoc.txt
@@ -98,7 +103,8 @@ OUTPUT_1_0_PROTEINCODING=${OUTPUTDIR}/mgi_uniprot.1_0_proteincoding.txt
 export INPUTFILE INFILE_NAME INFILE_MINIMUM_SIZE
 export EC2GOFILE IP2GOFILE SPKW2GOFILE
 export MGI_ACC_ASSOC_FILE 
-export UNIPROT_ACC_ASSOC_FILE UNIPROT_SP_ASSOC_FILE UNIPROT_TR_ASSOC_FILE
+export UNIPROT_ACC_ASSOC_FILE UNIPROT_ACC_ASSOC_ERR_FILE
+export UNIPROT_SP_ASSOC_FILE UNIPROT_TR_ASSOC_FILE
 export MGI_UNIPROT_LOAD_FILE MGI_SWISSPROT_LOAD_FILE
 export INFILE_1_0 OUTPUT_1_0_PROTEINCODING
 
