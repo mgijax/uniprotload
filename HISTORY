@@ -2,8 +2,11 @@ TAG: uniprotload-5-0-0-??
 DATE: 05/09/2012
 STAFF: lec
 CHANGES:
-1) TR11054/add UNIPROT_ACC_ASSOC_ERR_FILE file
-error file of uniprot ids that contain neither EntrezGene nor Ensembl ids
+1) TR11054
+UNIPROT_ACC_ASSOC_ERR_FILE file
+UNIPROT_SP_ASSOC_ERR_FILE
+UNIPROT_TR_ASSOC_ERR_FILE
+error files of uniprot ids that contain neither EntrezGene nor Ensembl ids
 
 TAG: uniprotload-5-0-0-2
 TAG: uniprotload-5-0-0-1
