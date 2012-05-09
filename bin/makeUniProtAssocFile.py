@@ -18,6 +18,7 @@
 #      3) all of the UniProt IDs that are TrEMBL
 #
 #      4) all of the UniProt IDs that contain neither EntrezGene nor Ensembl ids (error file)
+#	  formats:  all, SwissProt and TrEMBL
 #
 #  Usage:
 #
@@ -395,7 +396,7 @@ def getAssociations():
                 fpTRAssoc.write(uniprotID + '\n')
 
 	#
-	# else, write reportRow to error file
+	# else, write reportRow to error files
 	#
         else:
             fpAccAssocErr.write(reportRow)
@@ -407,7 +408,6 @@ def getAssociations():
 	    # trembl 
 	    else:
                 fpTRAssocErr.write(uniprotID + '\n')
-
 
         #
         # Get the next record from the parser.
