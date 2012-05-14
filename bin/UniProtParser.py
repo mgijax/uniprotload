@@ -6,6 +6,11 @@ import string
 import UniProtRecord
 
 #
+# 05/14/2012	lec
+#	- TR11071/add 'uniprotName' parsing
+#
+
+#
 # CLASS: Parser
 # IS: An object that knows how to parse the mouse-only UniProt file and extract
 #     specific attributes.
@@ -145,6 +150,20 @@ class Parser:
                 id = re.split(';', self.line[5:])[1].strip()
                 if not self.record.hasInterProID(id):
                     self.record.addInterProID(id)
+
+            #
+            # Save UniProt Name.  If the input line looks like this:
+            #
+            # GN   Name=Sh3bp2;
+            #
+            # We want to extract the Sh3bp2.
+            #
+            if self.line[0:10] == 'GN   Name=':
+		x = string.find(self.line, ';')
+		if x >= 0:
+		    name = self.line[10:x]
+		    if len(name) > 0:
+                        self.record.setUniProtName(name)
 
             #
             # Read the next line from the UniProt file.

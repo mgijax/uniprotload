@@ -343,6 +343,7 @@ def getAssociations():
         ecID = rec.getECID()
         ipID = rec.getInterProID()
         kwName = rec.getKWName()
+	uniprotName = rec.getUniProtName()
 
 	#
 	# construct the report rows
@@ -378,6 +379,11 @@ def getAssociations():
 	# UniProt/SwissProt key word
 	if len(kwName) > 0:
             reportRow = reportRow + ','.join(kwName)
+	reportRow = reportRow + '\t'
+
+	# UniProt name
+	if len(uniprotName) > 0:
+            reportRow = reportRow + uniprotName
 	reportRow = reportRow + '\n'
 
 	#

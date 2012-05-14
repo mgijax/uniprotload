@@ -2,6 +2,11 @@ import sys
 import os
 
 #
+# 05/14/2012    lec
+#       - TR11071/add 'uniprotName' parsing
+#
+
+#
 # CLASS: UniProtRecord
 # IS: An object that holds specific attributes from a UniProt record.
 # HAS: UniProt record attributes
@@ -36,6 +41,7 @@ class Record:
         self.ecID = []
         self.kwName = []
         self.interproID = []
+        self.uniprotName = []
 
 
     #
@@ -50,6 +56,16 @@ class Record:
 
     def getIsTrembl (self):
 	return self.isTrembl
+
+    #
+    # Name (Name=)
+    #
+
+    def setUniProtName (self, uniprotName):
+        self.uniprotName = uniprotName
+
+    def getUniProtName (self):
+        return self.uniprotName
 
     #
     # Ensembl ids
@@ -161,4 +177,6 @@ class Record:
                '|pdbID=' + ','.join(self.pdbID) + '|' + \
                '|ecID=' + ','.join(self.ecID) + '|' + \
                '|kwName=' + ','.join(self.kwName) + '|' + \
-               '|interproID=' + ','.join(self.interproID)
+               '|interproID=' + ','.join(self.interproID) + '|' + \
+	       '|uniprotName=' + self.uniprotName
+
