@@ -409,11 +409,11 @@ def getAssociations():
 
 	    # swiss-prot
 	    if not isTrembl:
-                fpSPAssocErr.write(uniprotID + '\n')
+                fpSPAssocErr.write(reportRow)
     
 	    # trembl 
 	    else:
-                fpTRAssocErr.write(uniprotID + '\n')
+                fpTRAssocErr.write(reportRow)
 
         #
         # Get the next record from the parser.
