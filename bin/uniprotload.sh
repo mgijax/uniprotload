@@ -182,6 +182,16 @@ STAT=$?
 checkStatus ${STAT} "Inferred From/Accession cache load (uniprotload.sh)"
 
 #
+# Run Reports
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Run report(s) (makeReports.sh)" | tee -a ${LOG}
+./makeReports.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "Run report(s) (makeReports.sh)"
+
+#
 # run postload cleanup and email logs
 #
 shutDown
