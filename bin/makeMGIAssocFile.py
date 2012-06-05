@@ -150,14 +150,16 @@ def closeFiles():
 def getAssociations():
 
     #
-    # Get all of the EntrezGene IDs, Ensembl gene model IDs that are
-    # associated with markers and load them into a temp table.
+    # Get all of the EntrezGene IDs, Ensembl gene model IDs, EMBL sequences
+    # that are associated with markers and load them into a temp table.
+    #
+    # marker must also have status official or interum
     #
     db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID", m.symbol, m._Marker_Type_key
               into #assoc 
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
-                 a1._LogicalDB_key in (55, 60) and 
+                 a1._LogicalDB_key in (9, 55, 60) and 
                  a1.preferred = 1 and 
                  a1._Object_key = m._Marker_key and 
                  m._Organism_key = 1 and 
@@ -218,6 +220,28 @@ def getAssociations():
         ensemblDict[mgiID].append(accID)
 
     #
+    # Get the MGI ID of the marker and the unique Ensembl gene model IDs
+    # that are associated with each marker.
+    #
+    cmd = '''select distinct mgiID, accID 
+             from #assoc 
+             where _LogicalDB_key = 9
+             order by mgiID'''
+    results = db.sql(cmd, 'auto')
+
+    #
+    # Create a dictionary lookup where the key is the MGI ID and the value
+    # is a list of association EMBL gene model IDs.
+    #
+    emblDict = {}
+    for r in results:
+        mgiID = r['mgiID']
+        accID = r['accID']
+        if not emblDict.has_key(mgiID):
+            emblDict[mgiID] = []
+        emblDict[mgiID].append(accID)
+
+    #
     # Get a unique list of all MGI IDs from the temp table.
     #
     cmd = '''select distinct mgiID, symbol, _Marker_Type_key
@@ -245,6 +269,11 @@ def getAssociations():
         else:
             ensemblID = []
 
+        if emblDict.has_key(mgiID):
+            emblID = emblDict[mgiID]
+        else:
+            emblID = []
+
         #
         # Write the IDs to the association file. If there is more than one
         # EntrezGene ID or Ensembl ID, they are comma-separated within the
@@ -254,7 +283,8 @@ def getAssociations():
 		      symbol + '\t' + \
 		      str(markerType) + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
-                      ','.join(ensemblID) + '\n')
+                      ','.join(ensemblID) + '\t' + \
+                      ','.join(emblID) + '\n')
 
     return 0
 

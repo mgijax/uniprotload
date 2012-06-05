@@ -2,6 +2,9 @@ import sys
 import os
 
 #
+# 06/04/2012    lec
+#	- TR11071/remove 'uniprotName', add emblID instead
+#
 # 05/14/2012    lec
 #       - TR11071/add 'uniprotName' parsing
 #
@@ -37,11 +40,11 @@ class Record:
 	self.isTrembl = 0
         self.ensemblID = []
         self.entrezgeneID = []
+        self.emblID = []
         self.pdbID = []
         self.ecID = []
         self.kwName = []
         self.interproID = []
-        self.uniprotName = []
 
 
     #
@@ -56,16 +59,6 @@ class Record:
 
     def getIsTrembl (self):
 	return self.isTrembl
-
-    #
-    # Name (Name=)
-    #
-
-    def setUniProtName (self, uniprotName):
-        self.uniprotName = uniprotName
-
-    def getUniProtName (self):
-        return self.uniprotName
 
     #
     # Ensembl ids
@@ -100,6 +93,22 @@ class Record:
             return 0
 
     #
+    # EMBL ids
+    #
+
+    def addEMBLID (self, emblID):
+        self.emblID.append(emblID)
+
+    def getEMBLID (self):
+        return self.emblID
+
+    def hasEMBLID (self, id):
+        if self.emblID.count(id) > 0:
+            return 1
+        else:
+            return 0
+
+    #
     # PDB ids (protein data bank)
     #
 
@@ -116,7 +125,7 @@ class Record:
             return 0
 
     #
-    # ED ids
+    # EC ids
     #
 
     def addECID (self, ecID):
@@ -178,5 +187,5 @@ class Record:
                '|ecID=' + ','.join(self.ecID) + '|' + \
                '|kwName=' + ','.join(self.kwName) + '|' + \
                '|interproID=' + ','.join(self.interproID) + '|' + \
-	       '|uniprotName=' + self.uniprotName
+               '|emblID=' + ','.join(self.entrezgeneID)
 

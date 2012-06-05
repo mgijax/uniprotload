@@ -34,13 +34,13 @@
 #		($UNIPROT__SP_ASSOC_ERR_FILE)
 #        It has the following tab-delimited fields:
 #        1) UniProt ID
-#        2) UniProt Name
+#        2) EMBL ID
 #
 #  Outputs:
 #
 #	 UniProt/MGI associations ($UNIPROT_SP_ASSOC_MGI_FILE)
 #	 1) UniProt ID (field 1 (err file))
-#	 2) UniProt Name (field  2 (err file))
+#	 2) EMBL ID Name (field 2 (err file))
 #	 3) MGI ID (field 1)
 #	 4) EntrezGene IDs (field 4)
 #	 5) Ensembl IDs (field 5)
@@ -163,10 +163,11 @@ def openFiles():
     #
     for line in fpMGIAssoc.readlines():
         tokens = string.split(line[:-1], '\t')
-        key = tokens[1]
-        value = tokens
-        mgiLookup[key] = []
-        mgiLookup[key].append(value)
+	allkey = tokens[5].split(',')
+	for key in allkey:
+            value = tokens
+            mgiLookup[key] = []
+            mgiLookup[key].append(value)
 
     return 0
 
@@ -207,23 +208,27 @@ def writeReport():
 	tokens = string.split(line[:-1], '\t')
 
 	uniprotID = tokens[0]
-	name = tokens[1]
+	allemblID = tokens[7]
+	emblID = tokens[7].split(',')
 
-	if name == '[]':
-	    continue
+	for e in emblID:
 
-	fp.write(uniprotID + '\t')
-	fp.write(name + '\t')
+	  if len(e) == 0:
+	      continue
 
-	#
-	# find info from MGI (MGI id, EntrezGene id, Ensembl id)
-	#
-	if mgiLookup.has_key(name):
-	    fp.write(mgiLookup[name][0][0] + '\t')
-	    fp.write(mgiLookup[name][0][3] + '\t')
-	    fp.write(mgiLookup[name][0][4] + '\n')
-	else:
-	    fp.write('\t\t\n')
+	  fp.write(uniprotID + '\t')
+	  fp.write(e + '\t')
+
+	  #
+	  # find info from MGI (MGI id, EntrezGene id, Ensembl id)
+	  #
+
+	  if mgiLookup.has_key(e):
+	      fp.write(mgiLookup[e][0][0] + '\t')
+	      fp.write(mgiLookup[e][0][3] + '\t')
+	      fp.write(mgiLookup[e][0][4] + '\n')
+	  else:
+	      fp.write('\t\t\n')
 
     return 0
 

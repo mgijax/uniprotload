@@ -31,6 +31,7 @@
 #        3) TrEMBL ID
 #        4) EC IDs (comma-separated)
 #        5) PDB IDs (comma-separated)
+#        6) Isoforms (comma-separated)
 #
 #  Outputs:
 #

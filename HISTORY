@@ -1,3 +1,10 @@
+TAG: uniprotload-?
+DATE: 06/05/2012
+STAFF: lec
+CHANGES:
+1) TR11071; replace search by UniProt Name with search by UniProt EMBL ID
+UNIPROT_SP_ASSOC_MGI_FILE
+
 TAG: uniprotload-5-0-0-4
 DATE: 05/15/2012
 STAFF: lec
