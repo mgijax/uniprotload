@@ -1,5 +1,5 @@
-TAG: uniprotload-?
-DATE: 06/05/2012
+TAG: uniprotload-5-0-0-5
+DATE: 06/06/2012
 STAFF: lec
 CHANGES:
 1) TR11071; replace search by UniProt Name with search by UniProt EMBL ID
