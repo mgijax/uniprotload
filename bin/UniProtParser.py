@@ -167,6 +167,11 @@ class Parser:
                 if not self.record.hasInterProID(id):
                     self.record.addInterProID(id)
 
+            #
+            # Read the next line from the UniProt file.
+            #
+            self.line = self.fp.readline()
+
         #
         # If the record terminator was found, return the record object.
         # Otherwise, EOF must have been reached, so return None.

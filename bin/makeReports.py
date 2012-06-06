@@ -29,6 +29,7 @@
 #        3) Marker Type
 #        4) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        5) Ensembl gene model IDs (comma-separated)
+#        6) EMBL IDs (comma-separated)
 #
 #      - UniProt SwissProt association that have neither EntrezGene nor Ensembl ids
 #		($UNIPROT__SP_ASSOC_ERR_FILE)
@@ -208,8 +209,7 @@ def writeReport():
 	tokens = string.split(line[:-1], '\t')
 
 	uniprotID = tokens[0]
-	allemblID = tokens[7]
-	emblID = tokens[7].split(',')
+	emblID = tokens[1].split(',')
 
 	for e in emblID:
 

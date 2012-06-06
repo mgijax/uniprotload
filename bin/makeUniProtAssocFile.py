@@ -343,7 +343,7 @@ def getAssociations():
         ecID = rec.getECID()
         ipID = rec.getInterProID()
         kwName = rec.getKWName()
-	uniprotName = rec.getUniProtName()
+	emblID = rec.getEMBLID()
 
 	#
 	# construct the report rows
@@ -381,9 +381,9 @@ def getAssociations():
             reportRow = reportRow + ','.join(kwName)
 	reportRow = reportRow + '\t'
 
-	# UniProt name
-	if len(uniprotName) > 0:
-            reportRow = reportRow + uniprotName
+	# EMBL ID
+	if len(emblID) > 0:
+            reportRow = reportRow + ','.join(emblID)
 	reportRow = reportRow + '\n'
 
 	#
@@ -409,11 +409,11 @@ def getAssociations():
 
 	    # swiss-prot
 	    if not isTrembl:
-                fpSPAssocErr.write(uniprotID + '\t' + str(uniprotName) + '\n')
+                fpSPAssocErr.write(uniprotID + '\t' + ','.join(emblID) + '\n')
     
 	    # trembl 
 	    else:
-                fpTRAssocErr.write(uniprotID + '\t' + str(uniprotName) + '\n')
+                fpTRAssocErr.write(uniprotID + '\t' + ','.join(emblID) + '\n')
 
         #
         # Get the next record from the parser.
