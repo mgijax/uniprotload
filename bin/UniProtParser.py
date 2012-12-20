@@ -109,9 +109,10 @@ class Parser:
             # been added.
             #
             if self.line[0:10] == 'DR   EMBL;':
-                id = re.split(';', self.line[5:])[1].strip()
-                if not self.record.hasEMBLID(id):
-                    self.record.addEMBLID(id)
+		if string.find(self.line, 'mRNA') >= 0:
+                  id = re.split(';', self.line[5:])[1].strip()
+                  if not self.record.hasEMBLID(id):
+                      self.record.addEMBLID(id)
 
             #
             # Save an PDB ID. If the input line looks like this:

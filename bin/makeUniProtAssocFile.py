@@ -8,7 +8,7 @@
 #      This script will use the records in the UniProt input file to create
 #      output files that contain:
 #
-#      1) all of the EntrezGene IDs, Ensembl gene model IDs,
+#      1) all of the EntrezGene IDs, Ensembl gene model IDs, EMBL IDs,
 #         EC ids, PDB ids, InterPro ids, SwissProt key words
 #         that are associated with each UniProt ID.
 #         (all)
@@ -17,7 +17,8 @@
 #
 #      3) all of the UniProt IDs that are TrEMBL
 #
-#      4) all of the UniProt IDs that contain neither EntrezGene nor Ensembl ids (error file)
+#      4) all of the UniProt IDs that contain neither EntrezGene nor Ensembl ids 
+#         no EMBL ids (error file)
 #	  formats:  all, SwissProt and TrEMBL
 #
 #  Usage:
@@ -52,10 +53,11 @@
 #        1) UniProt ID
 #        2) EntrezGene IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
-#        4) EC IDs (comma-separated)
-#        5) PDB IDs (comma-separated)
-#        6) InterPro IDs (comma-separated)
-#        7) SPKW Names (comma-separated)
+#        4) EMBL IDs (comma-separated)
+#        5) EC IDs (comma-separated)
+#        6) PDB IDs (comma-separated)
+#        7) InterPro IDs (comma-separated)
+#        8) SPKW Names (comma-separated)
 #
 #      - SwissProt association file ($UNIPROT_SP_ASSOC_FILE) 
 #      - SwissProt association file ($UNIPROT_SP_ASSOC_ERR_FILE) 
@@ -356,10 +358,12 @@ def getAssociations():
 	# uniprot ids
 	# entrezgene id
 	# ensembl id
+	# embl id
 	#
         reportRow = uniprotID + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
-                      ','.join(ensemblID) + '\t'
+                      ','.join(ensemblID) + '\t' + \
+                      ','.join(emblID) + '\t'
 
 	# EC
 	if len(ecID) > 0:
@@ -387,9 +391,9 @@ def getAssociations():
 	reportRow = reportRow + '\n'
 
 	#
-	# if exists either EnterzGene id or Ensembl id...
+	# if exists either EnterzGene id or Ensembl id or EMBL id...
 	#
-        if len(entrezgeneID) > 0 or len(ensemblID) > 0:
+        if len(entrezgeneID) > 0 or len(ensemblID) > 0 or len(emblID) > 0:
 
             fpAccAssoc.write(reportRow)
 

@@ -6,7 +6,7 @@
 #  Purpose:
 #
 #      This script will create an output file that contains all of the
-#      EntrezGene IDs and Ensembl gene model IDs that are associated with
+#      EntrezGene IDs, Ensembl gene model IDs, EMBL IDs that are associated with
 #      MGI markers.
 #
 #  Usage:
@@ -32,6 +32,7 @@
 #	 3) Marker Types
 #        4) EntrezGene IDs (comma-separated)
 #        5) Ensembl gene model IDs (comma-separated)
+#        6) EMBL IDs (comma-separated)
 #
 #  Exit Codes:
 #
@@ -155,7 +156,7 @@ def getAssociations():
     #
     # marker must also have status official or interum
     #
-    db.sql('''select a1.accID, a1._LogicalDB_key, a2.accID "mgiID", m.symbol, m._Marker_Type_key
+    db.sql('''select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID "mgiID", m.symbol, m._Marker_Type_key
               into #assoc 
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
@@ -173,6 +174,7 @@ def getAssociations():
     # Add indexes to the temp table.
     #
     db.sql('create nonclustered index idx_accID on #assoc (accID)', None)
+    db.sql('create nonclustered index idx_object on #assoc (_Object_key)', None)
     db.sql('create nonclustered index idx_logicalDB on #assoc (_LogicalDB_key)', None)
 
     #
@@ -220,18 +222,21 @@ def getAssociations():
         ensemblDict[mgiID].append(accID)
 
     #
-    # Get the MGI ID of the marker and the unique Ensembl gene model IDs
+    # Get the MGI ID of the marker and the unique EMBL IDs
     # that are associated with each marker.
     #
-    cmd = '''select distinct mgiID, accID 
-             from #assoc 
+    # EMBL IDs associated with at most one marker
+    #
+    cmd = '''select distinct mgiID, accID
+             from #assoc
              where _LogicalDB_key = 9
+	     group by accID having count(*) = 1
              order by mgiID'''
     results = db.sql(cmd, 'auto')
 
     #
     # Create a dictionary lookup where the key is the MGI ID and the value
-    # is a list of association EMBL gene model IDs.
+    # is a list of association EMBL gene IDs.
     #
     emblDict = {}
     for r in results:

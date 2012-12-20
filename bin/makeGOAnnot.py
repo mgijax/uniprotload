@@ -63,6 +63,7 @@
 #        3) Marker Type
 #        4) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        5) Ensembl gene model IDs (comma-separated)
+#        6) EMBL IDs (comma-separated)
 #
 #	- EC-2-GO file ($EC2GOFILE)
 #

@@ -7,7 +7,7 @@
 #
 #      This script will bucketize the MGI IDs in the MGI association file
 #      against the UniProt IDs in the UniProt association file by comparing
-#      what EntrezGene/Ensembl IDs they have in common.
+#      what EntrezGene/Ensembl/EMBL IDs they have in common.
 #
 #  Usage:
 #
@@ -37,16 +37,18 @@
 #        3) Marker Type
 #        4) EntrezGene IDs and NBCI gene model IDs (comma-separated)
 #        5) Ensembl gene model IDs (comma-separated)
+#        6) EMBL IDs (comma-separated)
 #
 #      - UniProt association file ($UNIPROT_ACC_ASSOC_FILE) to be used by
 #        the TableDataSet class. It has the following tab-delimited fields:
 #        1) UniProt ID
 #        2) EntrezGene IDs (comma-separated)
 #        3) Ensembl gene model IDs (comma-separated)
-#        4) EC IDs (comma-separated)
-#        5) PDB IDs (comma-separated)
-#        6) InterPro IDs (comma-separated)
-#        7) SPKW Names (comma-separated)
+#        4) EMBL IDs (comma-separated)
+#        5) EC IDs (comma-separated)
+#        6) PDB IDs (comma-separated)
+#        7) InterPro IDs (comma-separated)
+#        8) SPKW Names (comma-separated)
 #
 #      - SwissProt association file ($UNIPROT_SP_ASSOC_FILE) 
 #        to be used to generate a lookup file of SwissProt associations.
@@ -356,8 +358,8 @@ def bucketize():
     #
     # Create a TableDataSet for the MGI association file.
     #
-    fields = [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ]
-    multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' }
+    fields = [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ]
+    multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' , 'EMBL ID' : ',' }
 
     dsMGI = tabledatasetlib.TextFileTableDataSet(
                 'mgi',
@@ -366,13 +368,13 @@ def bucketize():
                 multiValued=multiFields,
                 readNow=1)
 
-    dsMGI.addIndexes( [ 'EntrezGene ID', 'Ensembl ID' ] )
+    dsMGI.addIndexes( [ 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ] )
 
     #
     # Create a TableDataSet for the UniProt association file.
     #
-    fields = [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EC', 'PDB', 'InterPro ID', 'SPKW name' ]
-    multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' }
+    fields = [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID', 'EC', 'PDB', 'InterPro ID', 'SPKW name' ]
+    multiFields = { 'EntrezGene ID' : ',' , 'Ensembl ID' : ',' , 'EMBL ID' : ',' }
 
     dsUniProt = tabledatasetlib.TextFileTableDataSet(
                     'uniprot',
@@ -381,16 +383,16 @@ def bucketize():
                     multiValued=multiFields,
                     readNow=1)
 
-    dsUniProt.addIndexes( [ 'EntrezGene ID', 'Ensembl ID' ] )
+    dsUniProt.addIndexes( [ 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ] )
 
     #
     # Create a bucketizer for the two datasets and run it.
     #
     bucketizer = tabledatasetlib.TableDataSetBucketizer(
                      dsMGI,
-                     [ 'EntrezGene ID', 'Ensembl ID' ],
+                     [ 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ],
                      dsUniProt,
-                     [ 'EntrezGene ID', 'Ensembl ID' ])
+                     [ 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
     bucketizer.run()
 
     print 'MGI vs UniProt'
@@ -431,26 +433,26 @@ def writeBuckets_format1():
     bucket[BN_N].write('total number of unique records:  %s\n\n' % (len(bucketizer.getn_m())))
 
     reporter.write_0_1(bucket[B0_1],
-                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     reporter.write_1_0(bucket[B1_0],
-                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     reporter.write_1_1(bucket[B1_1],
-                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
-                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ],
+                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     reporter.write_1_n(bucket[B1_N],
-                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
-                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ],
+                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     reporter.write_n_1(bucket[BN_1],
-                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
-                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ],
+                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     reporter.write_n_m(bucket[BN_N],
-                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID' ],
-                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID' ])
+                       [ 'MGI ID', 'Symbol', 'Marker Type', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ],
+                       [ 'UniProt ID', 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
 
     return 0
 
@@ -473,12 +475,14 @@ def writeBuckets_format2():
         symbol = mgiRcd[0]['Symbol']
         entrezgeneIDs = ','.join(mgiRcd[0]['EntrezGene ID'])
         ensemblIDs = ','.join(mgiRcd[0]['Ensembl ID'])
-        bucket[B1_1].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t')
+        emblIDs = ','.join(mgiRcd[0]['EMBL ID'])
+        bucket[B1_1].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\t')
         uniprotRcd = dsUniProt.getRecords(uniprotKey)
         uniprotID = uniprotRcd[0]['UniProt ID']
         entrezgeneIDs = ','.join(uniprotRcd[0]['EntrezGene ID'])
         ensemblIDs = ','.join(uniprotRcd[0]['Ensembl ID'])
-        bucket[B1_1].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\n')
+        emblIDs = ','.join(uniprotRcd[0]['EMBL ID'])
+        bucket[B1_1].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\n')
 
     #
     # Load the 1:N bucket.
@@ -489,8 +493,9 @@ def writeBuckets_format2():
         symbol = mgiRcd[0]['Symbol']
         entrezgeneIDs = ','.join(mgiRcd[0]['EntrezGene ID'])
         ensemblIDs = ','.join(mgiRcd[0]['Ensembl ID'])
-        bucket[B1_N].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t')
-        str = ' '*len(mgiID) + '\t' + ' '*len(entrezgeneIDs) + '\t' + ' '*len(ensemblIDs) + '\t'
+        emblIDs = ','.join(mgiRcd[0]['EMBL ID'])
+        bucket[B1_N].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\t')
+        str = ' '*len(mgiID) + '\t' + ' '*len(entrezgeneIDs) + '\t' + ' '*len(ensemblIDs) + '\t' + ' '*len(emblIDs) + '\t'
         count = 0
         for uniprotRcd in dsUniProt.getRecords(keys = uniprotKeys):
             if count > 0:
@@ -498,7 +503,8 @@ def writeBuckets_format2():
             uniprotID = uniprotRcd['UniProt ID']
             entrezgeneIDs = ','.join(uniprotRcd['EntrezGene ID'])
             ensemblIDs = ','.join(uniprotRcd['Ensembl ID'])
-            bucket[B1_N].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\n')
+            emblIDs = ','.join(uniprotRcd['EMBL ID'])
+            bucket[B1_N].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\n')
             count+=1
 
     #
@@ -511,15 +517,17 @@ def writeBuckets_format2():
             symbol = mgiRcd['Symbol']
             entrezgeneIDs = ','.join(mgiRcd['EntrezGene ID'])
             ensemblIDs = ','.join(mgiRcd['Ensembl ID'])
-            bucket[BN_1].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t')
+            emblIDs = ','.join(mgiRcd['EMBL ID'])
+            bucket[BN_1].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\t')
             if count == 0:
                 uniprotRcd = dsUniProt.getRecords(uniprotKey)
                 uniprotID = uniprotRcd[0]['UniProt ID']
                 entrezgeneIDs = ','.join(uniprotRcd[0]['EntrezGene ID'])
                 ensemblIDs = ','.join(uniprotRcd[0]['Ensembl ID'])
-                bucket[BN_1].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\n')
+                emblIDs = ','.join(uniprotRcd[0]['EMBL ID'])
+                bucket[BN_1].write(uniprotID + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\n')
             else:
-                bucket[BN_1].write('\t\t\n')
+                bucket[BN_1].write('\t\t\t\n')
             count+=1
 
     return 0

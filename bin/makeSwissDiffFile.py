@@ -29,9 +29,10 @@
 #        1) MGI ID (for a marker)
 #        2) Swiss-Prot ID
 #        3) TrEMBL ID
-#        4) EC IDs (comma-separated)
-#        5) PDB IDs (comma-separated)
-#        6) Isoforms (comma-separated)
+#        4) EMBL ID
+#        5) EC IDs (comma-separated)
+#        6) PDB IDs (comma-separated)
+#        7) Isoforms (comma-separated)
 #
 #  Outputs:
 #
@@ -41,6 +42,7 @@
 #        1) MGI ID (for a marker)
 #        2) SwissProt ID
 #        3) TrEMBL ID
+#        4) EMBL ID
 #
 #      - MGI/SwissProt vs. MGI/UniProt buckets
 #        Each file name is prefixed as follows:
