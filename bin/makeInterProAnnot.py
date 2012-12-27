@@ -271,10 +271,10 @@ def readUNIPROTACC():
 	key = tokens[0]
 
 	# not all uniprot ids have interpro ids...
-	if len(tokens[5]) == 0:
+	if len(tokens[6]) == 0:
 	    continue
 
-	values = string.split(tokens[5], ',')
+	values = string.split(tokens[6], ',')
 
         if not uniprot_to_ip.has_key(key):
             uniprot_to_ip[key] = []
