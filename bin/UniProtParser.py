@@ -6,6 +6,9 @@ import string
 import UniProtRecord
 
 #
+# 10/20/2014	lec
+#	- TR11817/DE changes
+#
 # 06/04/2012	lec
 #	- TR11071/remove 'uniprotName', add emblID instead
 #
@@ -129,15 +132,18 @@ class Parser:
             #
             # Save an EC ID. If the input line looks like this:
             #
-	    # DE              EC=2.3.1.41;
 	    # DE            EC=1.1.1.284;
-	    # the EC does not always appear at the same line number
+	    # DE            EC=2.7.11.21 {....};
+	    # note : the EC does not always appear at the same line number
             #
             # We want to extract the 2.3.1.41
+	    #
+	    # TR11817 : added "{...}" handling
             #
             if self.line[0:5] == 'DE   ':
 		if string.find(self.line, 'EC=') >= 0:
                   id = re.split('=', self.line)[1].strip()
+                  id = re.split(' {', id)[0]
 		  id = string.replace(id.strip(), ';', '')
                   if not self.record.hasECID(id):
                       self.record.addECID(id)
