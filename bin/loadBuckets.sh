@@ -82,7 +82,8 @@ LOG=${LOG_DIAG}
 COUNT=`cat ${INFILE_NAME} | wc -l | sed 's/ //g'`
 if [ ${COUNT} -lt ${INFILE_MINIMUM_SIZE} ]
 then
-    echo "\n**** WARNING ****" >> ${LOG}
+    echo "" >> ${LOG}
+    echo "**** WARNING ****" >> ${LOG}
     echo "${INFILE_NAME} has ${COUNT} lines." >> ${LOG}
     echo "Expecting at least ${INFILE_MINIMUM_SIZE} lines." >> ${LOG}
     echo "Sanity error detected in association file" | tee -a ${LOG}
