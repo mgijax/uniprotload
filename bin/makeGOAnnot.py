@@ -399,31 +399,31 @@ def openFiles():
 
     # get all GO annotations in MGD
 
-    db.sql('''select a._Annot_key, a._Object_key, ac.accID 
-	into #annots 
+    db.sql('''create temp table annots as
+	select a._Annot_key, a._Object_key, ac.accID 
 	from VOC_Annot a, ACC_Accession ac 
 	where a._AnnotType_key = 1000 
 	and a._Term_key = ac._Object_key 
 	and ac._MGIType_key = 13 
 	''', None)
-    db.sql('create index idx1 on #annots(_Annot_key)', None)
+    db.sql('create index idx1 on annots(_Annot_key)', None)
 
     # get  all non-IEA
-    db.sql('''select distinct a._Object_key, a.accID 
-	into #evidence 
-	from #annots a, VOC_Evidence e 
+    db.sql('''create temp table evidence as
+	select distinct a._Object_key, a.accID 
+	from annots a, VOC_Evidence e 
 	where a._Annot_key = e._Annot_key 
 	and e._EvidenceTerm_key != 115''', None)
-    db.sql('create index idx1 on #evidence(_Object_key)', None)
+    db.sql('create index idx1 on evidence(_Object_key)', None)
 
     # get Marker MGI ID/GO ID pairs for markers of type "gene" only
 
     results = db.sql('''select mgiID = a.accID, e.accID 
-	from #evidence e, ACC_Accession a, MRK_Marker m
+	from evidence e, ACC_Accession a, MRK_Marker m
 	where e._Object_key = a._Object_key 
 	and a._MGIType_key = 2 
 	and a._LogicalDB_key = 1 
-	and a.prefixPart = "MGI:" 
+	and a.prefixPart = \'MGI:\' 
 	and a.preferred = 1 
 	and a._Object_key = m._Marker_key 
 	and m._Marker_Type_key = 1
@@ -751,8 +751,8 @@ def processEC2GO():
 
     fp = open(goECFile, 'w')
 
-    db.sql('''select m._Marker_key, markerID = a2.accID, accID = "EC:" + a.accID
-		into #ec
+    db.sql('''create temp table ec as
+		select m._Marker_key, a2.accID as markerID, 'EC:' || a.accID as accID
                 from ACC_Accession a, MRK_Marker m, ACC_Accession a2
                 where a._MGIType_key = 2
                 and a._LogicalDB_key = 8
@@ -762,15 +762,15 @@ def processEC2GO():
 		and a._Object_key = a2._Object_key
 		and a2._MGIType_key = 2
                 and a2._LogicalDB_key = 1
-		and a2.prefixPart = "MGI:"
+		and a2.prefixPart = \'MGI:\'
 		and a2.preferred = 1
 		''', None)
-    db.sql('create index idx1 on #ec(_Marker_key)', None)
+    db.sql('create index idx1 on ec(_Marker_key)', None)
 
     # create a lookup of marker-to-uniprot (swissprot only)
     # this information will be added the note field
-    results = db.sql('''select e.markerID, spID = s.accID
-                from #ec e, ACC_Accession s
+    results = db.sql('''select e.markerID, s.accID as spID
+                from ec e, ACC_Accession s
                 where e._Marker_key = s._Object_key
 		and s._MGIType_key = 2
 		and s._LogicalDB_key in (13,41)
@@ -784,7 +784,7 @@ def processEC2GO():
         if annotNotePrefix + value not in mgd_to_uniprot[key]:
             mgd_to_uniprot[key].append(annotNotePrefix + value)
 
-    results = db.sql('select * from #ec', 'auto')
+    results = db.sql('select * from ec', 'auto')
     for r in results:
 
 	markerID = r['markerID']

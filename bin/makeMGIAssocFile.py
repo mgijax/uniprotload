@@ -156,8 +156,8 @@ def getAssociations():
     #
     # marker must also have status official or interum
     #
-    db.sql('''select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID "mgiID", m.symbol, m._Marker_Type_key
-              into #assoc 
+    db.sql('''create temp table assoc as
+	      select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID as mgiID, m.symbol, m._Marker_Type_key
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
                  a1._LogicalDB_key in (9, 55, 60) and 
@@ -168,21 +168,21 @@ def getAssociations():
                  a2._MGIType_key = 2 and 
                  a2._LogicalDB_Key = 1 and 
                  a2.preferred = 1 and
-                 a2.prefixPart = "MGI:"''', None)
+                 a2.prefixPart = \'MGI:\'''', None)
 
     #
     # Add indexes to the temp table.
     #
-    db.sql('create nonclustered index idx_accID on #assoc (accID)', None)
-    db.sql('create nonclustered index idx_object on #assoc (_Object_key)', None)
-    db.sql('create nonclustered index idx_logicalDB on #assoc (_LogicalDB_key)', None)
+    db.sql('create index idx_accID on assoc (accID)', None)
+    db.sql('create index idx_object on assoc (_Object_key)', None)
+    db.sql('create index idx_logicalDB on assoc (_LogicalDB_key)', None)
 
     #
     # Get the MGI ID of the marker and the unique EntrezGene IDs
     # that are associated with each marker.
     #
     cmd = '''select distinct mgiID, accID 
-             from #assoc 
+             from assoc 
              where _LogicalDB_key = 55 
              order by mgiID'''
     results = db.sql(cmd, 'auto')
@@ -204,7 +204,7 @@ def getAssociations():
     # that are associated with each marker.
     #
     cmd = '''select distinct mgiID, accID 
-             from #assoc 
+             from assoc 
              where _LogicalDB_key = 60 
              order by mgiID'''
     results = db.sql(cmd, 'auto')
@@ -228,9 +228,9 @@ def getAssociations():
     # EMBL IDs associated with at most one marker
     #
     cmd = '''select distinct mgiID, accID
-             from #assoc
+             from assoc
              where _LogicalDB_key = 9
-	     group by accID having count(*) = 1
+	     group by mgiID, accID having count(*) = 1
              order by mgiID'''
     results = db.sql(cmd, 'auto')
 
@@ -250,7 +250,7 @@ def getAssociations():
     # Get a unique list of all MGI IDs from the temp table.
     #
     cmd = '''select distinct mgiID, symbol, _Marker_Type_key
-             from #assoc 
+             from assoc 
              order by mgiID'''
     results = db.sql(cmd, 'auto')
 

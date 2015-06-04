@@ -211,11 +211,11 @@ def getAssociations():
     # Get all the MGI/SwissProt association 
     #
     results = db.sql('''
-		     select a1.accID "mgiID", a2.accID "uniprotID", a2._LogicalDB_key
+		     select a1.accID as mgiID, a2.accID as uniprotID, a2._LogicalDB_key
                      from ACC_Accession a1, ACC_Accession a2 
                      where a1._MGIType_key = 2
                            and a1._LogicalDB_key = 1 
-                           and a1.prefixPart = "MGI:" 
+                           and a1.prefixPart = \'MGI:\'
                            and a1.preferred = 1 
                            and a1._Object_key = a2._Object_key 
                            and a2._MGIType_key = 2 
