@@ -406,7 +406,7 @@ def openFiles():
 	and a._Term_key = ac._Object_key 
 	and ac._MGIType_key = 13 
 	''', None)
-    db.sql('create index idx1 on annots(_Annot_key)', None)
+    db.sql('create index annots_idx1 on annots(_Annot_key)', None)
 
     # get  all non-IEA
     db.sql('''create temp table evidence as
@@ -414,7 +414,7 @@ def openFiles():
 	from annots a, VOC_Evidence e 
 	where a._Annot_key = e._Annot_key 
 	and e._EvidenceTerm_key != 115''', None)
-    db.sql('create index idx1 on evidence(_Object_key)', None)
+    db.sql('create index evidence_idx1 on evidence(_Object_key)', None)
 
     # get Marker MGI ID/GO ID pairs for markers of type "gene" only
 
@@ -765,7 +765,7 @@ def processEC2GO():
 		and a2.prefixPart = \'MGI:\'
 		and a2.preferred = 1
 		''', None)
-    db.sql('create index idx1 on ec(_Marker_key)', None)
+    db.sql('create index ec_idx1 on ec(_Marker_key)', None)
 
     # create a lookup of marker-to-uniprot (swissprot only)
     # this information will be added the note field
