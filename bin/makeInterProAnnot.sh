@@ -63,6 +63,27 @@ LOG=${LOG_DIAG}
 
 #
 #
+# run annotation loads : delete mode
+#
+
+cd ${OUTPUTDIR}
+
+IPCONFIG_CSH=${UNIPROTLOAD}/ipannot_delete.config
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Running UniProt Marker/InterPro annotation load in delete mode (makeInterProAnnot.sh)" >> ${LOG_DIAG}
+rm -rf ${MARKER_IP_ASSOC_FILE}
+touch ${MARKER_IP_ASSOC_FILE}
+${ANNOTLOADER_CSH} ${IPCONFIG_CSH}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: Running UniProt Marker/InterPro annotation load in delete mode (makeInterProAnnot.sh)" | tee -a ${LOG}
+    exit 1
+fi
+
+#
+#
 # make the Marker/InterPro annotation file
 #
 
@@ -86,7 +107,7 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
-./makeInterProAnnot.py 2>&1 >> ${LOG}
+${UNIPROTLOAD}/bin/makeInterProAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
