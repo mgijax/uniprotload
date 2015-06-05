@@ -127,6 +127,8 @@ def generateReport():
 
     mgiID = []
 
+    # select all protein coding genes
+
     results = db.sql('''
            	select distinct a.accID
            	from ACC_Accession a, VOC_Annot v
