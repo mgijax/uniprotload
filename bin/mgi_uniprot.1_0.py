@@ -125,6 +125,25 @@ def closeFiles():
 #
 def generateReport():
 
+    mgiID = []
+
+    # select all protein coding genes
+
+    results = db.sql('''
+           	select distinct a.accID
+           	from ACC_Accession a, VOC_Annot v
+		where a._MGIType_key = 2
+		and a._LogicalDB_key = 1
+		and a.preferred = 1
+		and a._Object_key = v._Object_key
+           	and v._Term_key = 6238161
+           	and v._AnnotType_key = 1011
+		and v._Qualifier_key = 1614158
+		''', 'auto')
+		
+    for r in results:
+	mgiID.append(r['accID'])
+
     for line in inputFile.readlines():
 
         tokens = string.split(line[:-1], '\t')
@@ -133,19 +152,7 @@ def generateReport():
 	if string.find(id, 'total number') >= 0:
 	    continue
 
-	results = db.sql('''
-           	select a.accID
-           	from ACC_Accession a, VOC_Annot v
-		where a._MGIType_key = 2
-		and a._LogicalDB_key = 1
-		and a.preferred = 1
-		and a.accID = "%s"
-           	and a._Object_key = v._Object_key
-           	and v._AnnotType_key = 1011
-           	and v._Term_key = 6238161
-		''' % (id), 'auto')
-
-	if len(results) > 0:
+	if id in mgiID:
 	    outputFile.write(line)
 
     return 0
