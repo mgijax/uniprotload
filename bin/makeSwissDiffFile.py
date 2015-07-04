@@ -215,7 +215,7 @@ def getAssociations():
                      from ACC_Accession a1, ACC_Accession a2 
                      where a1._MGIType_key = 2
                            and a1._LogicalDB_key = 1 
-                           and a1.prefixPart = 'MGI:' 
+                           and a1.prefixPart = \'MGI:\'
                            and a1.preferred = 1 
                            and a1._Object_key = a2._Object_key 
                            and a2._MGIType_key = 2 

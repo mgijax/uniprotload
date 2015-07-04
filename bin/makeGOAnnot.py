@@ -418,7 +418,7 @@ def openFiles():
 
     # get Marker MGI ID/GO ID pairs for markers of type "gene" only
 
-    results = db.sql('''select mgiID = a.accID, e.accID 
+    results = db.sql('''select a.accID as mgiID, e.accID 
 	from evidence e, ACC_Accession a, MRK_Marker m
 	where e._Object_key = a._Object_key 
 	and a._MGIType_key = 2 
