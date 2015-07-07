@@ -25,7 +25,7 @@ fi
 #
 ###########################################################################
 
-INPUTDIR=/data/seqdbs/blast/uniprot.build
+INPUTDIR=/data/downloads/uniprot
 
 FILEDIR=${DATALOADSOUTPUT}/uniprot/uniprotload
 ARCHIVEDIR=${FILEDIR}/archive
