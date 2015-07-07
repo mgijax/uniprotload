@@ -25,7 +25,7 @@ fi
 #
 ###########################################################################
 
-INPUTDIR=/data/downloads/uniprot
+INPUTDIR=${DATADOWNLOADS}/uniprot
 
 FILEDIR=${DATALOADSOUTPUT}/uniprot/uniprotload
 ARCHIVEDIR=${FILEDIR}/archive
