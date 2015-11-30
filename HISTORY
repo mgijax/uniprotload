@@ -1,3 +1,9 @@
+TAG: uniprotload-6-0-1-1
+DATE: 11/30/2015
+STAFF: dbm
+CHANGES: TR11904 & TR12199
+1) uniprotload.config.default: Don't mail curator log to mgiadmin
+
 TAG: uniprotload-tr12070-BP
 DATE: 11/02/2015
 STAFF: lec
