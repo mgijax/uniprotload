@@ -1,3 +1,12 @@
+TAG: uniprotload-tr11937-1
+DATE: 12/28/2015
+STAFF: sc
+CHANGES: US134 - add core components for uniprot override load
+1) new script stubs: overrideQC.py overrideQC.sh publishOverride runOverrideQC
+2) new config: overrideload.config.default
+3) index.html - added override load section
+4) Install - added install for override load
+
 TAG: uniprotload-tr11937-BP
 DATE: 12/22/2015
 STAFF: sc

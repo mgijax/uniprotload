@@ -1,0 +1,105 @@
+#format: sh
+#
+#  Configuration for curator uniprot overrides
+#
+###########################################################################
+
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+CONFIG_MASTER=${MGICONFIG}/master.config.sh
+
+export CONFIG_MASTER
+
+. ${CONFIG_MASTER}
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+# Full path the the input, output, logs, reports, and archive directories 
+FILEDIR=${DATALOADSOUTPUT}/uniprot/uniprotload/uniprotload_override
+INPUTDIR=${FILEDIR}/input
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+ARCHIVEDIR=${FILEDIR}/archive
+
+export INPUTDIR FILEDIR LOGDIR RPTDIR OUTPUTDIR ARCHIVEDIR
+
+#
+# Sanity check settings
+#
+
+# Full path to the QC log.
+QC_LOGFILE=${LOGDIR}/overrideQC.log
+
+# Full path to the QC report
+QC_RPT=${RPTDIR}/overrideQC.rpt
+
+# Full path to QC scripts.
+LOAD_QC=${UNIPROTLOAD}/bin/overrideQC.py
+LOAD_QC_SH=${UNIPROTLOAD}/bin/overrideQC.sh
+export QC_LOGFILE QC_RPT LOAD_QC LOAD_QC_SH
+
+
+
+#
+# Inputs
+#
+# full path to the default input file
+INPUT_FILE_DEFAULT=${INPUTDIR}/override.txt
+
+export INPUT_FILE_DEFAULT
+
+#
+# Outputs
+#
+
+#  Full path name of the log files
+LOG_PROC=${LOGDIR}/override.proc.log
+LOG_DIAG=${LOGDIR}/override.diag.log
+LOG_CUR=${LOGDIR}/override.cur.log
+LOG_VAL=${LOGDIR}/override.val.log
+
+export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
+
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+# last run file
+LASTRUN=${INPUTDIR}/lastrun
+export LASTRUN
+
+# this load's login value for DB table CreatedBy and ModifiedBy
+JOBSTREAM=uniprot_overrideload
+
+export JOBSTREAM
+
+#  The name of the load for the subject of an email notification
+# will be set by wrapper based on collection for each load
+MAIL_LOADNAME="Uniprot Override Load"
+
+#  Recipient list for mailing the curation log file (comma-separated)
+MAIL_LOG_CUR=""
+
+export MAIL_LOADNAME MAIL_LOG_CUR
+
+#  INSTALLDIR expected by dlautils/DLAInstall
+INSTALLDIR=${UNIPROTLOAD}
+
+export INSTALLDIR
+
