@@ -56,10 +56,13 @@ export QC_LOGFILE QC_RPT LOAD_QC LOAD_QC_SH
 #
 # Inputs
 #
-# full path to the default input file
+# full path to the curator prepared file
 INPUT_FILE_DEFAULT=${INPUTDIR}/override.txt
 
-export INPUT_FILE_DEFAULT
+# full path the the load file, minus lines that do not pass QC
+INPUT_FILE_TOLOAD=${INPUTDIR}/override_toload.txt
+
+export INPUT_FILE_DEFAULT INPUT_FILE_TOLOAD
 
 #
 # Outputs

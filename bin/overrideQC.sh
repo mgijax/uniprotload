@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 #
 #  overrideQC.sh
 ###########################################################################
@@ -73,7 +73,6 @@ LIVE_RUN=0; export LIVE_RUN
 CONFIG=`cd ${BINDIR}/..; pwd`/overrideload.config
 . ${CONFIG}
 
-echo "$1"
 if [ $# -eq 1 ]
 then
     INPUT_FILE=$1
@@ -134,8 +133,14 @@ echo "" >> ${LOG}
 date >> ${LOG}
 echo "Run QC checks on the input file" >> ${LOG}
 
-${LOAD_QC}  ${INPUT_FILE}
+${LOAD_QC} ${INPUT_FILE}
 STAT=$?
+if [ ${STAT} -eq 0 ]
+then
+echo "No QC errors detected." | tee -a ${LOG}
+    echo "" | tee -a ${LOG}
+fi
+
 if [ ${STAT} -eq 1 ]
 then
     echo "Fatal initialization error. See ${QC_RPT}" | tee -a ${LOG}
@@ -145,10 +150,15 @@ fi
 
 if [ ${STAT} -eq 2 ]
 then
-    echo "QC errors detected. See ${QC_RPT}" | tee -a ${LOG}
+    echo "Non-fatal QC errors detected. See ${QC_RPT}" | tee -a ${LOG}
     echo "" | tee -a ${LOG}
-else
-    echo "No QC errors detected."
+fi
+
+if [ ${STAT} -eq 3 ]
+then
+    echo "Fatal QC errors detected. See ${QC_RPT}" | tee -a ${LOG}
+    echo "" | tee -a ${LOG}
+    exit ${STAT}
 fi
 
 echo "" >> ${LOG}

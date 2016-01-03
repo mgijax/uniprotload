@@ -106,7 +106,6 @@ ${DLAINSTALL} ${DEV}
 #
 # Create the input directory if it doesn't exist.
 #
-echo "INPUTDIR: $INPUTDIR"
 if [ ! -d ${INPUTDIR} ]
 then
     mkdir -p ${INPUTDIR}
@@ -127,8 +126,7 @@ fi
 
 chmod -f 775 ${INPUTDIR}
 chgrp mgi ${INPUTDIR}
-
-chmod -f 755 ${OVERRIDE_QC_SH}
+chmod -f 755 ${LOAD_QC_SH}
 
 # trim any trailing slash from MGIBIN variable
 DEPLOY_PATH=`echo "${MGIBIN}" | sed 's./$..'`
@@ -155,7 +153,6 @@ if [ -d ${DEPLOY_PATH} ]; then
 	    if [ $? -ne 0 ]; then
 		    echo "Warning: Failed to copy ${file} to ${DEPLOY_PATH}"
 	    fi
-
 	    chmod 755 ${DEPLOY_PATH}/${file}
 	    if [ $? -ne 0 ]; then
 		    echo "Warning: Failed to change permissions on ${DEPLOY_PATH}/${file}"

@@ -1,3 +1,11 @@
+TAG: uniprotload-tr11937-2
+DATE: 03/03/2015
+STAFF: sc
+CHANGES: US138 - implement QC checkes	
+1) overrideload.config.default - added INPUT_FILE_TOLOAD
+2) overrideQC.py - filled out stub with actual QC checks
+3) overrideQC.sh - some tweaks
+ 
 TAG: uniprotload-tr11937-1
 DATE: 12/28/2015
 STAFF: sc
