@@ -465,7 +465,7 @@ def runQcChecks ():
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
 	if len(deleteAssocNotExistList):
-            fpQcRpt.write('\nDelete associations that do not exist in the database. These will be skipped:\n')
+            fpQcRpt.write('\nDelete associations that do not exist in the database. These will not be processed:\n')
             fpQcRpt.write('------------------------\n')
             for line in deleteAssocNotExistList:
                 fpQcRpt.write(line)
