@@ -1,6 +1,15 @@
+TAG: uniprotload-tr11937-4
+DATE: 01/06/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1) Install - change perms of override_toload.txt output file which is created
+   by the QC script, so curators can run
+2) overrideload.py - updated comments. split four fatal errors into four diff-
+   erent sections in the QC report. Updated QC report section header text.
+
 TAG: uniprotload-tr11937-3
 TAG: uniprotload-tr11937-2
-DATE: 03/03/2015
+DATE: 01/03/2016
 STAFF: sc
 CHANGES: US138 - implement QC checkes	
 1) overrideload.config.default - added INPUT_FILE_TOLOAD

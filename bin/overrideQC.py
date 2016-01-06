@@ -25,9 +25,10 @@
 #  Inputs:
 # 	vocabulary abbreviation input file
 #	Columns:
-#	1. termID
-#	2. term
-#	3. abbreviation
+#	1. uniprot ID 
+#	2. MGI ID
+#	3. logical DB
+#	4. action
 #
 #  Outputs:
 #
@@ -87,8 +88,17 @@ markerToUniprotLookup = {}
 # {mgiID:Marker, ...}
 markerLookup = {}
 
-# lines with missing columns
-invalidRowList = []
+# input lines with missing data
+missingDataList = []
+
+# input lines with < 4 columns
+missingColumnsList = []
+
+# input lines with invalid action values
+invalidActionList = []
+
+# input lines with invalid logicalDB values
+invalidLdbList = []
 
 # input lines mapped to the uniprotId {uniprotId: [lines with that uniprotID, ...}
 linesByUniprotDict = {}
@@ -108,6 +118,10 @@ nonMarkerMgiIdList = []
 # add lines where association already exists
 addAssocExistsList = []
 
+# Counts reported when no fatal errors
+loadCt = 0
+skipCt = 0
+
 # delete lines where association doesn't exist
 deleteAssocNotExistList = []
 
@@ -125,7 +139,8 @@ class Association:
         self.uniprotID = None
 	self.markerID = None
         self.logicalDbKey = None
-
+    def toString(self):
+	return '%s %s %s\n' % (self.uniprotID, self.markerID, self.logicalDbKey) 
 class Marker:
     # Is: data object for a marker
     # Has: a set of marker attributes
@@ -163,6 +178,7 @@ def checkArgs ():
 
     return
 
+# end checkArgs() -------------------------------------
 
 #
 # Purpose: Perform initialization steps.
@@ -177,11 +193,13 @@ def init ():
     openFiles()
    
     # load lookups 
+    # lookup of existing uniprot load associations
     results = db.sql('''select a1.accid as uniprotID, a1._LogicalDB_key, 
 	m.symbol, a2.accid as mgiID
     from ACC_Accession a1, MRK_Marker m, ACC_Accession a2
     where a1. _MGIType_key = 2
     and a1._LogicalDB_key in (13, 41)
+    and a1._CreatedBy_key = 1442 /*uniprotload_assocload*/
     and a1._Object_key = m._Marker_key
     and m._Organism_key = 1
     and m._Marker_Status_key in (1, 3)
@@ -223,6 +241,8 @@ def init ():
 
     return
 
+# end init() -------------------------------------
+
 def queryForMgiId(mgiID):
     results = db.sql('''select distinct a._MGIType_key
 	from ACC_Accession a
@@ -231,6 +251,8 @@ def queryForMgiId(mgiID):
 	and a.prefixPart = 'MGI:' ''' % mgiID, 'auto')
 
     return results
+
+# end queryForMgiId() -------------------------------------
 
 #
 # Purpose: Open input and output files.
@@ -265,6 +287,8 @@ def openFiles ():
 
     return
 
+# end openFiles() -------------------------------------
+
 #
 # Purpose: run the QC checks
 # Returns: Nothing
@@ -274,7 +298,7 @@ def openFiles ():
 #
 def runQcChecks ():
 
-    global hasQcErrors, hasFatalQcErrors, hasWarnings
+    global hasQcErrors, hasFatalQcErrors, hasWarnings, loadCt, skipCt
 
     lineCt = 0
     hasQcErrors = 0
@@ -289,7 +313,7 @@ def runQcChecks ():
         tokens = map(string.strip, string.split(line, TAB))
 	if len(tokens) < 4:
 	    hasFatalQcErrors = 1
-	    invalidRowList.append('%s: %s%s' % (lineCt, line, CRT))
+	    missingColumnsList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
 	# get the uniprot ID and index it to its line for later determination
  	# of duplicate uniprot ID reporting
@@ -305,17 +329,17 @@ def runQcChecks ():
 	# check for empty columns
 	if uniprotId == '' or mgiID == '' or ldb == '' or action == '':
 	    hasFatalQcErrors = 1
-            invalidRowList.append('%s: %s%s' % (lineCt, line, CRT))
+            missingDataList.append('%s: %s%s' % (lineCt, line, CRT))
             continue	
 	# check for invalid action value
 	if not (action == 'add' or action == 'delete'):
             hasFatalQcErrors = 1
-            invalidRowList.append('%s: %s%s' % (lineCt, line, CRT))
+            invalidActionList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
 	# check for invalid logicalDB value
 	if not (ldb == 's' or ldb == 't'):
             hasFatalQcErrors = 1
-            invalidRowList.append('%s: %s%s' % (lineCt, line, CRT))
+            invalidLdbList.append('%s: %s%s' % (lineCt, line, CRT))
             continue
 
         # check that the MGI ID exists and is for a marker
@@ -325,10 +349,12 @@ def runQcChecks ():
 	    mgiTypeKeyList.append(r['_MGIType_key'])
 	if not mgiTypeKeyList:
 	    hasQcErrors = 1
+	    skipCt += 1
             invalidMgiIdList.append('%s: %s%s' % (lineCt, line, CRT))
             continue
 	if 2 not in mgiTypeKeyList:
 	    hasQcErrors = 1
+	    skipCt += 1
 	    nonMarkerMgiIdList.append('%s: %s%s' %  (lineCt, line, CRT))
 	    continue
 
@@ -338,6 +364,7 @@ def runQcChecks ():
             m = markerLookup[mgiID]
             if m.markerPreferred == 0 or m.markerStatus not in (1, 3):
                 hasQcErrors = 1
+	 	skipCt += 1
                 withdrawnMgiIdList.append('%s: %s%s' %  (lineCt, line, CRT))
                 continue
 	
@@ -353,31 +380,63 @@ def runQcChecks ():
 	    # report if action is add and association exists
 	    if action == 'add' and assoc != None:
 		hasQcErrors = 1
+		skipCt += 1
 		addAssocExistsList.append('%s: %s%s' % (lineCt, line, CRT))    
 		continue
 	    # report if action is delete and association does not exist
 	    if action == 'delete' and assoc == None:
 		hasQcErrors = 1
+		skipCt += 1
 		deleteAssocNotExistList.append('%s: %s%s' % (lineCt, line, CRT))
 		continue
+	else: # this marker has no uniprot associations
+	    if action == 'delete':
+		hasQcErrors = 1
+                skipCt += 1
+                deleteAssocNotExistList.append('%s: %s%s' % (lineCt, line, CRT))
 
-	# If we get here, we have a good record, so write it out to the load file
+	# If we get here, we have a good record, write it out to the load file
+	loadCt +=1
 	fpToLoadFile.write('%s%s' % (line, CRT))
 
     #
     # Report any fatal errors and exit - if found in published file, the load 
     # will not run
     #
+
     if hasFatalQcErrors:
-        if len(invalidRowList):
-            fpQcRpt.write('\nInput lines with missing data, invalid action values, invalid logical DB values or < 4 columns:\n')
-	    fpQcRpt.write('\nThese errors must be fixed before publishing; if present, the load will not run\n')
+	fpQcRpt.write('\nThese errors must be fixed before publishing; if present, the load will not run\n\n')
+
+        if len(missingColumnsList):
+            fpQcRpt.write('\nInput lines with < 4 columns:\n')
             fpQcRpt.write('-----------------------------\n')
-            for line in invalidRowList:
+            for line in missingColumnsList:
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
-	    closeFiles()
-	    sys.exit(3)
+
+        if len(missingDataList):
+            fpQcRpt.write('\nInput lines with missing data:\n')
+            fpQcRpt.write('-----------------------------\n')
+            for line in missingDataList:
+                fpQcRpt.write(line)
+            fpQcRpt.write('\n')
+
+        if len(invalidActionList):
+            fpQcRpt.write('\nInput lines with invalid Action value. Must be one of (a, A, d, D). :\n')
+            fpQcRpt.write('-----------------------------\n')
+            for line in invalidActionList:
+                fpQcRpt.write(line)
+            fpQcRpt.write('\n')
+
+        if len(invalidLdbList):
+            fpQcRpt.write('\nInput lines with invalid Trembl or Swiss-Prot value. Must be one of (t, T, s, S). :\n')
+            fpQcRpt.write('-----------------------------\n')
+            for line in invalidLdbList:
+                fpQcRpt.write(line)
+            fpQcRpt.write('\n')
+
+	closeFiles()
+	sys.exit(3)
 
     # 
     # Report any non-fatal errors
@@ -391,7 +450,7 @@ def runQcChecks ():
 	    
     if len(dupList):
 	hasWarnings = 1
-        fpQcRpt.write('\nUniProt ID listed twice in file. These will be loaded:\n')
+        fpQcRpt.write('\nUniProt ID listed twice in file. These will be processed if they pass all QC:\n')
 	fpQcRpt.write('-----------------------------\n')
 	for line in dupList:
 	    fpQcRpt.write(line)
@@ -406,30 +465,33 @@ def runQcChecks ():
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
 	if len(deleteAssocNotExistList):
-            fpQcRpt.write('\nDelete associations that do not exist in the databased:\n')
+            fpQcRpt.write('\nDelete associations that do not exist in the database. These will be processed:\n')
             fpQcRpt.write('------------------------\n')
             for line in deleteAssocNotExistList:
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
 	if len(invalidMgiIdList):
-	    fpQcRpt.write('\nInput lines where MGI ID does not exist. These will not be loaded:\n')
+	    fpQcRpt.write('\nInput lines where MGI ID does not exist. These will not be processed:\n')
             fpQcRpt.write('------------------------\n') 
 	    for line in invalidMgiIdList:
                 fpQcRpt.write(line)
 	    fpQcRpt.write('\n')
 	if len(withdrawnMgiIdList):
-	    fpQcRpt.write('\nInput lines with withdrawn MGI IDs. These will not be loaded:\n')
+	    fpQcRpt.write('\nInput lines with withdrawn MGI IDs. These will not be processed:\n')
             fpQcRpt.write('-------------------------------------------------------------\n')
             for line in withdrawnMgiIdList:
                 fpQcRpt.write(line)
 	    fpQcRpt.write('\n')
 	if len(nonMarkerMgiIdList):
-	    fpQcRpt.write('\nInput lines with non-marker MGI ID. These will not be loade:\n')
+	    fpQcRpt.write('\nInput lines with non-marker MGI ID. These will not be processed:\n')
             fpQcRpt.write('---------------------------------------------------\n')
             for line in nonMarkerMgiIdList:
                 fpQcRpt.write(line)
-	
+	print '%sNumber with non-fatal QC errors, these will be skipped: %s' % (CRT, skipCt)
+	print 'Number with no QC errors, these will be loaded: %s%s' % ( loadCt, CRT)
     return
+
+# end runQcChecks() -------------------------------------
 	
 #
 # Purpose: Close the files.
@@ -444,6 +506,8 @@ def closeFiles ():
     fpToLoadFile.close()
     fpQcRpt.close()
     return
+
+# end closeFiles() -------------------------------------
 
 #
 # Main

@@ -124,6 +124,13 @@ then
     chgrp mgi ${INPUT_FILE_DEFAULT}
 fi
 
+if [ ! -f ${INPUT_FILE_TOLOAD} ]
+then
+    touch ${INPUT_FILE_TOLOAD}
+    chmod 664 ${INPUT_FILE_TOLOAD}
+    chgrp mgi ${INPUT_FILE_TOLOAD}
+fi
+
 chmod -f 775 ${INPUTDIR}
 chgrp mgi ${INPUTDIR}
 chmod -f 755 ${LOAD_QC_SH}

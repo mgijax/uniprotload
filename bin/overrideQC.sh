@@ -143,7 +143,7 @@ fi
 
 if [ ${STAT} -eq 1 ]
 then
-    echo "Fatal initialization error. See ${QC_RPT}" | tee -a ${LOG}
+    echo "Fatal initialization error. See ${LOG}" | tee -a ${LOG}
     echo "" | tee -a ${LOG}
     exit ${STAT}
 fi

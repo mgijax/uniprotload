@@ -49,5 +49,4 @@ fi
 # Invoke the QC report wrapper script with the arguments that
 # were passed to this script.
 #
-echo "runOverrideQC calling QC wrapper: ${WRAPPER} $*"
 ${WRAPPER} $*
