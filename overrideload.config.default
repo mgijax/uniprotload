@@ -62,7 +62,10 @@ INPUT_FILE_DEFAULT=${INPUTDIR}/override.txt
 # full path the the load file, minus lines that do not pass QC
 INPUT_FILE_TOLOAD=${INPUTDIR}/override_toload.txt
 
-export INPUT_FILE_DEFAULT INPUT_FILE_TOLOAD
+# full path to the override assocload file
+INPUT_FILE_ASSOC=${INPUTDIR}/override_assocload.txt
+
+export INPUT_FILE_DEFAULT INPUT_FILE_TOLOAD INPUT_FILE_ASSOC
 
 #
 # Outputs
@@ -76,6 +79,10 @@ LOG_VAL=${LOGDIR}/override.val.log
 
 export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 
+#  Association Loader shell script
+ASSOCLOADER_SH=${ASSOCLOAD}/bin/AssocLoad.sh
+
+export ASSOCLOADER_SH
 
 ###########################################################################
 #
@@ -83,12 +90,8 @@ export LOG_PROC LOG_DIAG LOG_CUR LOG_VAL
 #
 ###########################################################################
 
-# last run file
-LASTRUN=${INPUTDIR}/lastrun
-export LASTRUN
-
 # this load's login value for DB table CreatedBy and ModifiedBy
-JOBSTREAM=uniprot_overrideload
+JOBSTREAM=uniprot_override_load
 
 export JOBSTREAM
 

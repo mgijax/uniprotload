@@ -1,3 +1,13 @@
+TAG: uniprotload-tr11937-5
+DATE: 01/06/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1. overrideload.config.default
+2. override_assoc.config.default - new
+	new: INPUT_FILE_ASSOC
+	removed: LAST_RUN
+	new: ASSOCLOAD_SH
+
 TAG: uniprotload-tr11937-4
 DATE: 01/06/2016
 STAFF: sc
