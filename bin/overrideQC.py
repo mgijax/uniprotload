@@ -465,7 +465,7 @@ def runQcChecks ():
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
 	if len(deleteAssocNotExistList):
-            fpQcRpt.write('\nDelete associations that do not exist in the database. These will be processed:\n')
+            fpQcRpt.write('\nDelete associations that do not exist in the database. These will be skipped:\n')
             fpQcRpt.write('------------------------\n')
             for line in deleteAssocNotExistList:
                 fpQcRpt.write(line)
@@ -487,7 +487,7 @@ def runQcChecks ():
             fpQcRpt.write('---------------------------------------------------\n')
             for line in nonMarkerMgiIdList:
                 fpQcRpt.write(line)
-	print '%sNumber with non-fatal QC errors, these will be skipped: %s' % (CRT, skipCt)
+	print '%sNumber with non-fatal QC errors, these will not be processed: %s' % (CRT, skipCt)
 	print 'Number with no QC errors, these will be loaded: %s%s' % ( loadCt, CRT)
     return
 
