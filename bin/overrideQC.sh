@@ -71,7 +71,6 @@ LIVE_RUN=0; export LIVE_RUN
 # /data/loads/... directory, not in the current directory.
 #
 CONFIG=`cd ${BINDIR}/..; pwd`/overrideload.config
-. ${CONFIG}
 
 if [ $# -eq 1 ]
 then
@@ -93,7 +92,6 @@ else
     echo "Missing configuration file: ${CONFIG}"
     exit 1
 fi
-
 
 #
 # If this is not a "live" run, the output, log and report files should reside
