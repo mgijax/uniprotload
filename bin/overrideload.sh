@@ -75,12 +75,21 @@ then
     checkStatus ${STAT} "Cannot read from input file: ${INPUT_FILE_DEFAULT}"
 fi
 
+#####################################
+#
+# Main
+#
+#####################################
+
+# remove logs (if not assocload logs will be appended)
+cleanDir ${LOGDIR}
+
 #
 # createArchive including OUTPUTDIR, startLog, getConfigEnv
 # sets "JOBKEY"
 #
 
-preload ${OUTPUTDIR}
+preload ${INPUTDIR} ${OUTPUTDIR} ${REPORTDIR}
 
 #
 # rm all files/dirs from OUTPUTDIR
@@ -135,20 +144,6 @@ then
     STAT=$?
     checkStatus ${STAT} "${ASSOCLOADER_SH} ${CONFIG_ASSOCLOAD}"
 fi
-
-#
-# Archive a copy of the input file, adding a timestamp suffix.
-#
-echo "" >> ${LOG_DIAG}
-date >> ${LOG_DIAG}
-echo "Archive input files" >> ${LOG_DIAG}
-TIMESTAMP=`date '+%Y%m%d.%H%M'`
-ARC_FILE=`basename ${INPUT_FILE_DEFAULT}`.${TIMESTAMP}
-cp -p ${INPUT_FILE_DEFAULT} ${ARCHIVEDIR}/${ARC_FILE}
-ARC_FILE=`basename ${INPUT_FILE_TOLOAD}`.${TIMESTAMP}
-cp -p ${INPUT_FILE_TOLOAD} ${ARCHIVEDIR}/${ARC_FILE}
-ARC_FILE=`basename ${INPUT_FILE_ASSOCLOAD}`.${TIMESTAMP}
-cp -p ${INPUT_FILE_TOLOAD} ${ARCHIVEDIR}/${ARC_FILE}
 
 # run postload cleanup and email logs
 

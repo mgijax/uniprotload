@@ -202,13 +202,6 @@ def processAdd(uniprotId, mgiId, ldb):
 
 # end processAdd() -------------------------------
 
-def createAssocFile():
-    print assocList
-    print  string.join(assocList)
-    fpAssocFile.write(string.join(assocList))
-
-# end createAssocFile() -------------------------------
-
 def closeFiles ():
     # Purpose: Close all file descriptors
     # Returns: Nothing
@@ -249,8 +242,6 @@ def process( ):
 	    continue
 	print 'processAdd'
 	processAdd(uniprotId, mgiId, ldb)
-    print 'calling createAssocFile'
-    #createAssocFile()
 
     return
 

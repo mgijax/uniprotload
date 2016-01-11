@@ -1,3 +1,12 @@
+TAG: uniprotload-tr11937-7
+DATE: 01/11/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1) index.html - 'Master' Input File
+2) overrideload.sh - archive input file in main archive file, not separately
+3) overrideload.py - remove createAssocFile function
+4) uniprotload.sh - added call to overrideload.sh
+
 TAG: uniprotload-tr11937-6
 TAG: uniprotload-tr11937-5
 DATE: 01/06/2016

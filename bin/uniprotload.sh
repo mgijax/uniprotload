@@ -48,6 +48,9 @@
 #
 #  Notes:  None
 #
+# 01/11/2015    sc
+#       - TR12218/Allow curator overrides of uniprotload associations
+#
 ###########################################################################
 
 cd `dirname $0`
@@ -190,6 +193,16 @@ echo "Run report(s) (makeReports.sh)" | tee -a ${LOG}
 ./makeReports.sh 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "Run report(s) (makeReports.sh)"
+
+#
+# Run Curator Override Load
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "Run Override Load (overrideload.sh)" | tee -a ${LOG}
+./overrideload.sh 2>&1 >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "Run Override Load (overrideload.sh)"
 
 #
 # run postload cleanup and email logs
