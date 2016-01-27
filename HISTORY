@@ -1,3 +1,61 @@
+TAG: uniprotload-6-0-2-1
+DATE: 01/27/2016
+STAFF: sc
+CHANGES: TR12218 curator overrides (part of project TR11937)
+
+TAG: uniprotload-tr11937-8
+TAG: uniprotload-tr11937-7
+DATE: 01/11/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1) index.html - 'Master' Input File
+2) overrideload.sh - archive input file in main archive file, not separately
+3) overrideload.py - remove createAssocFile function
+4) uniprotload.sh - added call to overrideload.sh
+5) overrideQC.py - new QC
+	remove blank lines from load ready file
+	report no sequence object for uniprot id
+	report non-mouse uniprot id
+
+TAG: uniprotload-tr11937-6
+TAG: uniprotload-tr11937-5
+DATE: 01/06/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1. overrideload.config.default
+2. override_assoc.config.default - new
+	new: INPUT_FILE_ASSOC
+	removed: LAST_RUN
+	new: ASSOCLOAD_SH
+3. overrideload.sh, overrideload.py - new
+
+TAG: uniprotload-tr11937-4
+DATE: 01/06/2016
+STAFF: sc
+CHANGES: US139 - implement load script
+1) Install - change perms of override_toload.txt output file which is created
+   by the QC script, so curators can run
+2) overrideload.py - updated comments. split four fatal errors into four diff-
+   erent sections in the QC report. Updated QC report section header text.
+
+TAG: uniprotload-tr11937-3
+TAG: uniprotload-tr11937-2
+DATE: 01/03/2016
+STAFF: sc
+CHANGES: US138 - implement QC checkes	
+1) overrideload.config.default - added INPUT_FILE_TOLOAD
+2) overrideQC.py - filled out stub with actual QC checks
+3) overrideQC.sh - some tweaks
+ 
+TAG: uniprotload-tr11937-1
+DATE: 12/28/2015
+STAFF: sc
+CHANGES: US134 - add core components for uniprot override load
+1) new script stubs: overrideQC.py overrideQC.sh publishOverride runOverrideQC
+2) new config: overrideload.config.default
+3) index.html - added override load section
+4) Install - added install for override load
+
 TAG: uniprotload-tr11937-BP
 DATE: 12/22/2015
 STAFF: sc
