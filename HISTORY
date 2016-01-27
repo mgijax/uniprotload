@@ -1,3 +1,4 @@
+TAG: uniprotload-tr11937-8
 TAG: uniprotload-tr11937-7
 DATE: 01/11/2016
 STAFF: sc
@@ -6,6 +7,10 @@ CHANGES: US139 - implement load script
 2) overrideload.sh - archive input file in main archive file, not separately
 3) overrideload.py - remove createAssocFile function
 4) uniprotload.sh - added call to overrideload.sh
+5) overrideQC.py - new QC
+	remove blank lines from load ready file
+	report no sequence object for uniprot id
+	report non-mouse uniprot id
 
 TAG: uniprotload-tr11937-6
 TAG: uniprotload-tr11937-5

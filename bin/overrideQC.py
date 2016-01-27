@@ -91,7 +91,7 @@ markerLookup = {}
 # input lines with missing data
 missingDataList = []
 
-# input lines with < 4 columns
+# input lines with < 3 columns
 missingColumnsList = []
 
 # input lines with invalid action values
@@ -117,6 +117,12 @@ nonMarkerMgiIdList = []
 
 # add lines where association already exists
 addAssocExistsList = []
+
+# lines where no sequence object for uniprot ID
+uniprotNotExistsList = []
+
+# lines where sequence object for uniprot ID is non-mouse
+uniprotNotMouseList = []
 
 # Counts reported when no fatal errors
 loadCt = 0
@@ -253,6 +259,17 @@ def queryForMgiId(mgiID):
     return results
 
 # end queryForMgiId() -------------------------------------
+def queryForUniprot(uniprotId):
+    results = db.sql( '''select s._Organism_key
+        from SEQ_Sequence s, ACC_Accession a
+        where a._LogicalDB_key in (13, 41)
+        and a._MGIType_key = 19
+	and a._Object_key = s._Sequence_key
+	and a.accid = '%s' ''' % uniprotId, 'auto')
+    if not len(results):
+	return 0
+    else:
+	return  results[0]['_Organism_key']
 
 #
 # Purpose: Open input and output files.
@@ -311,7 +328,10 @@ def runQcChecks ():
 	lineCt += 1
 	line = string.strip(line)
         tokens = map(string.strip, string.split(line, TAB))
-	if len(tokens) < 4:
+	# skip blank lines
+	if  len(tokens) == 1 and tokens[0] == '':
+	    continue
+	if len(tokens) < 3:
 	    hasFatalQcErrors = 1
 	    missingColumnsList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
@@ -323,11 +343,10 @@ def runQcChecks ():
 	linesByUniprotDict[uniprotId].append('%s: %s%s' % (lineCt, line, CRT))
 	    
 	mgiID = string.lower(tokens[1])
-	ldb = string.lower(tokens[2])
-	action = string.lower(tokens[3])
+	action = string.lower(tokens[2])
 
 	# check for empty columns
-	if uniprotId == '' or mgiID == '' or ldb == '' or action == '':
+	if uniprotId == '' or mgiID == '' or action == '':
 	    hasFatalQcErrors = 1
             missingDataList.append('%s: %s%s' % (lineCt, line, CRT))
             continue	
@@ -336,11 +355,6 @@ def runQcChecks ():
             hasFatalQcErrors = 1
             invalidActionList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
-	# check for invalid logicalDB value
-	if not (ldb == 's' or ldb == 't'):
-            hasFatalQcErrors = 1
-            invalidLdbList.append('%s: %s%s' % (lineCt, line, CRT))
-            continue
 
         # check that the MGI ID exists and is for a marker
 	qr = queryForMgiId(string.upper(mgiID))
@@ -367,7 +381,19 @@ def runQcChecks ():
 	 	skipCt += 1
                 withdrawnMgiIdList.append('%s: %s%s' %  (lineCt, line, CRT))
                 continue
-	
+	# check to see if there is a uniprot sequence in the database
+	# and it is a mouse
+	organismKey = queryForUniprot(uniprotId)
+	if organismKey == 0:
+	    hasQcErrors = 1
+	    skipCt += 1
+	    uniprotNotExistsList.append('%s: %s%s' %  (lineCt, line, CRT))
+	    continue
+	if organismKey != 1:
+	    hasQcErrors = 1
+            skipCt += 1
+	    uniprotNotMouseList.append('%s: %s%s' %  (lineCt, line, CRT))
+	    continue
 	# check to see if the association exists
 	if markerToUniprotLookup.has_key(mgiID):
 	    assocList = markerToUniprotLookup[mgiID]
@@ -408,7 +434,7 @@ def runQcChecks ():
 	fpQcRpt.write('\nThese errors must be fixed before publishing; if present, the load will not run\n\n')
 
         if len(missingColumnsList):
-            fpQcRpt.write('\nInput lines with < 4 columns:\n')
+            fpQcRpt.write('\nInput lines with < 3 columns:\n')
             fpQcRpt.write('-----------------------------\n')
             for line in missingColumnsList:
                 fpQcRpt.write(line)
@@ -487,6 +513,19 @@ def runQcChecks ():
             fpQcRpt.write('---------------------------------------------------\n')
             for line in nonMarkerMgiIdList:
                 fpQcRpt.write(line)
+	    fpQcRpt.write('\n')
+	if len(uniprotNotExistsList):
+	    fpQcRpt.write('\nInput lines where UniProt Sequence does not exist in the database. These will not be processed:\n')
+	    fpQcRpt.write('---------------------------------------------------\n')
+	    for line in uniprotNotExistsList:
+		 fpQcRpt.write(line)
+	    fpQcRpt.write('\n')
+	if len(uniprotNotMouseList):
+            fpQcRpt.write('\nInput lines where UniProt Sequence is not mouse. These will not be processed:\n')
+            fpQcRpt.write('---------------------------------------------------\n')
+            for line in uniprotNotMouseList:
+                 fpQcRpt.write(line)
+
 	print '%sNumber with non-fatal QC errors, these will not be processed: %s' % (CRT, skipCt)
 	print 'Number with no QC errors, these will be loaded: %s%s' % ( loadCt, CRT)
     return
