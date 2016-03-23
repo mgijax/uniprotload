@@ -108,11 +108,11 @@
 #               field 2: ID of MGI Object being Annotated (ex. MGI ID)
 #               field 3: J: (J:#####)
 #               field 4: Evidence Code Abbreviation (max length 5)
-#               field 5: Inferred From (max length 255)
-#               field 6: Qualifier (max length 255)
+#               field 5: Inferred From 
+#               field 6: Qualifier
 #               field 7: Editor (max length 30)
 #               field 8: Date (MM/DD/YYYY)
-#               field 9: Notes (max length 255)
+#               field 9: Notes
 #
 #  Implementation:
 #
@@ -950,18 +950,6 @@ def processIP2GO():
 	#
 
         for goid in go_to_ip.keys():
-
-	    # ip list must be <= 255 to fit into inferredFrom field
-	    #while (string.join(go_to_ip[goid], '|') > 255)
-	    #ipList = string.join(go_to_ip[goid], '|')
-	    #while ipList > 255:
-	    #    go_to_ip[goid].remove(ipid)
-	    #    ipList = string.join(go_to_ip[goid], '|')
-            #for i in go_to_ip[goid]:
-	    #    if len(ipList + ',' + i) > 255:
-	    #        break
-	    #    ipList = i + ','
-	    #        ipList[:-1]
 
             fp.write(goid + '\t' + \
 		     m + '\t' + \

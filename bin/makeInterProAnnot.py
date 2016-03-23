@@ -60,11 +60,11 @@
 #               field 2: ID of MGI Object being Annotated (ex. MGI ID)
 #               field 3: J: (J:#####)
 #               field 4: Evidence Code Abbreviation (max length 5)
-#               field 5: Inferred From (max length 255)
-#               field 6: Qualifier (max length 255)
+#               field 5: Inferred From
+#               field 6: Qualifier
 #               field 7: Editor (max length 30)
 #               field 8: Date (MM/DD/YYYY)
-#               field 9: Notes (max length 255)
+#               field 9: Notes
 #
 #  Implementation:
 #
