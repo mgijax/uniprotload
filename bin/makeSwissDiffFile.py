@@ -81,6 +81,9 @@ import string
 import db
 import tabledatasetlib
 
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
+
 FIELDS = [ 'MGI ID', 'SWISS-PROT', 'TrEMBL' ]
 
 DEFAULT_BUCKETDIR = os.getcwd()

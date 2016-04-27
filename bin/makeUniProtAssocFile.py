@@ -96,7 +96,6 @@
 
 import sys 
 import os
-
 import UniProtParser
 
 # INPUTFILE

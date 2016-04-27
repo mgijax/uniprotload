@@ -127,6 +127,9 @@ import string
 import db
 import tabledatasetlib
 
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
+
 DEFAULT_BUCKETDIR = os.getcwd()
 DEFAULT_BUCKET_PREFIX = 'bucket'
 

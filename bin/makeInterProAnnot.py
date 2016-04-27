@@ -88,6 +88,9 @@ import re
 import string
 import db
 
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
+
 # globals
 
 # file name MGI_UNIPROT_LOAD_FILE

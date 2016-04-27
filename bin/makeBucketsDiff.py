@@ -97,6 +97,9 @@ import string
 from sets import Set
 import db
 
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
+
 B0_1 = '0_1'
 B1_0 = '1_0'
 B1_1 = '1_1'
