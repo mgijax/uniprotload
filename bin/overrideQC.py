@@ -256,7 +256,7 @@ def queryForMgiId(mgiID):
     results = db.sql('''select distinct a._MGIType_key
 	from ACC_Accession a
 	where a._LogicalDB_key = 1
-	and a.accid = "%s"
+	and a.accid = '%s'
 	and a.prefixPart = 'MGI:' ''' % mgiID, 'auto')
 
     return results
