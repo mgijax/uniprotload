@@ -268,7 +268,7 @@ def queryForUniprot(uniprotId):
         where a._LogicalDB_key in (13, 41)
         and a._MGIType_key = 19
 	and a._Object_key = s._Sequence_key
-	and a.accid = '%s' ''' % uniprotId, 'auto')
+	and lower(a.accid) = '%s' ''' % uniprotId, 'auto')
     if not len(results):
 	return 0
     else:
@@ -328,6 +328,7 @@ def runQcChecks ():
     # throw away header
     header = fpInfile.readline()
     for line in fpInfile.readlines():
+	print line
 	lineCt += 1
 	line = string.strip(line)
         tokens = map(string.strip, string.split(line, TAB))
@@ -387,6 +388,7 @@ def runQcChecks ():
 	# check to see if there is a uniprot sequence in the database
 	# and it is a mouse
 	organismKey = queryForUniprot(uniprotId)
+	print 'organismKey = queryForUniprot(uniprotId): %s' % organismKey
 	if organismKey == 0:
 	    hasQcErrors = 1
 	    skipCt += 1
