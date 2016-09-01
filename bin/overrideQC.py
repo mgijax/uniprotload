@@ -211,7 +211,7 @@ def init ():
     and a1._CreatedBy_key = 1442 /*uniprotload_assocload*/
     and a1._Object_key = m._Marker_key
     and m._Organism_key = 1
-    and m._Marker_Status_key in (1, 3)
+    and m._Marker_Status_key = 1
     and m._Marker_key = a2._Object_key
     and a2. _MGIType_key = 2
     and a2._LogicalDB_key = 1
