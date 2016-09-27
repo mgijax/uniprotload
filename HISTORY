@@ -3,8 +3,8 @@ DATE: 09/27/2016
 STAFF: lec
 CHANGES:
 TR12240/modificaiton to EC2GO
-exclude EC ids with "-" from EC2GO
 makeGOAnnot.py
+exclude EC ids with "-" (dash)
 
 TAG: uniprotload-6-0-5-1
 DATE: 09/01/2016
