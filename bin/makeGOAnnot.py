@@ -426,7 +426,7 @@ def openFiles():
 	where e._Object_key = a._Object_key 
 	and a._MGIType_key = 2 
 	and a._LogicalDB_key = 1 
-	and a.prefixPart = \'MGI:\' 
+	and a.prefixPart = 'MGI:' 
 	and a.preferred = 1 
 	and a._Object_key = m._Marker_key 
 	and m._Marker_Type_key = 1
@@ -754,6 +754,9 @@ def processEC2GO():
 
     fp = open(goECFile, 'w')
 
+    #
+    # TR12240/exclude EC ids with "-"
+    #
     db.sql('''create temp table ec as
 		select m._Marker_key, a2.accID as markerID, 'EC:' || a.accID as accID
                 from ACC_Accession a, MRK_Marker m, ACC_Accession a2
@@ -765,8 +768,9 @@ def processEC2GO():
 		and a._Object_key = a2._Object_key
 		and a2._MGIType_key = 2
                 and a2._LogicalDB_key = 1
-		and a2.prefixPart = \'MGI:\'
+		and a2.prefixPart = 'MGI:'
 		and a2.preferred = 1
+		and a.accID not like '%-%'
 		''', None)
     db.sql('create index ec_idx1 on ec(_Marker_key)', None)
 
@@ -776,7 +780,7 @@ def processEC2GO():
                 from ec e, ACC_Accession s
                 where e._Marker_key = s._Object_key
 		and s._MGIType_key = 2
-		and s._LogicalDB_key in (13,41)
+		and s._LogicalDB_key in (13)
 		''', 'auto')
     mgd_to_uniprot = {}		
     for r in results:
@@ -1097,11 +1101,11 @@ if openFiles() != 0:
 if processEC2GO() != 0:
     sys.exit(1)
 
-if processIP2GO() != 0:
-    sys.exit(1)
+#if processIP2GO() != 0:
+#    sys.exit(1)
 
-if processSPKW2GO() != 0:
-    sys.exit(1)
+#if processSPKW2GO() != 0:
+#    sys.exit(1)
 
 sys.exit(0)
 

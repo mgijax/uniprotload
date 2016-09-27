@@ -141,6 +141,7 @@ class Parser:
 	    # TR11817 : added "{...}" handling
             #
             if self.line[0:5] == 'DE   ':
+		#if self.record.isTrembl == 0 and
 		if string.find(self.line, 'EC=') >= 0:
                   id = re.split('=', self.line)[1].strip()
                   id = re.split(' {', id)[0]
