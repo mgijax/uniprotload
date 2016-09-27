@@ -1104,11 +1104,11 @@ if openFiles() != 0:
 if processEC2GO() != 0:
     sys.exit(1)
 
-#if processIP2GO() != 0:
-#    sys.exit(1)
+if processIP2GO() != 0:
+    sys.exit(1)
 
-#if processSPKW2GO() != 0:
-#    sys.exit(1)
+if processSPKW2GO() != 0:
+    sys.exit(1)
 
 sys.exit(0)
 
