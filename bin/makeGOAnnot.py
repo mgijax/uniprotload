@@ -127,6 +127,9 @@
 #
 # History:
 #
+# 09/27/2016	lec
+#	- TR12240/exclude EC ids with "-" (dash)
+#
 # 04/11/2012
 # 04/03/2012
 #	- TR 11030/prevent use of GO:0005488 in IEA
@@ -755,7 +758,7 @@ def processEC2GO():
     fp = open(goECFile, 'w')
 
     #
-    # TR12240/exclude EC ids with "-"
+    # TR12240/exclude EC ids with "-" (dash)
     #
     db.sql('''create temp table ec as
 		select m._Marker_key, a2.accID as markerID, 'EC:' || a.accID as accID
