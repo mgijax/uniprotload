@@ -6,7 +6,6 @@
 # 1) cp uniprotload.config.default uniprotload.config
 # 2) cp uniprotload.config.csh.default uniprotload.config.csh
 # 3) Install 
-# 4) Create empty text files for makeBucketsDiff.py
 #
 
 Usage=Install
@@ -68,20 +67,6 @@ if [ ! -d ${INPUTDIR} ]
 then
     mkdir -p ${INPUTDIR}
 fi
-
-#
-# Create empty text files so that makeBucketsDiff.py will run correctly.
-#
-
-. ${MAIN_CONFIG}
-for i in 0_1 1_0 1_1 1_N N_1 N_N
-do
-    EMPTY_FILE="${BUCKETDIR}/${BUCKET_PREFIX}.${i}.txt"
-    if [ ! -f ${EMPTY_FILE} ]
-    then
-        touch ${EMPTY_FILE}
-    fi
-done
 
 # Install for the overrideload
 # establish the config files

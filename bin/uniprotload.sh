@@ -39,12 +39,11 @@
 #      4) Call makeMGIAssocFile.sh to make an association file from
 #         the database.
 #      5) Call makeBuckets.sh to bucketize the association files.
-#      6) Call makeBucketsDiff.sh to run diff of old/new buckets.
-#      7) Call loadBuckets.sh to load associations created by bucketizer.
-#      8) Call makeGOAnnot.sh to generate/load marker-to-GO annotations.
-#      9) Call makeInterProAnnot.sh to generate/load InterPro vocabulary
+#      6) Call loadBuckets.sh to load associations created by bucketizer.
+#      7) Call makeGOAnnot.sh to generate/load marker-to-GO annotations.
+#      8) Call makeInterProAnnot.sh to generate/load InterPro vocabulary
 #         and marker-to-interpro annotations.
-#      10) Call ${MGICACHELOAD}/inferredfrom.csh to refresh the inferred-from cache.
+#      9) Call ${MGICACHELOAD}/inferredfrom.csh to refresh the inferred-from cache.
 #
 #  Notes:  None
 #
@@ -133,16 +132,6 @@ echo "Call makeBuckets.sh (uniprotload.sh)" | tee -a ${LOG}
 ./makeBuckets.sh 2>&1 >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "makeBuckets.sh (uniprotload.sh)"
-
-#
-# Run "diff" reports to compare "old" vs. "new" buckets
-#
-echo "" >> ${LOG}
-date >> ${LOG}
-echo "Call makeBucketsDiff.sh (uniprotload.sh)" | tee -a ${LOG}
-./makeBucketsDiff.sh 2>&1 >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "makeBucketsDiff.sh (uniprotload.sh)"
 
 #
 # Load association buckets
