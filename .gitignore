@@ -6,3 +6,4 @@ ipannot_delete.config
 override_assocload.config
 overrideload.config
 uniprotload.config
+*pyc
