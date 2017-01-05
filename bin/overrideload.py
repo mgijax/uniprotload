@@ -64,9 +64,6 @@ import string
 import db
 import mgi_utils
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #
 #  CONSTANTS
 #

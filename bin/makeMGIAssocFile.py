@@ -65,9 +65,6 @@ import sys
 import os
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 # file name MGI_ACC_ASSOC_FILE
 mgiAssocFile = None
 
