@@ -79,16 +79,20 @@ class Parser:
             # Save an Ensembl ID. If the input line looks like this:
             #
             # DR   Ensembl; ID1; ID2; ID3; Mus musculus.
+            # DR   Ensembl; ID1; ID2; ID3; Mus musculus. [xxxxx]
             #
+	    # need to split by ";" and "."
+	    #
             # We want to extract any IDs that begin with 'ENSMUSG'. Do not
             # add an ID that has already been added.
             #
             if self.line[0:13] == 'DR   Ensembl;':
-                for str in re.split(';',self.line[13:]):
-                    if str.strip()[0:7] == 'ENSMUSG':
-		        str = string.replace(str.strip(), '.', '')
-                        if not self.record.hasEnsemblID(str.strip()):
-                            self.record.addEnsemblID(str.strip())
+		for t1 in re.split(';',self.line[13:]):
+                    if t1.strip()[0:7] == 'ENSMUSG':
+		        for t2 in re.split('\.',t1):
+                            if t2.strip()[0:7] == 'ENSMUSG':
+                	        if not self.record.hasEnsemblID(t2.strip()):
+                		    self.record.addEnsemblID(t2.strip())
 
             #
             # Save an EntrezGene ID. If the input line looks like this:
