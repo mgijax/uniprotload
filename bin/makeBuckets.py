@@ -74,7 +74,7 @@
 #        ${BUCKET_PREFIX}.N_1.txt
 #        ${BUCKET_PREFIX}.N_N.txt
 #
-#      - A file of unique MGI/UniProt associations from the 1:1 and 1:N
+#      - A file of unique MGI/UniProt associations from the 1:1, 1:N, and N:1
 #        buckets ($MGI_UNIPROT_LOAD_FILE). 
 #        It has the following tab-delimited fields:
 #
@@ -101,7 +101,7 @@
 #      3) Create a TableDataSet object for each of the input files.
 #      4) Create a bucketizer for the TableDataSet objects and run it.
 #      5) Write the contents of the buckets to the output files.
-#      6) Write the MGI/UniProt associations from the 1:1 and 1:N buckets to a file.
+#      6) Write the MGI/UniProt associations from the 1:1, N:1 and 1:N buckets to a file.
 #      7) Close files.
 #
 #  Notes:  None
@@ -600,6 +600,40 @@ def writeReport():
 		    pdbLookup[mgiID] = []
 	        if pdbID not in pdbLookup[mgiID]:
 	            pdbLookup[mgiID].append(pdbID)
+
+    #
+    # Find unique MGI/UniProt associations in the N:1 bucket.
+    #
+
+    for (mgiKeys, uniprotKey) in bucketizer.getn_1():
+	uniprotRcd = dsUniProt.getRecords(uniprotKey)
+	uniprotID = uniprotRcd[0]['UniProt ID']
+	ecID = uniprotRcd[0]['EC']
+	pdbID = uniprotRcd[0]['PDB']
+
+	for mgiRcd in dsMGI.getRecords(keys = mgiKeys):
+	    mgiID = mgiRcd['MGI ID']
+	    if mgiDict.has_key(mgiID):
+                list = mgiDict[mgiID]
+            else:
+                list = []
+            if list.count(uniprotID) == 0:
+                list.append(uniprotID)
+                mgiDict[mgiID] = list
+
+            # create a lookup of mgiID/ecIDs
+            if ecID is not None:
+                if not ecLookup.has_key(mgiID):
+                    ecLookup[mgiID] = []
+                if ecID not in ecLookup[mgiID]:
+                    ecLookup[mgiID].append(ecID)
+
+            # create a lookup of mgiID/pdbIDs
+            if pdbID is not None:
+                if not pdbLookup.has_key(mgiID):
+                    pdbLookup[mgiID] = []
+                if pdbID not in pdbLookup[mgiID]:
+                    pdbLookup[mgiID].append(pdbID)
 
     #
     # Write the MGI/UniProt associations to the file.
