@@ -94,6 +94,9 @@ missingDataList = []
 # input lines with < 3 columns
 missingColumnsList = []
 
+# input lines with invalid logical DB values
+invalidLdbList = []
+
 # input lines with invalid action values
 invalidActionList = []
 
@@ -332,7 +335,7 @@ def runQcChecks ():
 	# skip blank lines
 	if  len(tokens) == 1 and tokens[0] == '':
 	    continue
-	if len(tokens) < 3:
+	if len(tokens) < 4:
 	    hasFatalQcErrors = 1
 	    missingColumnsList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
@@ -344,19 +347,25 @@ def runQcChecks ():
 	linesByUniprotDict[uniprotId].append('%s: %s%s' % (lineCt, line, CRT))
 	    
 	mgiID = string.lower(tokens[1])
-	action = string.lower(tokens[2])
+	ldb = string.lower(tokens[2])
+	action = string.lower(tokens[3])
 
 	# check for empty columns
 	if uniprotId == '' or mgiID == '' or action == '':
 	    hasFatalQcErrors = 1
             missingDataList.append('%s: %s%s' % (lineCt, line, CRT))
             continue	
+	# check for invalid logical db value
+	
 	# check for invalid action value
 	if not (action == 'add' or action == 'delete'):
             hasFatalQcErrors = 1
             invalidActionList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
-
+	if not (ldb == 's' or ldb == 't'):
+	    hasFatalQcErrors = 1
+            invalidLdbList.append('%s: %s%s' % (lineCt, line, CRT))
+	    continue
         # check that the MGI ID exists and is for a marker
 	qr = queryForMgiId(string.upper(mgiID))
 	mgiTypeKeyList = []
@@ -446,6 +455,13 @@ def runQcChecks ():
             fpQcRpt.write('\nInput lines with missing data:\n')
             fpQcRpt.write('-----------------------------\n')
             for line in missingDataList:
+                fpQcRpt.write(line)
+            fpQcRpt.write('\n')
+
+        if len(invalidLdbList):
+            fpQcRpt.write('\nInput lines with invalid LogicalDB value. Must be one of (s, S, t, T). :\n')
+            fpQcRpt.write('-----------------------------\n')
+            for line in invalidLdbList:
                 fpQcRpt.write(line)
             fpQcRpt.write('\n')
 

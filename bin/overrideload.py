@@ -229,7 +229,6 @@ def process( ):
     # Iterate throught the input file
     #
     for line in fpInFile.readlines():
-	
         tokens = map(string.strip, string.split(line, TAB))
 	uniprotId = string.lower(tokens[0])
 	mgiId = string.lower(tokens[1])
