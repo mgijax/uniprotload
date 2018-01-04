@@ -29,6 +29,7 @@
 #	2. MGI ID
 #	3. logical DB
 #	4. action
+#	5. symbol
 #
 #  Outputs:
 #
@@ -117,6 +118,9 @@ withdrawnMgiIdList = []
 
 # lines where  MGI ID is non-marker
 nonMarkerMgiIdList = []
+
+# lines where the input symbol does not match the database
+symbolDiscrepancyList = []
 
 # add lines where association already exists
 addAssocExistsList = []
@@ -260,8 +264,18 @@ def queryForMgiId(mgiID):
 	and a.prefixPart = 'MGI:' ''' % mgiID, 'auto')
 
     return results
+# end queryForMgiId
 
-# end queryForMgiId() -------------------------------------
+def queryForSymbol(mgiID):
+    results = db.sql('''select m.symbol
+        from ACC_Accession a, MRK_Marker m
+        where a._LogicalDB_key = 1
+        and a.accid = '%s'
+        and a.prefixPart = 'MGI:' 
+	and a._Object_key = m._Marker_key''' % mgiID, 'auto')
+
+    return results
+# end queryForSymbol() -------------------------------------
 def queryForUniprot(uniprotId):
     results = db.sql( '''select s._Organism_key
         from SEQ_Sequence s, ACC_Accession a
@@ -328,14 +342,14 @@ def runQcChecks ():
     # throw away header
     header = fpInfile.readline()
     for line in fpInfile.readlines():
-	print line
+	#print line
 	lineCt += 1
 	line = string.strip(line)
         tokens = map(string.strip, string.split(line, TAB))
 	# skip blank lines
 	if  len(tokens) == 1 and tokens[0] == '':
 	    continue
-	if len(tokens) < 4:
+	if len(tokens) < 5:
 	    hasFatalQcErrors = 1
 	    missingColumnsList.append('%s: %s%s' % (lineCt, line, CRT))
 	    continue
@@ -349,9 +363,9 @@ def runQcChecks ():
 	mgiID = string.lower(tokens[1])
 	ldb = string.lower(tokens[2])
 	action = string.lower(tokens[3])
-
+	symbol = tokens[4]
 	# check for empty columns
-	if uniprotId == '' or mgiID == '' or action == '':
+	if uniprotId == '' or mgiID == '' or action == '' or symbol == '':
 	    hasFatalQcErrors = 1
             missingDataList.append('%s: %s%s' % (lineCt, line, CRT))
             continue	
@@ -381,7 +395,6 @@ def runQcChecks ():
 	    skipCt += 1
 	    nonMarkerMgiIdList.append('%s: %s%s' %  (lineCt, line, CRT))
 	    continue
-
 	# now check that the marker is not withdrawn i.e. markerStatus not
         # interim or official OR mgiID is not preferred
         if markerLookup.has_key(mgiID):
@@ -391,10 +404,19 @@ def runQcChecks ():
 	 	skipCt += 1
                 withdrawnMgiIdList.append('%s: %s%s' %  (lineCt, line, CRT))
                 continue
+        # check that the MGI ID is associated with the same symbol in the database
+        qr = queryForSymbol(string.upper(mgiID)) # >1 means primary and secondary IDs
+        symbolList = []
+        for r in qr:
+            symbolList.append(r['symbol'])
+        if symbol not in symbolList:
+            skipCt += 1
+            symbolDiscrepancyList.append('%s: %s. Database symbol: %s%s' % (lineCt, line, string.join(symbolList, ', '), CRT) )
+            continue
+
 	# check to see if there is a uniprot sequence in the database
 	# and it is a mouse
 	organismKey = queryForUniprot(uniprotId)
-	print 'organismKey = queryForUniprot(uniprotId): %s' % organismKey
 	if organismKey == 0:
 	    hasQcErrors = 1
 	    skipCt += 1
@@ -520,6 +542,12 @@ def runQcChecks ():
 	    for line in invalidMgiIdList:
                 fpQcRpt.write(line)
 	    fpQcRpt.write('\n')
+        if len(symbolDiscrepancyList):
+            fpQcRpt.write('\nInput lines where input symbol does not match database. These will not be processed:\n')
+            fpQcRpt.write('------------------------\n')
+            for line in symbolDiscrepancyList:
+                fpQcRpt.write(line)
+            fpQcRpt.write('\n')
 	if len(withdrawnMgiIdList):
 	    fpQcRpt.write('\nInput lines with withdrawn MGI IDs. These will not be processed:\n')
             fpQcRpt.write('-------------------------------------------------------------\n')

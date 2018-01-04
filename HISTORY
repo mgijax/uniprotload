@@ -1,3 +1,11 @@
+TAG: uniprotload-6-0-11-3
+DATE: 01/04/2018
+STAFF: sc
+CHANGES: 
+1) TR12697 - add to override QC input lines where input 
+    symbol does not match database
+2) TR12599 - add dos2unix to convert input file
+
 TAG: uniprotload-6-0-11-2
 DATE: 11/01/2017
 STAFF: sc
