@@ -564,9 +564,11 @@ def readEC2GO():
         if (r is not None):
             ecid = r.group(1)
             goid = r.group(2)
-            if not ec_to_go.has_key(ecid):
-                ec_to_go[ecid] = []
-            ec_to_go[ecid].append(goid)
+	    # TR13150/bin/makeGOAnnot.py: ignore EC ids that contain "-"
+	    if ecid.find('-') < 0:
+            	if not ec_to_go.has_key(ecid):
+                	ec_to_go[ecid] = []
+            	ec_to_go[ecid].append(goid)
 
     fp.close()
 

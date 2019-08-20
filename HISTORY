@@ -1,3 +1,9 @@
+TAG: uniprotload-6-0-14-1
+DATE: 08/20/2019
+STAFF: lec
+CHANGES:
+TR13150/bin/makeGOAnnot.py: ignore EC ids that contain "-"
+
 TAG: uniprotload-6-0-11-1
 DATE: 10/11/2017
 STAFF: sc
