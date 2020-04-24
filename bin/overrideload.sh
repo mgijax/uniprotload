@@ -126,7 +126,7 @@ fi
 echo "" >> ${LOG_DIAG}
 date >> ${LOG_DIAG}
 echo "Run overrideload.py"  | tee -a ${LOG_DIAG}
-${UNIPROTLOAD}/bin/overrideload.py  
+${PYTHON} ${UNIPROTLOAD}/bin/overrideload.py  
 STAT=$?
 checkStatus ${STAT} "UniProt Override Load:"
 

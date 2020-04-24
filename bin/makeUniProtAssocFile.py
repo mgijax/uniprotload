@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  makeUniProtAssocFile.py
 ###########################################################################
@@ -155,31 +154,31 @@ def initialize():
     # Make sure the environment variables are set.
     #
     if not uniprotFile:
-        print 'Environment variable not set: INPUTFILE'
+        print('Environment variable not set: INPUTFILE')
         rc = 1
 
     if not uniprotAccAssocFile:
-        print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_ACC_ASSOC_FILE')
         rc = 1
 
     if not uniprotAccAssocErrFile:
-        print 'Environment variable not set: UNIPROT_ACC_ASSOC_ERR_FILE'
+        print('Environment variable not set: UNIPROT_ACC_ASSOC_ERR_FILE')
         rc = 1
 
     if not uniprotSPAssocFile:
-        print 'Environment variable not set: UNIPROT_SP_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_SP_ASSOC_FILE')
         rc = 1
 
     if not uniprotSPAssocErrFile:
-        print 'Environment variable not set: UNIPROT_SP_ASSOC_ERR_FILE'
+        print('Environment variable not set: UNIPROT_SP_ASSOC_ERR_FILE')
         rc = 1
 
     if not uniprotTRAssocFile:
-        print 'Environment variable not set: UNIPROT_TR_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_TR_ASSOC_FILE')
         rc = 1
 
     if not uniprotTRAssocErrFile:
-        print 'Environment variable not set: UNIPROT_TR_ASSOC_ERR_FILE'
+        print('Environment variable not set: UNIPROT_TR_ASSOC_ERR_FILE')
         rc = 1
 
     #
@@ -215,7 +214,7 @@ def openFiles():
     try:
         fpUniProt = open(uniprotFile, 'r')
     except:
-        print 'Cannot open file: ' + uniprotFile
+        print('Cannot open file: ' + uniprotFile)
         return 1
 
     #
@@ -224,7 +223,7 @@ def openFiles():
     try:
         fpAccAssoc = open(uniprotAccAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotAccAssocFile
+        print('Cannot open association file: ' + uniprotAccAssocFile)
         return 1
 
     #
@@ -233,7 +232,7 @@ def openFiles():
     try:
         fpAccAssocErr = open(uniprotAccAssocErrFile, 'w')
     except:
-        print 'Cannot open association error file: ' + uniprotAccAssocErrFile
+        print('Cannot open association error file: ' + uniprotAccAssocErrFile)
         return 1
 
     #
@@ -242,7 +241,7 @@ def openFiles():
     try:
         fpSPAssoc = open(uniprotSPAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotSPAssocFile
+        print('Cannot open association file: ' + uniprotSPAssocFile)
         return 1
 
     #
@@ -251,7 +250,7 @@ def openFiles():
     try:
         fpSPAssocErr = open(uniprotSPAssocErrFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotSPAssocErrFile
+        print('Cannot open association file: ' + uniprotSPAssocErrFile)
         return 1
 
     #
@@ -260,7 +259,7 @@ def openFiles():
     try:
         fpTRAssoc = open(uniprotTRAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotTRAssocFile
+        print('Cannot open association file: ' + uniprotTRAssocFile)
         return 1
 
     #
@@ -269,7 +268,7 @@ def openFiles():
     try:
         fpTRAssocErr = open(uniprotTRAssocErrFile, 'w')
     except:
-        print 'Cannot open association file: ' + uniprotTRAssocErrFile
+        print('Cannot open association file: ' + uniprotTRAssocErrFile)
         return 1
 
     return 0
@@ -344,78 +343,78 @@ def getAssociations():
         ecID = rec.getECID()
         ipID = rec.getInterProID()
         kwName = rec.getKWName()
-	emblID = rec.getEMBLID()
+        emblID = rec.getEMBLID()
 
-	#
-	# construct the report rows
-	# multiple accession ids are comma-separated
-	#
+        #
+        # construct the report rows
+        # multiple accession ids are comma-separated
+        #
 
-	reportRow = ''
+        reportRow = ''
 
-	#
-	# uniprot ids
-	# entrezgene id
-	# ensembl id
-	# embl id
-	#
+        #
+        # uniprot ids
+        # entrezgene id
+        # ensembl id
+        # embl id
+        #
         reportRow = uniprotID + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
                       ','.join(ensemblID) + '\t' + \
                       ','.join(emblID) + '\t'
 
-	# EC
-	if len(ecID) > 0:
+        # EC
+        if len(ecID) > 0:
             reportRow = reportRow + ','.join(ecID)
-	reportRow = reportRow + '\t'
+        reportRow = reportRow + '\t'
 
-	# PDB
-	if len(pdbID) > 0:
+        # PDB
+        if len(pdbID) > 0:
             reportRow = reportRow + ','.join(pdbID)
-	reportRow = reportRow + '\t'
+        reportRow = reportRow + '\t'
 
-	# InterPro
-	if len(ipID) > 0:
+        # InterPro
+        if len(ipID) > 0:
             reportRow = reportRow + ','.join(ipID)
-	reportRow = reportRow + '\t'
+        reportRow = reportRow + '\t'
 
-	# UniProt/SwissProt key word
-	if len(kwName) > 0:
+        # UniProt/SwissProt key word
+        if len(kwName) > 0:
             reportRow = reportRow + ','.join(kwName)
-	reportRow = reportRow + '\t'
+        reportRow = reportRow + '\t'
 
-	# EMBL ID
-	if len(emblID) > 0:
+        # EMBL ID
+        if len(emblID) > 0:
             reportRow = reportRow + ','.join(emblID)
-	reportRow = reportRow + '\n'
+        reportRow = reportRow + '\n'
 
-	#
-	# if exists either EnterzGene id or Ensembl id or EMBL id...
-	#
+        #
+        # if exists either EnterzGene id or Ensembl id or EMBL id...
+        #
         if len(entrezgeneID) > 0 or len(ensemblID) > 0 or len(emblID) > 0:
 
             fpAccAssoc.write(reportRow)
 
-	    # swiss-prot
-	    if not isTrembl:
+            # swiss-prot
+            if not isTrembl:
                 fpSPAssoc.write(uniprotID + '\n')
     
-	    # trembl 
-	    else:
+            # trembl 
+            else:
                 fpTRAssoc.write(uniprotID + '\n')
 
-	#
-	# else, write reportRow to error files
-	#
+        #
+        # else, write reportRow to error files
+        #
         else:
             fpAccAssocErr.write(reportRow)
 
-	    # swiss-prot
-	    if not isTrembl:
+            # swiss-prot
+            if not isTrembl:
                 fpSPAssocErr.write(uniprotID + '\t' + ','.join(emblID) + '\n')
     
-	    # trembl 
-	    else:
+            # trembl 
+            else:
                 fpTRAssocErr.write(uniprotID + '\t' + ','.join(emblID) + '\n')
 
         #
@@ -442,4 +441,3 @@ if getAssociations() != 0:
 
 closeFiles()
 sys.exit(0)
-

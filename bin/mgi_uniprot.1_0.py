@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  mgi_uniprot.1_0.py
 ###########################################################################
@@ -40,7 +39,6 @@
 
 import sys 
 import os
-import string
 import db
 
 inputFileName = None
@@ -68,14 +66,14 @@ def initialize():
     # Make sure the required environment variables are set.
     #
     if not inputFileName:
-        print 'Environment variable not set: INFILE_1_0'
+        print('Environment variable not set: INFILE_1_0')
         return 1
 
     #
     # Make sure the required environment variables are set.
     #
     if not outputFileName:
-        print 'Environment variable not set: OUTPUT_1_0_PROTEINCODING'
+        print('Environment variable not set: OUTPUT_1_0_PROTEINCODING')
         return 1
 
     #
@@ -84,7 +82,7 @@ def initialize():
     try:
         inputFile = open(inputFileName, 'r')
     except:
-        print 'Cannot open file: ' + inputFileName
+        print('Cannot open file: ' + inputFileName)
         return 1
 
     #
@@ -93,7 +91,7 @@ def initialize():
     try:
         outputFile = open(outputFileName, 'w')
     except:
-        print 'Cannot open file: ' + outputFileName
+        print('Cannot open file: ' + outputFileName)
         return 1
 
     return 0
@@ -130,30 +128,30 @@ def generateReport():
     # select all protein coding genes
 
     results = db.sql('''
-           	select distinct a.accID
-           	from ACC_Accession a, VOC_Annot v
-		where a._MGIType_key = 2
-		and a._LogicalDB_key = 1
-		and a.preferred = 1
-		and a._Object_key = v._Object_key
-           	and v._Term_key = 6238161
-           	and v._AnnotType_key = 1011
-		and v._Qualifier_key = 1614158
-		''', 'auto')
-		
+                select distinct a.accID
+                from ACC_Accession a, VOC_Annot v
+                where a._MGIType_key = 2
+                and a._LogicalDB_key = 1
+                and a.preferred = 1
+                and a._Object_key = v._Object_key
+                and v._Term_key = 6238161
+                and v._AnnotType_key = 1011
+                and v._Qualifier_key = 1614158
+                ''', 'auto')
+                
     for r in results:
-	mgiID.append(r['accID'])
+        mgiID.append(r['accID'])
 
     for line in inputFile.readlines():
 
-        tokens = string.split(line[:-1], '\t')
-	id = tokens[0]
+        tokens = str.split(line[:-1], '\t')
+        id = tokens[0]
 
-	if string.find(id, 'total number') >= 0:
-	    continue
+        if str.find(id, 'total number') >= 0:
+            continue
 
-	if id in mgiID:
-	    outputFile.write(line)
+        if id in mgiID:
+            outputFile.write(line)
 
     return 0
 

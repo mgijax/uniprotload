@@ -68,7 +68,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the UniProt association file (makeUniProtAssocFile.sh)" | tee -a ${LOG}
-./makeUniProtAssocFile.py 2>&1 >> ${LOG}
+${PYTHON} ./makeUniProtAssocFile.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

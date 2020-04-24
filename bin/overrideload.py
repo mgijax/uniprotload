@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  overrideload.py
 ###########################################################################
@@ -60,7 +59,6 @@
 
 import sys
 import os
-import string
 import db
 import mgi_utils
 
@@ -109,7 +107,7 @@ def checkArgs ():
     # Throws: Nothing
 
     if len(sys.argv) != 1:
-        print USAGE
+        print(USAGE)
         sys.exit(1)
     return
 
@@ -146,13 +144,13 @@ def openFiles ():
     try:
         fpInFile = open(inFile, 'r')
     except:
-        print 'Cannot open override input file: %s' % inFile
+        print('Cannot open override input file: %s' % inFile)
         sys.exit(1)
 
     try:
         fpAssocFile = open(assocFile, 'w')
     except:
-        print 'Cannot open override association file: %s' % relationshipFile
+        print('Cannot open override association file: %s' % relationshipFile)
         sys.exit(1)
 
 
@@ -163,23 +161,23 @@ def openFiles ():
 def processDelete(uniprotId, mgiId, ldb):
     ldbKey = spLdb
     if ldb == 't':
-	ldbKey = trLdb
-    print '%s %s' % (mgiId, uniprotId)
+        ldbKey = trLdb
+    print('%s %s' % (mgiId, uniprotId))
     results = db.sql('''select a2._Accession_key
-	from ACC_Accession a1, ACC_Accession a2
-	where lower(a1.accid) = '%s'
-	and a1._LogicalDB_key = 1
-	and a1._MGIType_key = 2
-	and a1.preferred = 1
-	and a1._Object_key = a2._Object_key
-	and a2._LogicalDB_key = %s
-	and a2. _MGIType_key = 2
-	and lower(a2.accid) = '%s' ''' % (mgiId, ldbKey, uniprotId), 'auto')
-    print results
+        from ACC_Accession a1, ACC_Accession a2
+        where lower(a1.accid) = '%s'
+        and a1._LogicalDB_key = 1
+        and a1._MGIType_key = 2
+        and a1.preferred = 1
+        and a1._Object_key = a2._Object_key
+        and a2._LogicalDB_key = %s
+        and a2. _MGIType_key = 2
+        and lower(a2.accid) = '%s' ''' % (mgiId, ldbKey, uniprotId), 'auto')
+    print(results)
     aKey = results[0]['_Accession_key']
-    print aKey
+    print(aKey)
     db.sql('''delete from ACC_Accession
-	    where _Accession_key = %s''' % aKey, None)
+            where _Accession_key = %s''' % aKey, None)
     db.commit()
     return
 
@@ -190,12 +188,12 @@ def processAdd(uniprotId, mgiId, ldb):
 
     # add assocload file header
     if firstDataLine == 1:
-	fpAssocFile.write('MGI%sSWISS-PROT%sTrEMBL%s' % (TAB, TAB, CRT))
+        fpAssocFile.write('MGI%sSWISS-PROT%sTrEMBL%s' % (TAB, TAB, CRT))
         firstDataLine = 0
     if ldb == 's':
-	fpAssocFile.write(templateSP % (string.upper(mgiId), string.upper(uniprotId) ))
+        fpAssocFile.write(templateSP % (str.upper(mgiId), str.upper(uniprotId) ))
     else:
-	fpAssocFile.write(templateTR % (string.upper(mgiId), string.upper(uniprotId) ))
+        fpAssocFile.write(templateTR % (str.upper(mgiId), str.upper(uniprotId) ))
 
     return
 
@@ -229,17 +227,17 @@ def process( ):
     # Iterate throught the input file
     #
     for line in fpInFile.readlines():
-        tokens = map(string.strip, string.split(line, TAB))
-	uniprotId = string.lower(tokens[0])
-	mgiId = string.lower(tokens[1])
-        ldb = string.lower(tokens[2])
-        action = string.lower(tokens[3])
-	if action == 'delete':
-	    print 'processDelete'
-	    processDelete(uniprotId, mgiId, ldb)
-	    continue
-	print 'processAdd'
-	processAdd(uniprotId, mgiId, ldb)
+        tokens = list(map(str.strip, str.split(line, TAB)))
+        uniprotId = str.lower(tokens[0])
+        mgiId = str.lower(tokens[1])
+        ldb = str.lower(tokens[2])
+        action = str.lower(tokens[3])
+        if action == 'delete':
+            print('processDelete')
+            processDelete(uniprotId, mgiId, ldb)
+            continue
+        print('processAdd')
+        processAdd(uniprotId, mgiId, ldb)
 
     return
 
@@ -253,19 +251,19 @@ def process( ):
 #####################
 
 # check the arguments to this script
-print 'checkArgs'
+print('checkArgs')
 checkArgs()
 
 # this function will exit(1) if errors opening files
-print 'init'
+print('init')
 init()
 
 # do deletes and create assocload input file
-print 'process'
+print('process')
 process()
 
 # close all output files
-print 'closeFiles'
+print('closeFiles')
 closeFiles()
 
 db.useOneConnection(0)

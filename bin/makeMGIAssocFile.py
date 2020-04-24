@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  makeMGIAssocFile.py
 ###########################################################################
@@ -90,7 +89,7 @@ def initialize():
     # Make sure the environment variables are set.
     #
     if not mgiAssocFile:
-        print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
+        print('Environment variable not set: MGI_ACC_ASSOC_FILE')
         rc = 1
 
     #
@@ -117,7 +116,7 @@ def openFiles():
     try:
         fpAssoc = open(mgiAssocFile, 'w')
     except:
-        print 'Cannot open association file: ' + mgiAssocFile
+        print('Cannot open association file: ' + mgiAssocFile)
         return 1
 
     return 0
@@ -157,7 +156,7 @@ def getAssociations():
     # marker must also have status official or interum
     #
     db.sql('''create temp table assoc as
-	      select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID as mgiID, m.symbol, m._Marker_Type_key
+              select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID as mgiID, m.symbol, m._Marker_Type_key
               from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
               where a1._MGIType_key = 2 and 
                  a1._LogicalDB_key in (9, 55, 60) and 
@@ -195,7 +194,7 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
-        if not entrezgeneDict.has_key(mgiID):
+        if mgiID not in entrezgeneDict:
             entrezgeneDict[mgiID] = []
         entrezgeneDict[mgiID].append(accID)
 
@@ -217,7 +216,7 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
-        if not ensemblDict.has_key(mgiID):
+        if mgiID not in ensemblDict:
             ensemblDict[mgiID] = []
         ensemblDict[mgiID].append(accID)
 
@@ -228,11 +227,11 @@ def getAssociations():
     # EMBL IDs associated with at most one marker
     #
     cmd = '''with tmp_assoc as (
-	     select accID from assoc group by accID having count(*) = 1)
+             select accID from assoc group by accID having count(*) = 1)
              select distinct a.mgiID, a.accID
              from assoc a, tmp_assoc t
              where a._LogicalDB_key = 9
-	     and a.accID = t.accID
+             and a.accID = t.accID
              order by a.mgiID'''
     results = db.sql(cmd, 'auto')
 
@@ -244,7 +243,7 @@ def getAssociations():
     for r in results:
         mgiID = r['mgiID']
         accID = r['accID']
-        if not emblDict.has_key(mgiID):
+        if mgiID not in emblDict:
             emblDict[mgiID] = []
         emblDict[mgiID].append(accID)
 
@@ -266,17 +265,17 @@ def getAssociations():
         symbol = r['symbol']
         markerType = r['_Marker_Type_key']
 
-        if entrezgeneDict.has_key(mgiID):
+        if mgiID in entrezgeneDict:
             entrezgeneID = entrezgeneDict[mgiID]
         else:
             entrezgeneID = []
 
-        if ensemblDict.has_key(mgiID):
+        if mgiID in ensemblDict:
             ensemblID = ensemblDict[mgiID]
         else:
             ensemblID = []
 
-        if emblDict.has_key(mgiID):
+        if mgiID in emblDict:
             emblID = emblDict[mgiID]
         else:
             emblID = []
@@ -287,8 +286,8 @@ def getAssociations():
         # appropriate field.
         #
         fpAssoc.write(mgiID + '\t' + \
-		      symbol + '\t' + \
-		      str(markerType) + '\t' + \
+                      symbol + '\t' + \
+                      str(markerType) + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
                       ','.join(ensemblID) + '\t' + \
                       ','.join(emblID) + '\n')

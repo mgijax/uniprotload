@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #
 # Program: makeGOAnnot.py
@@ -174,7 +173,6 @@
 import sys
 import os
 import re
-import string
 import db
 
 # globals
@@ -312,67 +310,67 @@ def initialize():
     # Make sure the required environment variables are set.
     #
     if not mgi_to_uniprotFile:
-        print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
+        print('Environment variable not set: MGI_UNIPROT_LOAD_FILE')
         rc = 1
 
     if not uniprotFile:
-        print 'Environment variable not set: UNIPROT_ACC_ASSOC'
+        print('Environment variable not set: UNIPROT_ACC_ASSOC')
         rc = 1
 
     if not mgi_to_markertypeFile:
-        print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
+        print('Environment variable not set: MGI_ACC_ASSOC_FILE')
         rc = 1
 
     if not ec2goFile:
-        print 'Environment variable not set: EC2GOFILE'
+        print('Environment variable not set: EC2GOFILE')
         rc = 1
 
     if not goECFile:
-        print 'Environment variable not set: GO_EC_ASSOC_FILE'
+        print('Environment variable not set: GO_EC_ASSOC_FILE')
         rc = 1
 
     if not goECRef:
-        print 'Environment variable not set: GO_EC_ANNOTREF'
+        print('Environment variable not set: GO_EC_ANNOTREF')
         rc = 1
 
     if not ip2goFile:
-        print 'Environment variable not set: IP2GOFILE'
+        print('Environment variable not set: IP2GOFILE')
         rc = 1
 
     if not goIPFile:
-        print 'Environment variable not set: GO_IP_ASSOC_FILE'
+        print('Environment variable not set: GO_IP_ASSOC_FILE')
         rc = 1
 
     if not goIPRef:
-        print 'Environment variable not set: GO_IP_ANNOTREF'
+        print('Environment variable not set: GO_IP_ANNOTREF')
         rc = 1
 
     if not goSPKWFile:
-        print 'Environment variable not set: GO_SPKW_ASSOC_FILE'
+        print('Environment variable not set: GO_SPKW_ASSOC_FILE')
         rc = 1
 
     if not goSPKWRef:
-        print 'Environment variable not set: GO_SPKW_ANNOTREF'
+        print('Environment variable not set: GO_SPKW_ANNOTREF')
         rc = 1
 
     if not annotEvidence:
-        print 'Environment variable not set: ANNOT_EVIDENCECODE'
+        print('Environment variable not set: ANNOT_EVIDENCECODE')
         rc = 1
 
     if not annotEditor:
-        print 'Environment variable not set: ANNOT_EDITOR'
+        print('Environment variable not set: ANNOT_EDITOR')
         rc = 1
 
     if not annotDate:
-        print 'Environment variable not set: ANNOT_DATE'
+        print('Environment variable not set: ANNOT_DATE')
         rc = 1
 
     if not annotNote:
-        print 'Environment variable not set: ANNOT_NOTE'
+        print('Environment variable not set: ANNOT_NOTE')
         rc = 1
 
     if not annotNotePrefix:
-        print 'Environment variable not set: ANNOT_NOTEPREFIX'
+        print('Environment variable not set: ANNOT_NOTEPREFIX')
         rc = 1
 
     return rc
@@ -403,34 +401,34 @@ def openFiles():
     # get all GO annotations in MGD
 
     db.sql('''create temp table annots as
-	select a._Annot_key, a._Object_key, ac.accID 
-	from VOC_Annot a, ACC_Accession ac 
-	where a._AnnotType_key = 1000 
-	and a._Term_key = ac._Object_key 
-	and ac._MGIType_key = 13 
-	''', None)
+        select a._Annot_key, a._Object_key, ac.accID 
+        from VOC_Annot a, ACC_Accession ac 
+        where a._AnnotType_key = 1000 
+        and a._Term_key = ac._Object_key 
+        and ac._MGIType_key = 13 
+        ''', None)
     db.sql('create index annots_idx1 on annots(_Annot_key)', None)
 
     # get  all non-IEA
     db.sql('''create temp table evidence as
-	select distinct a._Object_key, a.accID 
-	from annots a, VOC_Evidence e 
-	where a._Annot_key = e._Annot_key 
-	and e._EvidenceTerm_key != 115''', None)
+        select distinct a._Object_key, a.accID 
+        from annots a, VOC_Evidence e 
+        where a._Annot_key = e._Annot_key 
+        and e._EvidenceTerm_key != 115''', None)
     db.sql('create index evidence_idx1 on evidence(_Object_key)', None)
 
     # get Marker MGI ID/GO ID pairs for markers of type "gene" only
 
     results = db.sql('''select a.accID as mgiID, e.accID 
-	from evidence e, ACC_Accession a, MRK_Marker m
-	where e._Object_key = a._Object_key 
-	and a._MGIType_key = 2 
-	and a._LogicalDB_key = 1 
-	and a.prefixPart = 'MGI:' 
-	and a.preferred = 1 
-	and a._Object_key = m._Marker_key 
-	and m._Marker_Type_key = 1
-	''', 'auto')
+        from evidence e, ACC_Accession a, MRK_Marker m
+        where e._Object_key = a._Object_key 
+        and a._MGIType_key = 2 
+        and a._LogicalDB_key = 1 
+        and a.prefixPart = 'MGI:' 
+        and a.preferred = 1 
+        and a._Object_key = m._Marker_key 
+        and m._Marker_Type_key = 1
+        ''', 'auto')
     for r in results:
         key = r['mgiID'] + r['accID']
         nonIEA_annotations[key] = []
@@ -467,32 +465,32 @@ def readMGI2UNIPROT():
     lineNum = 0
     for line in fp.readlines():
 
-	if lineNum == 0:
-	    lineNum = lineNum + 1
-	    continue
+        if lineNum == 0:
+            lineNum = lineNum + 1
+            continue
 
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
-	value1 = string.split(tokens[1], ',')
-	value2 = string.split(tokens[2], ',')
+        tokens = str.split(line[:-1], '\t')
+        key = tokens[0]
+        value1 = str.split(tokens[1], ',')
+        value2 = str.split(tokens[2], ',')
 
-	# swissprot + trembl
+        # swissprot + trembl
 
-	if not mgi_to_uniprot_sptr.has_key(key):
-	    mgi_to_uniprot_sptr[key] = []
+        if key not in mgi_to_uniprot_sptr:
+            mgi_to_uniprot_sptr[key] = []
 
-	for v in value1:
-	    mgi_to_uniprot_sptr[key].append(v)
-	for v in value2:
-	    mgi_to_uniprot_sptr[key].append(v)
+        for v in value1:
+            mgi_to_uniprot_sptr[key].append(v)
+        for v in value2:
+            mgi_to_uniprot_sptr[key].append(v)
 
-	# swissprot only
+        # swissprot only
 
-	if not mgi_to_uniprot_sp.has_key(key):
-	    mgi_to_uniprot_sp[key] = []
+        if key not in mgi_to_uniprot_sp:
+            mgi_to_uniprot_sp[key] = []
 
-	for v in value1:
-	    mgi_to_uniprot_sp[key].append(v)
+        for v in value1:
+            mgi_to_uniprot_sp[key].append(v)
 
     fp.close()
 
@@ -523,11 +521,11 @@ def readMGI2MARKERTYPE():
 
     for line in fp.readlines():
 
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
-	value = tokens[2]
+        tokens = str.split(line[:-1], '\t')
+        key = tokens[0]
+        value = tokens[2]
 
-	mgi_to_markertype[key] = value
+        mgi_to_markertype[key] = value
 
     fp.close()
 
@@ -564,11 +562,11 @@ def readEC2GO():
         if (r is not None):
             ecid = r.group(1)
             goid = r.group(2)
-	    # TR13150/bin/makeGOAnnot.py: ignore EC ids that contain "-"
-	    if ecid.find('-') < 0:
-            	if not ec_to_go.has_key(ecid):
-                	ec_to_go[ecid] = []
-            	ec_to_go[ecid].append(goid)
+            # TR13150/bin/makeGOAnnot.py: ignore EC ids that contain "-"
+            if ecid.find('-') < 0:
+                if ecid not in ec_to_go:
+                        ec_to_go[ecid] = []
+                ec_to_go[ecid].append(goid)
 
     fp.close()
 
@@ -620,7 +618,7 @@ def readIP2GO():
             #
             if goid not in ['GO:0005575', 'GO:0003674', 'GO:0008150']:
 
-                if not ip_to_go.has_key(ipName):
+                if ipName not in ip_to_go:
                     ip_to_go[ipName] = []
                 ip_to_go[ipName].append((ipid, goid))
 
@@ -666,7 +664,7 @@ def readSPKW2GO():
             spkwName = r.group(2)    # "Cytoplasm,Phosphoprotein"
             goid = r.group(3)        # GO:#####
 
-            if not spkw_to_go.has_key(spkwName):
+            if spkwName not in spkw_to_go:
                 spkw_to_go[spkwName] = []
             spkw_to_go[spkwName].append((spkwid, goid))
 
@@ -702,24 +700,24 @@ def readUNIPROTACC():
     fp = open(uniprotFile,'r')
 
     for line in fp.readlines():
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
+        tokens = str.split(line[:-1], '\t')
+        key = tokens[0]
 
-	# not all uniprot ids have interpro ids...
-	if len(tokens[6]) > 0:
-	    values = string.split(tokens[6], ',')
-	    if not uniprot_to_ip.has_key(key):
-	        uniprot_to_ip[key] = []
-	    for v in values:
-	        uniprot_to_ip[key].append(v)
+        # not all uniprot ids have interpro ids...
+        if len(tokens[6]) > 0:
+            values = str.split(tokens[6], ',')
+            if key not in uniprot_to_ip:
+                uniprot_to_ip[key] = []
+            for v in values:
+                uniprot_to_ip[key].append(v)
 
-	# not all uniprot ids have spkw ids...
-	if len(tokens[7]) > 0:
-	    values = string.split(tokens[7], ',')
-	    if not uniprot_to_spkw.has_key(key):
-	        uniprot_to_spkw[key] = []
-	    for v in values:
-	        uniprot_to_spkw[key].append(v)
+        # not all uniprot ids have spkw ids...
+        if len(tokens[7]) > 0:
+            values = str.split(tokens[7], ',')
+            if key not in uniprot_to_spkw:
+                uniprot_to_spkw[key] = []
+            for v in values:
+                uniprot_to_spkw[key].append(v)
 
     fp.close()
 
@@ -760,20 +758,20 @@ def processEC2GO():
     # TR12240/exclude EC ids with "-" (dash)
     #
     db.sql('''create temp table ec as
-		select m._Marker_key, a2.accID as markerID, 'EC:' || a.accID as accID
+                select m._Marker_key, a2.accID as markerID, 'EC:' || a.accID as accID
                 from ACC_Accession a, MRK_Marker m, ACC_Accession a2
                 where a._MGIType_key = 2
                 and a._LogicalDB_key = 8
                 and a._Object_key = m._Marker_key
-		and m._Organism_key = 1
+                and m._Organism_key = 1
                 and m._Marker_Type_key = 1
-		and a._Object_key = a2._Object_key
-		and a2._MGIType_key = 2
+                and a._Object_key = a2._Object_key
+                and a2._MGIType_key = 2
                 and a2._LogicalDB_key = 1
-		and a2.prefixPart = 'MGI:'
-		and a2.preferred = 1
-		and a.accID not like '%-%'
-		''', None)
+                and a2.prefixPart = 'MGI:'
+                and a2.preferred = 1
+                and a.accID not like '%-%'
+                ''', None)
     db.sql('create index ec_idx1 on ec(_Marker_key)', None)
 
     # create a lookup of marker-to-uniprot (swissprot only)
@@ -781,14 +779,14 @@ def processEC2GO():
     results = db.sql('''select e.markerID, s.accID as spID
                 from ec e, ACC_Accession s
                 where e._Marker_key = s._Object_key
-		and s._MGIType_key = 2
-		and s._LogicalDB_key in (13)
-		''', 'auto')
+                and s._MGIType_key = 2
+                and s._LogicalDB_key in (13)
+                ''', 'auto')
     mgd_to_uniprot = {}		
     for r in results:
-	key = r['markerID']
-	value = r['spID']
-        if not mgd_to_uniprot.has_key(key):
+        key = r['markerID']
+        value = r['spID']
+        if key not in mgd_to_uniprot:
             mgd_to_uniprot[key] = []
         if annotNotePrefix + value not in mgd_to_uniprot[key]:
             mgd_to_uniprot[key].append(annotNotePrefix + value)
@@ -796,51 +794,51 @@ def processEC2GO():
     results = db.sql('select * from ec', 'auto')
     for r in results:
 
-	markerID = r['markerID']
-	ec = r['accID']
+        markerID = r['markerID']
+        ec = r['accID']
 
         # if there is no EC-2-GO mapping for the EC ID, then skip it
 
-        if not ec_to_go.has_key(ec):
+        if ec not in ec_to_go:
             continue
 
-	# if the marker does not exist in the marker type check, then skip it
-	if not mgi_to_markertype.has_key(markerID):
-	    continue
+        # if the marker does not exist in the marker type check, then skip it
+        if markerID not in mgi_to_markertype:
+            continue
 
-	# if the marker is not of type 'gene', then skip it
-	if mgi_to_markertype[markerID] != '1':
-	    continue
+        # if the marker is not of type 'gene', then skip it
+        if mgi_to_markertype[markerID] != '1':
+            continue
 
-	# for each EC-2-GO mapping....
+        # for each EC-2-GO mapping....
 
-	for goid in ec_to_go[ec]:
+        for goid in ec_to_go[ec]:
 
-	    # if a non-IEA annotation exists, skip
+            # if a non-IEA annotation exists, skip
 
-	    nonIEAkey = markerID + goid
-	    if nonIEA_annotations.has_key(nonIEAkey):
-	        continue
+            nonIEAkey = markerID + goid
+            if nonIEAkey in nonIEA_annotations:
+                continue
 
-	    # if the go id = GO:0005515, then skip it
-	    # if the go id = GO:0005488, then skip it
-	    if goid in ('GO:0005515', 'GO:0005488'):
-	        continue
+            # if the go id = GO:0005515, then skip it
+            # if the go id = GO:0005488, then skip it
+            if goid in ('GO:0005515', 'GO:0005488'):
+                continue
 
-	     # else we want to load this annotation.
+             # else we want to load this annotation.
 
-	    fp.write(goid + '\t' + \
-		         markerID + '\t' + \
-	      	         goECRef + '\t' + \
-	      	         annotEvidence + '\t' + \
-	      	         ec + '\t' + \
-	      	         '\t' + \
-	      	         annotEditor + '\t' + \
-	      	         annotDate + '\t')
+            fp.write(goid + '\t' + \
+                         markerID + '\t' + \
+                         goECRef + '\t' + \
+                         annotEvidence + '\t' + \
+                         ec + '\t' + \
+                         '\t' + \
+                         annotEditor + '\t' + \
+                         annotDate + '\t')
 
-	    if mgd_to_uniprot.has_key(markerID):
-	      	 fp.write(annotNote + string.join(mgd_to_uniprot[markerID], '|'))
-	    fp.write('\n')
+            if markerID in mgd_to_uniprot:
+                 fp.write(annotNote + str.join('|', mgd_to_uniprot[markerID]))
+            fp.write('\n')
 
     fp.close()
 
@@ -888,87 +886,86 @@ def processIP2GO():
 
     fp = open(goIPFile, 'w')
 
-    markerIDs = mgi_to_uniprot_sp.keys()
-    markerIDs.sort()
+    markerIDs = sorted(mgi_to_uniprot_sp.keys())
 
     for m in markerIDs:
 
         #
         # for the given marker, collect a set of GO id -> interpro ids
-	# the GO annotation loader is driven by Marker/GO id/set of interpro ids
-	# we want one set of interpro ids per GO id per Marker
+        # the GO annotation loader is driven by Marker/GO id/set of interpro ids
+        # we want one set of interpro ids per GO id per Marker
         #
     
-	# if the marker is not of type 'gene', then skip it
-	if mgi_to_markertype[m] != '1':
-	    continue
+        # if the marker is not of type 'gene', then skip it
+        if mgi_to_markertype[m] != '1':
+            continue
 
         go_to_ip = {}		
 
-	# the uniprot id where this interpro id was found
+        # the uniprot id where this interpro id was found
         go_to_uniprot = {}		
 
         for uniprotVal in mgi_to_uniprot_sp[m]:
 
             # if there is no uniprot_to_ip mapping, then skip it
 
-            if not uniprot_to_ip.has_key(uniprotVal):
+            if uniprotVal not in uniprot_to_ip:
                 continue
 
-	    # for each UNIPROT-2-IP mapping....
+            # for each UNIPROT-2-IP mapping....
 
-	    for ipName in uniprot_to_ip[uniprotVal]:
+            for ipName in uniprot_to_ip[uniprotVal]:
 
                 # if there is no ip_to_go mapping, then skip it
 
-	        if not ip_to_go.has_key(ipName):
-		    continue
+                if ipName not in ip_to_go:
+                    continue
 
-	        # for each IP-2-GO mapping...
+                # for each IP-2-GO mapping...
 
                 for r in ip_to_go[ipName]:
 
-		    ipid = r[0]
-		    goid = r[1]
+                    ipid = r[0]
+                    goid = r[1]
 
-	            # if a non-IEA annotation exists, skip
-	            nonIEAkey = m + goid
-	            if nonIEA_annotations.has_key(nonIEAkey):
-		        continue
+                    # if a non-IEA annotation exists, skip
+                    nonIEAkey = m + goid
+                    if nonIEAkey in nonIEA_annotations:
+                        continue
 
-	            # if the go id = GO:0005515, skip
-	    	    # if the go id = GO:0005488, then skip it
-	    	    if goid in ('GO:0005515', 'GO:0005488'):
-	                continue
+                    # if the go id = GO:0005515, skip
+                    # if the go id = GO:0005488, then skip it
+                    if goid in ('GO:0005515', 'GO:0005488'):
+                        continue
 
-		    # else we want to load this annotation.
+                    # else we want to load this annotation.
 
-	            if not go_to_ip.has_key(goid):
-	                go_to_ip[goid] = []
+                    if goid not in go_to_ip:
+                        go_to_ip[goid] = []
                     if ipid not in go_to_ip[goid]:
                         go_to_ip[goid].append(ipid)
 
-	            if not go_to_uniprot.has_key(goid):
-	                go_to_uniprot[goid] = []
+                    if goid not in go_to_uniprot:
+                        go_to_uniprot[goid] = []
                     if annotNotePrefix + uniprotVal not in go_to_uniprot[goid]:
                         go_to_uniprot[goid].append(annotNotePrefix + uniprotVal)
 
-	#
-	# the GO annotation loader is driven by Marker/GO id/set of interpro ids
-	# we want one set of interpro ids per GO id per Marker
-	#
+        #
+        # the GO annotation loader is driven by Marker/GO id/set of interpro ids
+        # we want one set of interpro ids per GO id per Marker
+        #
 
-        for goid in go_to_ip.keys():
+        for goid in list(go_to_ip.keys()):
 
             fp.write(goid + '\t' + \
-		     m + '\t' + \
-	      	     goIPRef + '\t' + \
-	      	     annotEvidence + '\t' + \
-	      	     string.join(go_to_ip[goid], '|') + '\t' + \
-	      	     '\t' + \
-	      	     annotEditor + '\t' + \
-	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], '|') + '\n')
+                     m + '\t' + \
+                     goIPRef + '\t' + \
+                     annotEvidence + '\t' + \
+                     str.join('|', go_to_ip[goid]) + '\t' + \
+                     '\t' + \
+                     annotEditor + '\t' + \
+                     annotDate + '\t' + \
+                     annotNote + str.join('|', go_to_uniprot[goid]) + '\n')
 
     fp.close()
 
@@ -1005,86 +1002,85 @@ def processSPKW2GO():
 
     fp = open(goSPKWFile, 'w')
 
-    markerIDs = mgi_to_uniprot_sptr.keys()
-    markerIDs.sort()
+    markerIDs = sorted(mgi_to_uniprot_sptr.keys())
 
     for m in markerIDs:
 
-	# if the marker is not of type 'gene', then skip it
-	if mgi_to_markertype[m] != '1':
-	    continue
+        # if the marker is not of type 'gene', then skip it
+        if mgi_to_markertype[m] != '1':
+            continue
 
         #
         # for the given marker, collect a set of GO id -> SP-KW ids
-	# the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
-	# we want one set of SP-KW ids per GO id per Marker
+        # the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
+        # we want one set of SP-KW ids per GO id per Marker
         #
     
         go_to_spkw = {}		
 
-	# the uniprot id where this SP-KW id was found
+        # the uniprot id where this SP-KW id was found
         go_to_uniprot = {}		
 
         for uniprotVal in mgi_to_uniprot_sptr[m]:
 
             # if there is no uniprot_to_spkw mapping, then skip it
 
-            if not uniprot_to_spkw.has_key(uniprotVal):
+            if uniprotVal not in uniprot_to_spkw:
                 continue
 
-	    # for each UNIPROT-2-SPKW mapping....
+            # for each UNIPROT-2-SPKW mapping....
 
-	    for spkwName in uniprot_to_spkw[uniprotVal]:
+            for spkwName in uniprot_to_spkw[uniprotVal]:
 
                 # if there is no spkw_to_go mapping, then skip it
 
-	        if not spkw_to_go.has_key(spkwName):
-		    continue
+                if spkwName not in spkw_to_go:
+                    continue
 
-	        # for each SPKW-2-GO mapping...
+                # for each SPKW-2-GO mapping...
 
                 for r in spkw_to_go[spkwName]:
 
-		    spkwid = r[0]
-		    goid = r[1]
+                    spkwid = r[0]
+                    goid = r[1]
 
-	            # if a non-IEA annotation exists, skip
-	            nonIEAkey = m + goid
-	            if nonIEA_annotations.has_key(nonIEAkey):
-		        continue
+                    # if a non-IEA annotation exists, skip
+                    nonIEAkey = m + goid
+                    if nonIEAkey in nonIEA_annotations:
+                        continue
 
-	            # if the go id = GO:0005515, skip
-	    	    # if the go id = GO:0005488, then skip it
-	    	    if goid in ('GO:0005515', 'GO:0005488'):
-	                continue
+                    # if the go id = GO:0005515, skip
+                    # if the go id = GO:0005488, then skip it
+                    if goid in ('GO:0005515', 'GO:0005488'):
+                        continue
 
-		    # else we want to load this annotation.
+                    # else we want to load this annotation.
 
-	            if not go_to_spkw.has_key(goid):
-	                go_to_spkw[goid] = []
+                    if goid not in go_to_spkw:
+                        go_to_spkw[goid] = []
                     if spkwid not in go_to_spkw[goid]:
                         go_to_spkw[goid].append(spkwid)
 
-	            if not go_to_uniprot.has_key(goid):
-	                go_to_uniprot[goid] = []
+                    if goid not in go_to_uniprot:
+                        go_to_uniprot[goid] = []
                     if annotNotePrefix + uniprotVal not in go_to_uniprot[goid]:
                         go_to_uniprot[goid].append(annotNotePrefix + uniprotVal)
 
-	#
-	# the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
-	# we want one set of SP-KW ids per GO id per Marker
-	#
+        #
+        # the GO annotation loader is driven by Marker/GO id/set of SP-KW ids
+        # we want one set of SP-KW ids per GO id per Marker
+        #
 
-        for goid in go_to_spkw.keys():
+        for goid in list(go_to_spkw.keys()):
             fp.write(goid + '\t' + \
-		     m + '\t' + \
-	      	     goSPKWRef + '\t' + \
-	      	     annotEvidence + '\t' + \
-	      	     string.join(go_to_spkw[goid], '|') + '\t' + \
-	      	     '\t' + \
-	      	     annotEditor + '\t' + \
-	      	     annotDate + '\t' + \
-	      	     annotNote + string.join(go_to_uniprot[goid], '|') + '\n')
+                     m + '\t' + \
+                     goSPKWRef + '\t' + \
+                     annotEvidence + '\t' + \
+                     str.join('|', go_to_spkw[goid]) + '\t' + \
+                     '\t' + \
+                     annotEditor + '\t' + \
+                     annotDate + '\t' + \
+                     annotNote + str.join('|', go_to_uniprot[goid]) + '\n')
 
     fp.close()
 
@@ -1110,4 +1106,3 @@ if processSPKW2GO() != 0:
     sys.exit(1)
 
 sys.exit(0)
-

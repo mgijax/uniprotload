@@ -77,7 +77,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Bucketize the association files (makeBuckets.sh)" | tee -a ${LOG}
-./makeBuckets.py ${BUCKET_PREFIX} 2>&1 >> ${LOG}
+${PYTHON} ./makeBuckets.py ${BUCKET_PREFIX} 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then
@@ -92,7 +92,7 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Run report (mgi_uniprot.1_0.py)" | tee -a ${LOG}
-./mgi_uniprot.1_0.py 2>> ${LOG}
+${PYTHON} ./mgi_uniprot.1_0.py 2>> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

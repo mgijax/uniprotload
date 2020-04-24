@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #
 # Program: makeInterProAnnot.py
@@ -85,7 +84,6 @@
 import sys
 import os
 import re
-import string
 import db
 
 # globals
@@ -156,31 +154,31 @@ def initialize():
     # Make sure the required environment variables are set.
     #
     if not mgi_to_uniprotFile:
-        print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
+        print('Environment variable not set: MGI_UNIPROT_LOAD_FILE')
         rc = 1
 
     if not uniprotFile:
-        print 'Environment variable not set: UNIPROT_ACC_ASSOC'
+        print('Environment variable not set: UNIPROT_ACC_ASSOC')
         rc = 1
 
     if not markerIPFile:
-        print 'Environment variable not set: MARKER_IP_ASSOC_FILE'
+        print('Environment variable not set: MARKER_IP_ASSOC_FILE')
         rc = 1
 
     if not markerIPRef:
-        print 'Environment variable not set: MARKER_IP_ANNOT_REF'
+        print('Environment variable not set: MARKER_IP_ANNOT_REF')
         rc = 1
 
     if not annotEvidence:
-        print 'Environment variable not set: ANNOT_EVIDENCECODE'
+        print('Environment variable not set: ANNOT_EVIDENCECODE')
         rc = 1
 
     if not annotEditor:
-        print 'Environment variable not set: ANNOT_EDITOR'
+        print('Environment variable not set: ANNOT_EDITOR')
         rc = 1
 
     if not annotDate:
-        print 'Environment variable not set: ANNOT_DATE'
+        print('Environment variable not set: ANNOT_DATE')
         rc = 1
 
     return rc
@@ -227,14 +225,14 @@ def readMGI2UNIPROT():
     lineNum = 0
     for line in fp.readlines():
 
-	if lineNum == 0:
-	    lineNum = lineNum + 1
-	    continue
+        if lineNum == 0:
+            lineNum = lineNum + 1
+            continue
 
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
-	value1 = string.split(tokens[1], ',')
-	value2 = string.split(tokens[2], ',')
+        tokens = str.split(line[:-1], '\t')
+        key = tokens[0]
+        value1 = str.split(tokens[1], ',')
+        value2 = str.split(tokens[2], ',')
 
         mgi_to_uniprot[key] = []
         for v in value1:
@@ -267,19 +265,19 @@ def readUNIPROTACC():
     fp = open(uniprotFile,'r')
 
     for line in fp.readlines():
-	tokens = string.split(line[:-1], '\t')
-	key = tokens[0]
+        tokens = str.split(line[:-1], '\t')
+        key = tokens[0]
 
-	# not all uniprot ids have interpro ids...
-	if len(tokens[6]) == 0:
-	    continue
+        # not all uniprot ids have interpro ids...
+        if len(tokens[6]) == 0:
+            continue
 
-	values = string.split(tokens[6], ',')
+        values = str.split(tokens[6], ',')
 
-        if not uniprot_to_ip.has_key(key):
+        if key not in uniprot_to_ip:
             uniprot_to_ip[key] = []
-	for v in values:
-	    uniprot_to_ip[key].append(v)
+        for v in values:
+            uniprot_to_ip[key].append(v)
 
     fp.close()
 
@@ -306,44 +304,43 @@ def processIP():
 
     fp = open(markerIPFile, 'w')
 
-    markerIDs = mgi_to_uniprot.keys()
-    markerIDs.sort()
+    markerIDs = sorted(mgi_to_uniprot.keys())
 
     for m in markerIDs:
 
-	# unique set of marker/ip associations for this marker
-	markerIP = []
+        # unique set of marker/ip associations for this marker
+        markerIP = []
 
-	# for each uniprot id of a given marker...
+        # for each uniprot id of a given marker...
 
         for uniprotVal in mgi_to_uniprot[m]:
 
             # if there is no uniprot_to_ip mapping, then skip it
 
-            if not uniprot_to_ip.has_key(uniprotVal):
+            if uniprotVal not in uniprot_to_ip:
                 continue
 
-	    # for each interpro id for given uniprot id...
+            # for each interpro id for given uniprot id...
 
-	    for ipid in uniprot_to_ip[uniprotVal]:
+            for ipid in uniprot_to_ip[uniprotVal]:
 
-		# store unique interpro id for this marker
-		if ipid not in markerIP:
-		    markerIP.append(ipid)
+                # store unique interpro id for this marker
+                if ipid not in markerIP:
+                    markerIP.append(ipid)
 
-	# print out the unique interpro ids for this marker
+        # print out the unique interpro ids for this marker
 
-	for ipid in markerIP:
+        for ipid in markerIP:
 
             fp.write(ipid + '\t' + \
-		     m + '\t' + \
-	      	     markerIPRef + '\t' + \
-	      	     annotEvidence + '\t' + \
-	      	     '\t' + \
-	      	     '\t' + \
-	      	     annotEditor + '\t' + \
-	      	     annotDate + '\t' + \
-		     '\n')
+                     m + '\t' + \
+                     markerIPRef + '\t' + \
+                     annotEvidence + '\t' + \
+                     '\t' + \
+                     '\t' + \
+                     annotEditor + '\t' + \
+                     annotDate + '\t' + \
+                     '\n')
 
     fp.close()
 
@@ -363,4 +360,3 @@ if processIP() != 0:
     sys.exit(1)
 
 sys.exit(0)
-

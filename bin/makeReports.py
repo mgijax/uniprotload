@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  makeReports.py
 ###########################################################################
@@ -62,7 +61,6 @@
 
 import sys 
 import os
-import string
 import db
 
 # MGI_ACC_ASSOC_FILE
@@ -103,15 +101,15 @@ def initialize():
     # Make sure the required environment variables are set.
     #
     if not mgiAssocFile:
-        print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
+        print('Environment variable not set: MGI_ACC_ASSOC_FILE')
         rc = 1
 
     if not uniprotSPAssocErrFile:
-        print 'Environment variable not set: UNIPROT_SP_ASSOC_ERR_FILE'
+        print('Environment variable not set: UNIPROT_SP_ASSOC_ERR_FILE')
         rc = 1
 
     if not reportFile:
-        print 'Environment variable not set: UNIPROT_SP_ASSOC_MGI_FILE'
+        print('Environment variable not set: UNIPROT_SP_ASSOC_MGI_FILE')
         rc = 1
 
     fpMGIAssoc = None
@@ -138,7 +136,7 @@ def openFiles():
     try:
         fpMGIAssoc = open(mgiAssocFile, 'r')
     except:
-        print 'Cannot open MGI association file: ' + uniprotSPAssocErrFile
+        print('Cannot open MGI association file: ' + uniprotSPAssocErrFile)
         return 1
 
     #
@@ -147,7 +145,7 @@ def openFiles():
     try:
         fpSPAssoc = open(uniprotSPAssocErrFile, 'r')
     except:
-        print 'Cannot open swissprot association file: ' + uniprotSPAssocErrFile
+        print('Cannot open swissprot association file: ' + uniprotSPAssocErrFile)
         return 1
 
     #
@@ -156,16 +154,16 @@ def openFiles():
     try:
         fp = open(reportFile, 'w')
     except:
-        print 'Cannot open report file: ' + reportFile
+        print('Cannot open report file: ' + reportFile)
         return 1
 
     #
     # put MGI association file into mgiLookup
     #
     for line in fpMGIAssoc.readlines():
-        tokens = string.split(line[:-1], '\t')
-	allkey = tokens[5].split(',')
-	for key in allkey:
+        tokens = str.split(line[:-1], '\t')
+        allkey = tokens[5].split(',')
+        for key in allkey:
             value = tokens
             mgiLookup[key] = []
             mgiLookup[key].append(value)
@@ -206,29 +204,29 @@ def writeReport():
     #
 
     for line in fpSPAssoc.readlines():
-	tokens = string.split(line[:-1], '\t')
+        tokens = str.split(line[:-1], '\t')
 
-	uniprotID = tokens[0]
-	emblID = tokens[1].split(',')
+        uniprotID = tokens[0]
+        emblID = tokens[1].split(',')
 
-	for e in emblID:
+        for e in emblID:
 
-	  if len(e) == 0:
-	      continue
+          if len(e) == 0:
+              continue
 
-	  fp.write(uniprotID + '\t')
-	  fp.write(e + '\t')
+          fp.write(uniprotID + '\t')
+          fp.write(e + '\t')
 
-	  #
-	  # find info from MGI (MGI id, EntrezGene id, Ensembl id)
-	  #
+          #
+          # find info from MGI (MGI id, EntrezGene id, Ensembl id)
+          #
 
-	  if mgiLookup.has_key(e):
-	      fp.write(mgiLookup[e][0][0] + '\t')
-	      fp.write(mgiLookup[e][0][3] + '\t')
-	      fp.write(mgiLookup[e][0][4] + '\n')
-	  else:
-	      fp.write('\t\t\n')
+          if e in mgiLookup:
+              fp.write(mgiLookup[e][0][0] + '\t')
+              fp.write(mgiLookup[e][0][3] + '\t')
+              fp.write(mgiLookup[e][0][4] + '\n')
+          else:
+              fp.write('\t\t\n')
 
     return 0
 

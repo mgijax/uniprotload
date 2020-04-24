@@ -1,7 +1,5 @@
-import sys
 import os
 import re
-import string
 
 import UniProtRecord
 
@@ -62,12 +60,12 @@ class Parser:
         while self.line and self.line[0:2] != '//':
             self.line = self.line[:-1]
 
-	    #
-	    # Determine if the UniProt ID is a TrEMBL ID or not
-	    #
-	    if self.line[0:2] == 'ID':
-		if string.find(self.line, 'Unreviewed;') >= 0:
-		    self.record.isTrembl = 1
+            #
+            # Determine if the UniProt ID is a TrEMBL ID or not
+            #
+            if self.line[0:2] == 'ID':
+                if self.line.find('Unreviewed;') >= 0:
+                    self.record.isTrembl = 1
 
             #
             # Save the UniProt ID.
@@ -81,18 +79,18 @@ class Parser:
             # DR   Ensembl; ID1; ID2; ID3; Mus musculus.
             # DR   Ensembl; ID1; ID2; ID3; Mus musculus. [xxxxx]
             #
-	    # need to split by ";" and "."
-	    #
+            # need to split by ";" and "."
+            #
             # We want to extract any IDs that begin with 'ENSMUSG'. Do not
             # add an ID that has already been added.
             #
             if self.line[0:13] == 'DR   Ensembl;':
-		for t1 in re.split(';',self.line[13:]):
+                for t1 in re.split(';',self.line[13:]):
                     if t1.strip()[0:7] == 'ENSMUSG':
-		        for t2 in re.split('\.',t1):
+                        for t2 in re.split('\.',t1):
                             if t2.strip()[0:7] == 'ENSMUSG':
-                	        if not self.record.hasEnsemblID(t2.strip()):
-                		    self.record.addEnsemblID(t2.strip())
+                                if not self.record.hasEnsemblID(t2.strip()):
+                                    self.record.addEnsemblID(t2.strip())
 
             #
             # Save an EntrezGene ID. If the input line looks like this:
@@ -116,7 +114,7 @@ class Parser:
             # been added.
             #
             if self.line[0:10] == 'DR   EMBL;':
-		if string.find(self.line, 'mRNA') >= 0:
+                if self.line.find('mRNA') >= 0:
                   id = re.split(';', self.line[5:])[1].strip()
                   if not self.record.hasEMBLID(id):
                       self.record.addEMBLID(id)
@@ -136,20 +134,20 @@ class Parser:
             #
             # Save an EC ID. If the input line looks like this:
             #
-	    # DE            EC=1.1.1.284;
-	    # DE            EC=2.7.11.21 {....};
-	    # note : the EC does not always appear at the same line number
+            # DE            EC=1.1.1.284;
+            # DE            EC=2.7.11.21 {....};
+            # note : the EC does not always appear at the same line number
             #
             # We want to extract the 2.3.1.41
-	    #
-	    # TR11817 : added "{...}" handling
+            #
+            # TR11817 : added "{...}" handling
             #
             if self.line[0:5] == 'DE   ':
-		#if self.record.isTrembl == 0 and
-		if string.find(self.line, 'EC=') >= 0:
+                #if self.record.isTrembl == 0 and
+                if self.line.find('EC=') >= 0:
                   id = re.split('=', self.line)[1].strip()
                   id = re.split(' {', id)[0]
-		  id = string.replace(id.strip(), ';', '')
+                  id = str.replace(id.strip(), ';', '')
                   if not self.record.hasECID(id):
                       self.record.addECID(id)
 
@@ -161,11 +159,11 @@ class Parser:
             # We want to extract any keyword.
             #
             if self.line[0:5] == 'KW   ':
-		for str in re.split(';',self.line[5:]):
-		    str = string.replace(str.strip(), '.', '')
-		    if str.strip() != '':
-                        if not self.record.hasKWName(str.strip()):
-                            self.record.addKWName(str.strip())
+                for s in re.split(';',self.line[5:]):
+                    s = str.replace(s.strip(), '.', '')
+                    if s.strip() != '':
+                        if not self.record.hasKWName(s.strip()):
+                            self.record.addKWName(s.strip())
 
             #
             # Save an InterPro ID. If the input line looks like this:

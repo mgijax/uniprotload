@@ -107,7 +107,7 @@ fi
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the Marker/InterPro annotation files (makeInterProAnnot.sh)" | tee -a ${LOG}
-${UNIPROTLOAD}/bin/makeInterProAnnot.py 2>&1 >> ${LOG}
+${PYTHON} ${UNIPROTLOAD}/bin/makeInterProAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

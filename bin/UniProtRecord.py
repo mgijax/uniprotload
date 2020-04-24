@@ -1,4 +1,3 @@
-import sys
 import os
 
 #
@@ -37,7 +36,7 @@ class Record:
     #
     def clear (self):
         self.uniprotID = ''
-	self.isTrembl = 0
+        self.isTrembl = 0
         self.ensemblID = []
         self.entrezgeneID = []
         self.emblID = []
@@ -58,7 +57,7 @@ class Record:
         return self.uniprotID
 
     def getIsTrembl (self):
-	return self.isTrembl
+        return self.isTrembl
 
     #
     # Ensembl ids
@@ -173,7 +172,7 @@ class Record:
             return 0
 
     #
-    # Purpose: Return all the attributes as one string (for debugging).
+    # Purpose: Return all the attributes as one string(for debugging).
     # Returns: String of all objects.
     # Assumes: Nothing
     # Effects: Nothing
@@ -188,4 +187,3 @@ class Record:
                '|kwName=' + ','.join(self.kwName) + '|' + \
                '|interproID=' + ','.join(self.interproID) + '|' + \
                '|emblID=' + ','.join(self.entrezgeneID)
-

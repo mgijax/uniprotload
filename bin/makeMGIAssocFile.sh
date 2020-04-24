@@ -67,7 +67,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the MGI association file (makeMGIAssocFile.sh)" | tee -a ${LOG}
-./makeMGIAssocFile.py 2>&1 >> ${LOG}
+${PYTHON} ./makeMGIAssocFile.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

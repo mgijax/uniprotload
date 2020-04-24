@@ -68,7 +68,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the UniProt/MGI report file (makeReports.sh)" | tee -a ${LOG}
-./makeReports.py 2>&1 >> ${LOG}
+${PYTHON} ./makeReports.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

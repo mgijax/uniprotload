@@ -72,7 +72,7 @@ LOG=${LOG_DIAG}
 echo "" >> ${LOG}
 date >> ${LOG}
 echo "Create the GO annotation files (makeGOAnnot.sh)" | tee -a ${LOG}
-./makeGOAnnot.py 2>&1 >> ${LOG}
+${PYTHON} ./makeGOAnnot.py 2>&1 >> ${LOG}
 STAT=$?
 if [ ${STAT} -ne 0 ]
 then

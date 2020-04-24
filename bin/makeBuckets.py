@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 #
 #  makeBuckets.py
 ###########################################################################
@@ -114,7 +113,6 @@
 
 import sys 
 import os
-import string
 import db
 import tabledatasetlib
 
@@ -204,23 +202,23 @@ def initialize():
     # Make sure the required environment variables are set.
     #
     if not mgiAssocFile:
-        print 'Environment variable not set: MGI_ACC_ASSOC_FILE'
+        print('Environment variable not set: MGI_ACC_ASSOC_FILE')
         rc = 1
 
     if not uniprotAccAssocFile:
-        print 'Environment variable not set: UNIPROT_ACC_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_ACC_ASSOC_FILE')
         rc = 1
 
     if not uniprotSPAssocFile:
-        print 'Environment variable not set: UNIPROT_SP_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_SP_ASSOC_FILE')
         rc = 1
 
     if not uniprotTRAssocFile:
-        print 'Environment variable not set: UNIPROT_TR_ASSOC_FILE'
+        print('Environment variable not set: UNIPROT_TR_ASSOC_FILE')
         rc = 1
 
     if not bucketRptFile:
-        print 'Environment variable not set: MGI_UNIPROT_LOAD_FILE'
+        print('Environment variable not set: MGI_UNIPROT_LOAD_FILE')
         rc = 1
 
     #
@@ -265,7 +263,7 @@ def openFiles():
         try:
             bucket[i] = open(file, 'w')
         except:
-            print 'Cannot rename/open bucket: ' + file
+            print('Cannot rename/open bucket: ' + file)
             return 1
 
     #
@@ -274,7 +272,7 @@ def openFiles():
     try:
         bucketRpt = open(bucketRptFile, 'w')
     except:
-        print 'Cannot open report: ' + bucketRptFile
+        print('Cannot open report: ' + bucketRptFile)
         return 1
 
     bucketRpt.write('MGI\tSWISS-PROT\tTrEMBL\tEC\tPDB\n')
@@ -284,10 +282,10 @@ def openFiles():
     #
     try:
         fpSPAssoc = open(uniprotSPAssocFile, 'r')
-	for line in fpSPAssoc.readlines():
+        for line in fpSPAssoc.readlines():
             swissprotLookup.append(line[:-1])
     except:
-        print 'Cannot open swissprot association file: ' + uniprotSPAssocFile
+        print('Cannot open swissprot association file: ' + uniprotSPAssocFile)
         return 1
 
     #
@@ -295,10 +293,10 @@ def openFiles():
     #
     try:
         fpTRAssoc = open(uniprotTRAssocFile, 'r')
-	for line in fpTRAssoc.readlines():
+        for line in fpTRAssoc.readlines():
             tremblLookup.append(line[:-1])
     except:
-        print 'Cannot open trembl association file: ' + uniprotTRAssocFile
+        print('Cannot open trembl association file: ' + uniprotTRAssocFile)
         return 1
 
     return 0
@@ -378,21 +376,21 @@ def bucketize():
                      [ 'EntrezGene ID', 'Ensembl ID', 'EMBL ID' ])
     bucketizer.run()
 
-    print 'MGI vs UniProt'
+    print('MGI vs UniProt')
 
-    print '0:1 Bucket: ' + str(len(bucketizer.get0_1()))
-    print '1:0 Bucket: ' + str(len(bucketizer.get1_0()))
-    print '1:1 Bucket: ' + str(len(bucketizer.get1_1()))
+    print('0:1 Bucket: ' + str(len(bucketizer.get0_1())))
+    print('1:0 Bucket: ' + str(len(bucketizer.get1_0())))
+    print('1:1 Bucket: ' + str(len(bucketizer.get1_1())))
 
     count = 0
     for (mgiKey, uniprotKeys) in bucketizer.get1_n():
         count += len(uniprotKeys)
-    print '1:N Bucket: ' + str(count)
+    print('1:N Bucket: ' + str(count))
 
     count = 0
     for (mgiKeys, uniprotKey) in bucketizer.getn_1():
         count += len(mgiKeys)
-    print 'N:1 Bucket: ' + str(count)
+    print('N:1 Bucket: ' + str(count))
 
     return 0
 
@@ -478,11 +476,11 @@ def writeBuckets_format2():
         ensemblIDs = ','.join(mgiRcd[0]['Ensembl ID'])
         emblIDs = ','.join(mgiRcd[0]['EMBL ID'])
         bucket[B1_N].write(mgiID + '\t' + symbol + '\t' + entrezgeneIDs + '\t' + ensemblIDs + '\t' + emblIDs + '\t')
-        str = ' '*len(mgiID) + '\t' + ' '*len(entrezgeneIDs) + '\t' + ' '*len(ensemblIDs) + '\t' + ' '*len(emblIDs) + '\t'
+        mgiIDstr = ' '*len(mgiID) + '\t' + ' '*len(entrezgeneIDs) + '\t' + ' '*len(ensemblIDs) + '\t' + ' '*len(emblIDs) + '\t'
         count = 0
         for uniprotRcd in dsUniProt.getRecords(keys = uniprotKeys):
             if count > 0:
-                bucket[B1_N].write(str)
+                bucket[B1_N].write(mgiIDstr)
             uniprotID = uniprotRcd['UniProt ID']
             entrezgeneIDs = ','.join(uniprotRcd['EntrezGene ID'])
             ensemblIDs = ','.join(uniprotRcd['Ensembl ID'])
@@ -541,10 +539,10 @@ def writeReport():
 
         uniprotRcd = dsUniProt.getRecords(uniprotKey)
         uniprotID = uniprotRcd[0]['UniProt ID']
-	ecID = uniprotRcd[0]['EC']
-	pdbID = uniprotRcd[0]['PDB']
+        ecID = uniprotRcd[0]['EC']
+        pdbID = uniprotRcd[0]['PDB']
 
-        if mgiDict.has_key(mgiID):
+        if mgiID in mgiDict:
             list = mgiDict[mgiID]
         else:
             list = []
@@ -552,19 +550,19 @@ def writeReport():
             list.append(uniprotID)
             mgiDict[mgiID] = list
 
-	# create a lookup of mgiID/ecIDs
-	if ecID is not None:
-	    if not ecLookup.has_key(mgiID):
-	        ecLookup[mgiID] = []
-	    if ecID not in ecLookup[mgiID]:
-	        ecLookup[mgiID].append(ecID)
+        # create a lookup of mgiID/ecIDs
+        if ecID is not None:
+            if mgiID not in ecLookup:
+                ecLookup[mgiID] = []
+            if ecID not in ecLookup[mgiID]:
+                ecLookup[mgiID].append(ecID)
 
-	# create a lookup of mgiID/pdbIDs
-	if pdbID is not None:
-	    if not pdbLookup.has_key(mgiID):
-	        pdbLookup[mgiID] = []
-	    if pdbID not in pdbLookup[mgiID]:
-	        pdbLookup[mgiID].append(pdbID)
+        # create a lookup of mgiID/pdbIDs
+        if pdbID is not None:
+            if mgiID not in pdbLookup:
+                pdbLookup[mgiID] = []
+            if pdbID not in pdbLookup[mgiID]:
+                pdbLookup[mgiID].append(pdbID)
 
     #
     # Find unique MGI/UniProt associations in the 1:N bucket.
@@ -576,44 +574,10 @@ def writeReport():
 
         for uniprotRcd in dsUniProt.getRecords(keys = uniprotKeys):
             uniprotID = uniprotRcd['UniProt ID']
-	    ecID = uniprotRcd['EC']
-	    pdbID = uniprotRcd['PDB']
+            ecID = uniprotRcd['EC']
+            pdbID = uniprotRcd['PDB']
 
-            if mgiDict.has_key(mgiID):
-                list = mgiDict[mgiID]
-            else:
-                list = []
-            if list.count(uniprotID) == 0:
-                list.append(uniprotID)
-                mgiDict[mgiID] = list
-
-	    # create a lookup of mgiID/ecIDs
-	    if ecID is not None:
-	        if not ecLookup.has_key(mgiID):
-		    ecLookup[mgiID] = []
-	        if ecID not in ecLookup[mgiID]:
-	            ecLookup[mgiID].append(ecID)
-
-	    # create a lookup of mgiID/pdbIDs
-	    if pdbID is not None:
-	        if not pdbLookup.has_key(mgiID):
-		    pdbLookup[mgiID] = []
-	        if pdbID not in pdbLookup[mgiID]:
-	            pdbLookup[mgiID].append(pdbID)
-
-    #
-    # Find unique MGI/UniProt associations in the N:1 bucket.
-    #
-
-    for (mgiKeys, uniprotKey) in bucketizer.getn_1():
-	uniprotRcd = dsUniProt.getRecords(uniprotKey)
-	uniprotID = uniprotRcd[0]['UniProt ID']
-	ecID = uniprotRcd[0]['EC']
-	pdbID = uniprotRcd[0]['PDB']
-
-	for mgiRcd in dsMGI.getRecords(keys = mgiKeys):
-	    mgiID = mgiRcd['MGI ID']
-	    if mgiDict.has_key(mgiID):
+            if mgiID in mgiDict:
                 list = mgiDict[mgiID]
             else:
                 list = []
@@ -623,14 +587,48 @@ def writeReport():
 
             # create a lookup of mgiID/ecIDs
             if ecID is not None:
-                if not ecLookup.has_key(mgiID):
+                if mgiID not in ecLookup:
                     ecLookup[mgiID] = []
                 if ecID not in ecLookup[mgiID]:
                     ecLookup[mgiID].append(ecID)
 
             # create a lookup of mgiID/pdbIDs
             if pdbID is not None:
-                if not pdbLookup.has_key(mgiID):
+                if mgiID not in pdbLookup:
+                    pdbLookup[mgiID] = []
+                if pdbID not in pdbLookup[mgiID]:
+                    pdbLookup[mgiID].append(pdbID)
+
+    #
+    # Find unique MGI/UniProt associations in the N:1 bucket.
+    #
+
+    for (mgiKeys, uniprotKey) in bucketizer.getn_1():
+        uniprotRcd = dsUniProt.getRecords(uniprotKey)
+        uniprotID = uniprotRcd[0]['UniProt ID']
+        ecID = uniprotRcd[0]['EC']
+        pdbID = uniprotRcd[0]['PDB']
+
+        for mgiRcd in dsMGI.getRecords(keys = mgiKeys):
+            mgiID = mgiRcd['MGI ID']
+            if mgiID in mgiDict:
+                list = mgiDict[mgiID]
+            else:
+                list = []
+            if list.count(uniprotID) == 0:
+                list.append(uniprotID)
+                mgiDict[mgiID] = list
+
+            # create a lookup of mgiID/ecIDs
+            if ecID is not None:
+                if mgiID not in ecLookup:
+                    ecLookup[mgiID] = []
+                if ecID not in ecLookup[mgiID]:
+                    ecLookup[mgiID].append(ecID)
+
+            # create a lookup of mgiID/pdbIDs
+            if pdbID is not None:
+                if mgiID not in pdbLookup:
                     pdbLookup[mgiID] = []
                 if pdbID not in pdbLookup[mgiID]:
                     pdbLookup[mgiID].append(pdbID)
@@ -638,39 +636,37 @@ def writeReport():
     #
     # Write the MGI/UniProt associations to the file.
     #
-    mgiIDs = mgiDict.keys()
-    mgiIDs.sort()
+    mgiIDs = sorted(mgiDict.keys())
 
     for m in mgiIDs:
-        uniprotIDs = mgiDict[m]
-        uniprotIDs.sort()
+        uniprotIDs = sorted(mgiDict[m])
 
-	# MGI id
+        # MGI id
         bucketRpt.write(m + '\t')
-	
-	# SwissProt ids
-	# TrEMBL ids
-	spIDs = []
-	trIDs = []
-	for id in uniprotIDs:
+        
+        # SwissProt ids
+        # TrEMBL ids
+        spIDs = []
+        trIDs = []
+        for id in uniprotIDs:
 
-	    if id in swissprotLookup:
-		spIDs.append(id)
+            if id in swissprotLookup:
+                spIDs.append(id)
 
-	    if id in tremblLookup:
-		trIDs.append(id)
+            if id in tremblLookup:
+                trIDs.append(id)
 
-	bucketRpt.write(string.join(spIDs, ',') + '\t')
-	bucketRpt.write(string.join(trIDs, ',') + '\t')
+        bucketRpt.write(str.join(',', spIDs) + '\t')
+        bucketRpt.write(str.join(',', trIDs) + '\t')
 
-	# EC ids
-        if ecLookup.has_key(m):
-            bucketRpt.write(string.join(ecLookup[m], ','))
+        # EC ids
+        if m in ecLookup:
+            bucketRpt.write(str.join(',', ecLookup[m]))
         bucketRpt.write('\t')
 
-	# PDB ids
-        if pdbLookup.has_key(m):
-            bucketRpt.write(string.join(pdbLookup[m], ','))
+        # PDB ids
+        if m in pdbLookup:
+            bucketRpt.write(str.join(',', pdbLookup[m]))
         bucketRpt.write('\n')
 
     return 0
