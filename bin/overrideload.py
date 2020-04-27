@@ -146,7 +146,6 @@ def openFiles ():
     except:
         print('Cannot open override input file: %s' % inFile)
         sys.exit(1)
-
     try:
         fpAssocFile = open(assocFile, 'w')
     except:
