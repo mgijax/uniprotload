@@ -226,13 +226,15 @@ def getAssociations():
     #
     # EMBL IDs associated with at most one marker
     #
-    cmd = '''with tmp_assoc as (
-             select accID from assoc group by accID having count(*) = 1)
-             select distinct a.mgiID, a.accID
-             from assoc a, tmp_assoc t
-             where a._LogicalDB_key = 9
-             and a.accID = t.accID
-             order by a.mgiID'''
+    db.sql('create temp table tmp_assoc as select accID from assoc group by accID having count(*) = 1', None)
+    db.sql('create index idx_accID2 on tmp_assoc (accID)', None)
+
+    cmd = '''select distinct a.mgiID, a.accID
+        from assoc a, tmp_assoc t
+        where a._LogicalDB_key = 9
+        and a.accID = t.accID
+        order by a.mgiID
+    '''
     results = db.sql(cmd, 'auto')
 
     #
