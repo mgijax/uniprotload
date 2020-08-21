@@ -1,3 +1,10 @@
+TAG: uniprotload-6-0-15-1
+DATE: 07/22/2020
+STAFF: lec
+CHANGES:
+1) bin/makeMGIAssocFile.py: Replace SQL that was causing performance issues
+                            with postgres 12
+
 TAG: uniprotload-6-0-14-1
 DATE: 08/20/2019
 STAFF: lec
