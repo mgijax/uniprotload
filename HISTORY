@@ -1,3 +1,17 @@
+TAG: uniprotload-6-0-23-?
+DATE: 08/23/2023
+STAFF: lec
+CHANGES:
+wts2-1155/GOC taking over GOA mouse, GOA human, etc.
+wts2-575/fl2-743/Add GlyGen links to MGI gene detail pages (TR13475)
+
+#       deleted:    bin/makeGOAnnot.py
+#       deleted:    bin/makeGOAnnot.sh
+#       deleted:    goecannot.config.default
+#       deleted:    goipannot.config.default
+#       deleted:    gospkwannot.config.default
+#       modified:   bin/uniprotload.sh
+
 TAG: uniprotload-6-0-18-1
 DATE: 03/07/2022
 STAFF: lec

@@ -60,14 +60,12 @@
 import sys
 import os
 import db
-import mgi_utils
 
 #
 #  CONSTANTS
 #
 TAB = '\t'
 CRT = '\n'
-DATE = mgi_utils.date("%m/%d/%Y")
 USAGE='Usage:override.py'
 
 #
@@ -123,12 +121,6 @@ def init():
     # Open input and output files
     #
     openFiles()
-
-    #
-    # create database connection
-    #
-    db.useOneConnection(1)
-
 
 # end init() -------------------------------
 
@@ -264,7 +256,5 @@ process()
 # close all output files
 print('closeFiles')
 closeFiles()
-
-db.useOneConnection(0)
 
 sys.exit(0)

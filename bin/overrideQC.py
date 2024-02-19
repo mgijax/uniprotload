@@ -59,8 +59,6 @@
 
 import sys
 import os
-import re
-import mgi_utils
 import db
 
 #
@@ -205,20 +203,21 @@ def init ():
    
     # load lookups 
     # lookup of existing uniprot load associations
-    results = db.sql('''select a1.accid as uniprotID, a1._LogicalDB_key, 
-        m.symbol, a2.accid as mgiID
-    from ACC_Accession a1, MRK_Marker m, ACC_Accession a2
-    where a1. _MGIType_key = 2
-    and a1._LogicalDB_key in (13, 41)
-    and a1._CreatedBy_key = 1442 /*uniprotload_assocload*/
-    and a1._Object_key = m._Marker_key
-    and m._Organism_key = 1
-    and m._Marker_Status_key = 1
-    and m._Marker_key = a2._Object_key
-    and a2. _MGIType_key = 2
-    and a2._LogicalDB_key = 1
-    and a2.preferred = 1
-    and a2.prefixPart = 'MGI:' ''', 'auto')
+    results = db.sql('''
+        select a1.accid as uniprotID, a1._LogicalDB_key, m.symbol, a2.accid as mgiID
+        from ACC_Accession a1, MRK_Marker m, ACC_Accession a2
+        where a1. _MGIType_key = 2
+        and a1._LogicalDB_key in (13, 41)
+        and a1._CreatedBy_key = 1442 /*uniprotload_assocload*/
+        and a1._Object_key = m._Marker_key
+        and m._Organism_key = 1
+        and m._Marker_Status_key = 1
+        and m._Marker_key = a2._Object_key
+        and a2. _MGIType_key = 2
+        and a2._LogicalDB_key = 1
+        and a2.preferred = 1
+        and a2.prefixPart = 'MGI:' 
+        ''', 'auto')
  
     for r in results:
         a = Association()
@@ -227,20 +226,19 @@ def init ():
         mgiID = str.lower(r['mgiID'])
         a.mgiID = mgiID
         a.logicalDbKey = r['_LogicalDB_key']  # swiss-prot or trembl
-
         if mgiID not in markerToUniprotLookup:
             markerToUniprotLookup[mgiID] = []
         markerToUniprotLookup[mgiID].append(a)
     
     # load lookup of all marker MGI IDs
-    results = db.sql('''select m.symbol, m._Organism_key, 
-        m._Marker_Status_key, a.accid as mgiID, a.preferred
-    from ACC_Accession a, MRK_Marker m
-    where a. _MGIType_key = 2
-    and a._LogicalDB_key = 1
-    and a.prefixPart = 'MGI:'
-    and a._Object_key = m._Marker_key
-    ''', 'auto')
+    results = db.sql('''
+        select m.symbol, m._Organism_key, m._Marker_Status_key, a.accid as mgiID, a.preferred
+        from ACC_Accession a, MRK_Marker m
+        where a. _MGIType_key = 2
+        and a._LogicalDB_key = 1
+        and a.prefixPart = 'MGI:'
+        and a._Object_key = m._Marker_key
+        ''', 'auto')
     for r in results:
         m = Marker()
         m.markerID = str.lower(r['mgiID'])
@@ -255,32 +253,38 @@ def init ():
 # end init() -------------------------------------
 
 def queryForMgiId(mgiID):
-    results = db.sql('''select distinct a._MGIType_key
+    results = db.sql('''
+        select distinct a._MGIType_key
         from ACC_Accession a
         where a._LogicalDB_key = 1
         and a.accid = '%s'
-        and a.prefixPart = 'MGI:' ''' % mgiID, 'auto')
+        and a.prefixPart = 'MGI:' 
+        ''' % mgiID, 'auto')
 
     return results
 # end queryForMgiId
 
 def queryForSymbol(mgiID):
-    results = db.sql('''select m.symbol
+    results = db.sql('''
+        select m.symbol
         from ACC_Accession a, MRK_Marker m
         where a._LogicalDB_key = 1
         and a.accid = '%s'
         and a.prefixPart = 'MGI:' 
-        and a._Object_key = m._Marker_key''' % mgiID, 'auto')
+        and a._Object_key = m._Marker_key
+        ''' % mgiID, 'auto')
 
     return results
 # end queryForSymbol() -------------------------------------
 def queryForUniprot(uniprotId):
-    results = db.sql( '''select s._Organism_key
+    results = db.sql( '''
+        select s._Organism_key
         from SEQ_Sequence s, ACC_Accession a
         where a._LogicalDB_key in (13, 41)
         and a._MGIType_key = 19
         and a._Object_key = s._Sequence_key
-        and lower(a.accid) = '%s' ''' % uniprotId, 'auto')
+        and lower(a.accid) = '%s' 
+        ''' % uniprotId, 'auto')
     if not len(results):
         return 0
     else:

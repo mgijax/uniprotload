@@ -13,9 +13,6 @@
 <LI><B>Input Files</B>
 <UL>
 <LI><A HREF="/data/downloads/uniprot/uniprotmus.dat">uniprotmus.dat</A>
-<LI><A HREF="/data/downloads/go_translation/ec2go">ec2go</A> - from Gene Ontology, EC-to-GO
-<LI><A HREF="/data/downloads/go_translation/interpro2go">interpro2go</A> - from Gene Ontology, InterPro-to-GO
-<LI><A HREF="/data/downloads/go_translation/uniprotkb_kw2go">uniprotkb_kw2go</A> - from Gene Ontology, UniProt keyword-to-GO
 </UL>
 <P>
 
@@ -64,15 +61,6 @@
 <P>
 </UL>
 
-<LI><B>UniProt Parser + Gene Ontology Input Files generates these files that are used as input into the Annotation loader (annotload)</B>
-<UL>
-<LI><A HREF="/data/loads/uniprot/uniprotload/output/go_ec_annot.txt">go_ec_annot.txt</A> - Marker-to-GO/EC annotations, J:72245
-<LI><A HREF="/data/loads/uniprot/uniprotload/output/go_ip_annot.txt">go_ip_annot.txt</A> - Marker-to-GO/InterPro annotations, J:72247
-<LI><A HREF="/data/loads/uniprot/uniprotload/output/go_spkw_annot.txt">go_spkw_annot.txt</A> - Marker-to-GO/SwissProt keyword annotations, J:60000
-<LI><A HREF="/data/loads/uniprot/uniprotload/output/marker_ip_annot.txt">marker_ip_annot.txt</A> - Marker-to-InterPro annotations, J:53168
-<P>
-</UL>
-
 <P>
 
 <LI><B>Output Logs</B>
@@ -82,16 +70,12 @@
 <LI><A HREF="/data/loads/uniprot/uniprotload/logs/uniprotload.diag.log">uniprotload.diag.log</A> - Diagnostic file
 </UL>
 <P>
-
 <LI><A HREF="/data/loads/uniprot/uniprotload/archive/"><B>Archive</B></A> - Data files from previous loads.
 </UL>
-
 <H3>Documentation</H3>
-
 <UL>
-<LI><A HREF="http://mgiwiki/mediawiki/index.php/sw%3AUniprotload">UniProt Load Wiki</A>
+<LI><A HREF="http://mgiwiki/mediawiki/index.php/sw:Uniprotload">UniProt Load Wiki</A>
 </UL>
-
 <H3> Curator Overrides </H3>
 <UL>
 <LI>Inputs
@@ -102,7 +86,6 @@
     <UL>
     <LI><A HREF="/data/loads/uniprot/uniprotload/uniprotload_override/output">Output Files</A>
     </UL>
-
 <LI>Logs
     <UL>
     <LI><A HREF="/data/loads/uniprot/uniprotload/uniprotload_override/logs">Log Files</A>
@@ -111,7 +94,6 @@
     <UL>
     <LI><A HREF="/data/loads/uniprot/uniprotload/uniprotload_override/reports">Report Files</A>
    </UL>
-
 <LI>Archive
     <UL>
     <LI><A HREF="/data/loads/uniprot/uniprotload/uniprotload_override/archive">Archive Files</A>
@@ -120,4 +102,13 @@
     <UL>
     <LI><A HREF="http://mgiwiki/mediawiki/index.php/sw:Uniprotload#Curator_Overrides">Override Wiki</A>
    </UL>
+</UL>
+
+<H3>GlyGen</H3>
+<UL>
+<LI><A HREF="/data/loads/lec/uniprot/uniprotload/output/uniprot_gg_assoc.txt">GlyGen input file</A>
+<LI><A HREF="http://bhmgiwk01lp.jax.org/mediawiki/index.php/sw:Vocload#GlyGen/UniProtKB_(GlyGen)">link to GlyGen Vocabulary</A>
+<LI><A HREF="/data/loads/lec/uniprot/uniprotload/output/marker_gg_annot_err.txt">GlyGen/Marker sanity check errors</A>
+<LI><A HREF="/data/loads/lec/uniprot/uniprotload/output/marker_gg_annot.txt">GlyGen/Marker Annotation file; sanity checks pass</A>
+<LI>Annotation Output:  <A HREF="/data/loads/lec/uniprot/uniprotload/output/">See marker_gg_annot.txt.VOC_Annot.bcp, etc. </A>
 </UL>

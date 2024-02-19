@@ -134,7 +134,6 @@ def initialize():
     #  initialize caches
     #
 
-    db.useOneConnection(1)
     db.set_sqlLogFunction(db.sqlLogAll)
 
     mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')

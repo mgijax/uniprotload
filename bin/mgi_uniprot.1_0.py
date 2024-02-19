@@ -56,7 +56,6 @@ outputFile = None
 def initialize():
     global inputFileName, outputFileName, inputFile, outputFile
 
-    db.useOneConnection(1)
     db.set_sqlLogFunction(db.sqlLogAll)
 
     inputFileName = os.getenv('INFILE_1_0')
@@ -108,8 +107,6 @@ def closeFiles():
 
     inputFile.close();
     outputFile.close();
-
-    db.useOneConnection(0)
 
     return 0
 

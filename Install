@@ -33,6 +33,13 @@ fi
 #
 cd `dirname $0`
 
+rm -rf glygenannot.config ipannot.config override_assocload.config overrideload.config uniprotload.config
+cp -r glygenannot.config.default glygenannot.config
+cp -r ipannot.config.default ipannot.config
+cp -r override_assocload.config.default override_assocload.config
+cp -r overrideload.config.default overrideload.config
+cp -r uniprotload.config.default uniprotload.config
+
 # establish the config files
 MAIN_CONFIG=uniprotload.config
 

@@ -134,8 +134,6 @@ def closeFiles():
     if fpAssoc:
         fpAssoc.close()
 
-    db.useOneConnection(0)
-
     return 0
 
 
@@ -163,6 +161,7 @@ def getAssociations():
                  a1.preferred = 1 and 
                  a1._Object_key = m._Marker_key and 
                  m._Organism_key = 1 and 
+                 m._Marker_Status_key in (1,3) and
                  a1._Object_key = a2._Object_key and 
                  a2._MGIType_key = 2 and 
                  a2._LogicalDB_Key = 1 and 
@@ -301,8 +300,6 @@ def getAssociations():
 #
 #  MAIN
 #
-
-db.useOneConnection(1)
 
 if initialize() != 0:
     sys.exit(1)
