@@ -17,7 +17,6 @@
 #      The following environment variables are set by the configuration
 #      file that is sourced by the wrapper script:
 #
-#	  MGI_UNIPROT_LOAD_FILE
 #	  UNIPROT_GG_ASSOC_FILE
 #
 #         MARKER_GG_ASSOC_FILE
@@ -84,9 +83,6 @@ import mgi_utils
 # turn of for debugging
 #db.setTrace(True)
 
-# file name MGI_UNIPROT_LOAD_FILE
-mgi_to_uniprotFile = None
-
 # file name MARKER_GG_ASSOC_FILE
 markerGGFile = None
 
@@ -105,9 +101,6 @@ annotEditor = None
 # variable name ANNOT_DATE
 annotDate = None
 
-# MGI UniProt load mapping/SP/TR (MGI id -> UniProt id)
-mgi_to_uniprot = {}
-
 # MGI to GlyGen/UniProt mapping (MGI id -> UniProt id)
 mgi_to_gguniprot = {}
 
@@ -120,7 +113,6 @@ mgi_to_gguniprot = {}
 #
 
 def initialize():
-    global mgi_to_uniprotFile
     global uniprotGGFile
     global markerGGFile, markerGGErrFile
     global markerGGRef
@@ -132,7 +124,6 @@ def initialize():
 
     db.set_sqlLogFunction(db.sqlLogAll)
 
-    mgi_to_uniprotFile = os.getenv('MGI_UNIPROT_LOAD_FILE')
     uniprotGGFile = os.getenv('UNIPROT_GG_ASSOC_FILE')
     markerGGFile = os.getenv('MARKER_GG_ASSOC_FILE')
     markerGGErrFile = os.getenv('MARKER_GG_ASSOC_ERR_FILE')
@@ -146,10 +137,6 @@ def initialize():
     #
     # Make sure the required environment variables are set.
     #
-    if not mgi_to_uniprotFile:
-        print('Environment variable not set: MGI_UNIPROT_LOAD_FILE')
-        rc = 1
-
     if not uniprotGGFile:
         print('Environment variable not set: UNIPROT_GG_ASSOC_FILE')
         rc = 1
@@ -239,9 +226,9 @@ def processGlyGen():
     # Select all Marker/UniProt associations from the GG/Marker association file.
     # Generate an annotation file from the Marker/GlyGen associations.
     #
-    # each uniprot id has one uniprot ids (mgi_to_gguniprot)
-    #   if uniprot_to_go/marker/uniprot id does not match mgi_to_uniprot:
-    #       print discrepency
+    # for each row in mgi_to_gguniprot:
+    #   if glygen-uniprot-id-&-marker does not match mgi-uniprot-id-&-marker
+    #       print bad match discrepency
     #   else:
     #	    print out each unique marker/uniprot annotation
     #
