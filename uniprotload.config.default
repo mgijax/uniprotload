@@ -135,7 +135,7 @@ GO_SPKW_ANNOT_REF=J:60000
 MARKER_IP_ASSOC_FILE=${OUTPUTDIR}/marker_ip_annot.txt
 MARKER_IP_ANNOT_REF=J:53168
 
-GLYGEN_FILE="/data/downloads/data.glygen.org/ln2data/releases/data/current/reviewed/protein_glygen_mgi_xref_mapping.tsv"
+GLYGEN_FILE=${DATADOWNLOADS}/data.glygen.org/ln2data/releases/data/current/reviewed/protein_glygen_mgi_xref_mapping.tsv
 UNIPROT_GG_ASSOC_FILE=${OUTPUTDIR}/uniprot_gg_assoc.txt
 MARKER_GG_ASSOC_FILE=${OUTPUTDIR}/marker_gg_annot.txt
 MARKER_GG_ASSOC_ERR_FILE=${OUTPUTDIR}/marker_gg_annot_err.txt
