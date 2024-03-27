@@ -265,18 +265,13 @@ def getAssociations():
     # For each MGI ID, get the associated IDs from the dictionaries and
     # write them to the association file.
     #
-    print("\n")
+    print("\nWithdrawn Markers")
     for r in results:
 
         mgiID = r['mgiID']
         symbol = r['symbol']
         markerType = r['_Marker_Type_key']
         markerStatus = r['_Marker_Status_key']
-
-        # report & skip, if marker is not official, reserved
-        if markerStatus not in (1,3):
-            print('Withdrawn Marker: ' + r['mgiID'], r['symbol'])
-            continue
 
         if mgiID in entrezgeneDict:
             entrezgeneID = entrezgeneDict[mgiID]
@@ -298,7 +293,16 @@ def getAssociations():
         # EntrezGene ID or Ensembl ID, they are comma-separated within the
         # appropriate field.
         #
-        fpAssoc.write(mgiID + '\t' + \
+
+        # report & skip, if marker is not official, reserved
+        if markerStatus not in (1,3):
+            print(mgiID + ',' + \
+                      symbol + ',' + \
+                      ','.join(entrezgeneID) + ',' + \
+                      ','.join(ensemblID) + ',' + \
+                      ','.join(emblID))
+        else:
+            fpAssoc.write(mgiID + '\t' + \
                       symbol + '\t' + \
                       str(markerType) + '\t' + \
                       ','.join(entrezgeneID) + '\t' + \
