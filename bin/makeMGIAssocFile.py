@@ -138,8 +138,7 @@ def closeFiles():
 
 
 #
-# Purpose: Query the database to get associations to MGI markers and
-#          create the association file.
+# Purpose: Query the database to get associations to MGI markers and create the association file.
 # Returns: 1 if file does not exist or is not readable, else 0
 # Assumes: Nothing
 # Effects: Nothing
@@ -151,22 +150,21 @@ def getAssociations():
     # Get all of the EntrezGene IDs, Ensembl gene model IDs, EMBL sequences
     # that are associated with markers and load them into a temp table.
     #
-    # marker must also have status official or interum
-    #
-    db.sql('''create temp table assoc as
-              select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID as mgiID, m.symbol, m._Marker_Type_key
-              from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
-              where a1._MGIType_key = 2 and 
-                 a1._LogicalDB_key in (9, 55, 60) and 
-                 a1.preferred = 1 and 
-                 a1._Object_key = m._Marker_key and 
-                 m._Organism_key = 1 and 
-                 m._Marker_Status_key in (1,3) and
-                 a1._Object_key = a2._Object_key and 
-                 a2._MGIType_key = 2 and 
-                 a2._LogicalDB_Key = 1 and 
-                 a2.preferred = 1 and
-                 a2.prefixPart = \'MGI:\'''', None)
+    db.sql('''
+        create temp table assoc as
+        select a1.accID, a1._Object_key, a1._LogicalDB_key, a2.accID as mgiID, m.symbol, m._Marker_Type_key, m._Marker_Status_key
+        from ACC_Accession a1, ACC_Accession a2, MRK_Marker m 
+        where a1._MGIType_key = 2 
+        and a1._LogicalDB_key in (9, 55, 60) 
+        and a1.preferred = 1 
+        and a1._Object_key = m._Marker_key 
+        and m._Organism_key = 1 
+        and a1._Object_key = a2._Object_key 
+        and a2._MGIType_key = 2 
+        and a2._LogicalDB_Key = 1 
+        and a2.preferred = 1 
+        and a2.prefixPart = \'MGI:\'
+        ''', None)
 
     #
     # Add indexes to the temp table.
@@ -179,10 +177,12 @@ def getAssociations():
     # Get the MGI ID of the marker and the unique EntrezGene IDs
     # that are associated with each marker.
     #
-    cmd = '''select distinct mgiID, accID 
-             from assoc 
-             where _LogicalDB_key = 55 
-             order by mgiID'''
+    cmd = '''
+        select distinct mgiID, accID 
+        from assoc 
+        where _LogicalDB_key = 55 
+        order by mgiID
+        '''
     results = db.sql(cmd, 'auto')
 
     #
@@ -201,10 +201,12 @@ def getAssociations():
     # Get the MGI ID of the marker and the unique Ensembl gene model IDs
     # that are associated with each marker.
     #
-    cmd = '''select distinct mgiID, accID 
-             from assoc 
-             where _LogicalDB_key = 60 
-             order by mgiID'''
+    cmd = '''
+        select distinct mgiID, accID 
+        from assoc 
+        where _LogicalDB_key = 60 
+        order by mgiID
+        '''
     results = db.sql(cmd, 'auto')
 
     #
@@ -225,16 +227,16 @@ def getAssociations():
     #
     # EMBL IDs associated with at most one marker
     #
-    db.sql('''create temp table tmp_assoc as
-	      select accID from assoc group by accID having count(*) = 1''', None)
-
+    db.sql('''create temp table tmp_assoc as select accID from assoc group by accID having count(*) = 1''', None)
     db.sql('create index idx_accID2 on tmp_assoc (accID)', None)
 
-    cmd = '''select distinct a.mgiID, a.accID
-             from assoc a, tmp_assoc t
-             where a._LogicalDB_key = 9
-	     and a.accID = t.accID
-             order by a.mgiID'''
+    cmd = '''
+        select distinct a.mgiID, a.accID
+        from assoc a, tmp_assoc t
+        where a._LogicalDB_key = 9
+	and a.accID = t.accID
+        order by a.mgiID
+        '''
     results = db.sql(cmd, 'auto')
 
     #
@@ -252,20 +254,29 @@ def getAssociations():
     #
     # Get a unique list of all MGI IDs from the temp table.
     #
-    cmd = '''select distinct mgiID, symbol, _Marker_Type_key
-             from assoc 
-             order by mgiID'''
+    cmd = '''
+        select distinct mgiID, symbol, _Marker_Type_key, _Marker_Status_key
+        from assoc 
+        order by mgiID
+        '''
     results = db.sql(cmd, 'auto')
 
     #
     # For each MGI ID, get the associated IDs from the dictionaries and
     # write them to the association file.
     #
+    print("\n")
     for r in results:
 
         mgiID = r['mgiID']
         symbol = r['symbol']
         markerType = r['_Marker_Type_key']
+        markerStatus = r['_Marker_Status_key']
+
+        # report & skip, if marker is not official, reserved
+        if markerStatus not in (1,3):
+            print('Withdrawn Marker: ' + r['mgiID'], r['symbol'])
+            continue
 
         if mgiID in entrezgeneDict:
             entrezgeneID = entrezgeneDict[mgiID]
@@ -294,6 +305,7 @@ def getAssociations():
                       ','.join(ensemblID) + '\t' + \
                       ','.join(emblID) + '\n')
 
+    print("\n")
     return 0
 
 
