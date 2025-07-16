@@ -120,6 +120,9 @@ def closeFiles():
 #
 def processUpdates():
 
+    db.sql('delete from ACC_Accession where _logicaldb_key = 234', None)
+    db.commit()
+
     results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
     accKey = results[0]['maxKey']
 
@@ -131,7 +134,7 @@ def processUpdates():
         accid = tokens[0]
         info = tokens[7]
 
-        if 'Reference proteome' in info:
+        if 'Reference proteome' not in info:
             continue
 
         accLookup[accid] = []
@@ -145,7 +148,6 @@ def processUpdates():
             where a._mgitype_key = 2 
             and a._logicaldb_key in (13,41) 
             and a._createdby_key = 1442
-            --and a.preferred = 1
             and a._object_key = m._marker_key
             ''', 'auto')
 
