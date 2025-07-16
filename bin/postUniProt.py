@@ -4,11 +4,10 @@
 #
 #  Purpose:
 #
-#      This script will use the records in the UniProt input file to create
-#      output files that contain:
+#      This script will use the records in the UNIPROT_ACC_ASSOC_FILE file
 #
 #	   If the UNIPROT_ACC_ASSOC_FILE/field 8 contains "Reference proteome", 
-#        then update ACC_Acccession.preferred = 1, else preferred = 0
+#        then add row for ACC_Accession._logicaldb_key = 234
 #
 #  Usage:
 #
