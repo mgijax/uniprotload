@@ -120,6 +120,12 @@ def closeFiles():
 #
 def processUpdates():
 
+    results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
+    accKey = results[0]['maxKey']
+    logicalDBKey = 234
+    mgiTypKey = 2
+    userKey = 1442
+
     # list of accids that do *not* contain 'Reference proteome'
     accLookup = {}
     for line in fpAccAssoc.readlines():
@@ -137,28 +143,33 @@ def processUpdates():
 
     # search for accids that exist for markers/SWISS-PROT/TrEMBL, er uniprotload_assocload
     results = db.sql('''
-            select a._accession_key, a.accid, m.symbol
+            select a._accession_key, a.accid, m._marker_key, m.symbol
             from acc_accession a, mrk_marker m
             where a._mgitype_key = 2 
             and a._logicaldb_key in (13,41) 
             and a._createdby_key = 1442
-            and a.preferred = 1
+            --and a.preferred = 1
             and a._object_key = m._marker_key
             ''', 'auto')
 
+    addSQL = ''
     for r in results:
-        key = r['_accession_key']
+        #key = r['_accession_key']
         accid = r['accid']
+        markerKey = r['_marker_key']
 
         # if accid in database exists in accLookup, then set preferred = 0
         if accid in accLookup:
-            updateSQL = 'update acc_accession set preferred = 0 where _accession_key = %s;\n' % (key)
+            addSQL += '''insert into ACC_Accession values(%s,'%s',null,null,234,%d,2,0,1,1442,1442,now(),now());\n''' \
+                % (accKey, accid, markerKey)
+            accKey += 1
             print(r)
-            #print(accLookup[accid])
-            print(updateSQL)
-            db.sql(updateSQL, None)
-            db.commit()
            
+    print(addSQL)
+    if len(addSQL) > 0:
+        db.sql(addSQL, None)
+        db.commit()
+
     return 0
 
 #
