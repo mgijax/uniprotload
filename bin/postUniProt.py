@@ -165,7 +165,7 @@ def processUpdates():
             accKey += 1
             print(r)
            
-    print(addSQL)
+    #print(addSQL)
     if len(addSQL) > 0:
         db.sql(addSQL, None)
         db.commit()
