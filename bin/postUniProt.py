@@ -172,15 +172,15 @@ def processUpdates():
 #  MAIN
 #
 
-print('initialize()')
+#print('initialize()')
 if initialize() != 0:
     sys.exit(1)
 
-print('openFiles()')
+#print('openFiles()')
 if openFiles() != 0:
     sys.exit(1)
 
-print('processUpdates()')
+#print('processUpdates()')
 if processUpdates() != 0:
     closeFiles()
     sys.exit(1)
