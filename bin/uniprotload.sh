@@ -183,10 +183,10 @@ checkStatus ${STAT} "makeGlyGenAnnot.sh (uniprotload.sh)"
 
 echo "" >> ${LOG}
 date >> ${LOG}
-echo "Post UniProt postUniprot.sh (uniprotload.sh)" | tee -a ${LOG}
-./postUniprot.sh 2>&1 >> ${LOG}
+echo "Post UniProt postUniProt.sh (uniprotload.sh)" | tee -a ${LOG}
+./postUniProt.sh 2>&1 >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "postUniprot.sh (uniprotload.sh)"
+checkStatus ${STAT} "postUniProt.sh (uniprotload.sh)"
 
 #
 # run postload cleanup and email logs
