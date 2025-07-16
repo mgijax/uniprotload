@@ -126,7 +126,7 @@ def processUpdates():
     results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
     accKey = results[0]['maxKey']
 
-    # list of accids that do *not* contain 'Reference proteome'
+    # list of accids that contain 'Reference proteome'
     accLookup = {}
     for line in fpAccAssoc.readlines():
 
@@ -134,11 +134,10 @@ def processUpdates():
         accid = tokens[0]
         info = tokens[7]
 
-        if 'Reference proteome' not in info:
-            continue
+        if 'Reference proteome' in info:
+            accLookup[accid] = []
+            accLookup[accid].append(info)
 
-        accLookup[accid] = []
-        accLookup[accid].append(info)
     #print(accLookup)
 
     # search for accids that exist for markers/SWISS-PROT/TrEMBL, er uniprotload_assocload
