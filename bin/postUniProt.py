@@ -122,9 +122,6 @@ def processUpdates():
 
     results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
     accKey = results[0]['maxKey']
-    logicalDBKey = 234
-    mgiTypKey = 2
-    userKey = 1442
 
     # list of accids that do *not* contain 'Reference proteome'
     accLookup = {}
@@ -154,7 +151,6 @@ def processUpdates():
 
     addSQL = ''
     for r in results:
-        #key = r['_accession_key']
         accid = r['accid']
         markerKey = r['_marker_key']
 
