@@ -159,7 +159,7 @@ def processUpdates():
             addSQL += '''insert into ACC_Accession values(%s,'%s',null,null,234,%d,2,0,1,1442,1442,now(),now());\n''' \
                 % (accKey, accid, markerKey)
             accKey += 1
-            print(r)
+            #print(r)
            
     #print(addSQL)
     if len(addSQL) > 0:
