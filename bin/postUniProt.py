@@ -145,7 +145,7 @@ def processUpdates():
             from acc_accession a, mrk_marker m
             where a._mgitype_key = 2 
             and a._logicaldb_key in (13,41) 
-            and a._createdby_key = 1442
+            and a._createdby_key in (1442,1555)
             and a._object_key = m._marker_key
             ''', 'auto')
 
