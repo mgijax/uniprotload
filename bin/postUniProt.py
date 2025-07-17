@@ -139,7 +139,8 @@ def processUpdates():
 
     #print(accLookup)
 
-    # search for accids that exist for markers/SWISS-PROT/TrEMBL, er uniprotload_assocload
+    # search for accids that exist for markers/SWISS-PROT/TrEMBL
+    # user = uniprotload_assocload (1442), uniprot_override_assocload (1555)
     results = db.sql('''
             select a._accession_key, a.accid, m._marker_key, m.symbol
             from acc_accession a, mrk_marker m
