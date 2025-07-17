@@ -156,8 +156,8 @@ def processUpdates():
 
         # if accid in database exists in accLookup, then set preferred = 0
         if accid in accLookup:
-            addSQL += '''insert into ACC_Accession values(%s,'%s',null,null,234,%d,2,0,1,1442,1442,now(),now());\n''' \
-                % (accKey, accid, markerKey)
+            addSQL += '''insert into ACC_Accession values(%s,'%s',null,null,234,%d,2,0,1,1442,1442,now(),now());\n''' % (accKey, accid, markerKey)
+            addSQL += '''insert into ACC_AccessionReference values(%s,58535,1442,1442,now(),now());\n''' % (accKey)
             accKey += 1
             #print(r)
            
