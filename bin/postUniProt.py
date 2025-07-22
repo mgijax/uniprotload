@@ -4,10 +4,10 @@
 #
 #  Purpose:
 #
-#      This script will use the records in the UNIPROT_ACC_ASSOC_FILE file
+#  This script will use the records in the UNIPROT_ACC_ASSOC_FILE file
 #
-#	   If the UNIPROT_ACC_ASSOC_FILE/field 8 contains "Reference proteome", 
-#        then add row for ACC_Accession._logicaldb_key = 234
+#   If the UNIPROT_ACC_ASSOC_FILE/field 8 contains "Reference proteome", 
+#   then add row for ACC_Accession._logicaldb_key = 234
 #
 #  Usage:
 #
