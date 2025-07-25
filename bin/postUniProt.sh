@@ -62,6 +62,22 @@ fi
 LOG=${LOG_DIAG}
 
 #
+# grep the GCRP info from the 10090 fasta file
+# this is to find the single GCRP ids
+#
+echo "" >> ${LOG}
+date >> ${LOG}
+echo "grep the GCRP info from the 10090 fasta file (postUniProt.sh)" | tee -a ${LOG}
+rm -rf ${GCRP_IDS_TXT} | tee -a ${LOG}
+gunzip -c ${GCRP_FILE} | grep "^>" | cut -d "|" -f 2 > ${GCRP_IDS_TXT} | tee -a ${LOG}
+STAT=$?
+if [ ${STAT} -ne 0 ]
+then
+    echo "Error: grep the GCRP info from the 10090 fasta file (postUniProt.sh)" | tee -a ${LOG}
+    exit 1
+fi
+
+#
 # Call the Python script to execute the post uniprot updates
 #
 echo "" >> ${LOG}
